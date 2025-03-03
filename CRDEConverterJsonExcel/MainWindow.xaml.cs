@@ -252,6 +252,35 @@ public partial class MainWindow : Window
         }
     }
 
+    private void btnSendRequestToAPI_Click(object sender, RoutedEventArgs e)
+    {
+        //X: if (cb_endpoint.Text == "")
+        if (true)
+        {
+            MessageBox.Show("[WARNING]: Please select an endpoint!");
+        }
+        else
+        {
+            // Flush response list item
+            //X: lb_responseList.Items.Clear();
+
+            // Send Request to API
+            List<Item> selectedRequestItem = lb_requestItems.FindAll(item => item.isSelected == true);
+            int iterator = 0;
+            if (selectedRequestItem.Count > 0)
+            {
+                foreach (Item it in selectedRequestItem)
+                {
+                    //X: Api.postRequestCRDE(cb_endpoint.Text, it.json, it.fileName, iterator);
+                }
+            }
+            else
+            {
+                MessageBox.Show("[WARNING]: Please select at least one request to send!");
+            }
+        }
+    }
+
     private void t1_btn_BrowseFile_Click(object sender, RoutedEventArgs e)
     {
         try
@@ -284,78 +313,6 @@ public partial class MainWindow : Window
     {
         lb_requestItems = new List<Item>();
         t1_lb_JSONList.ItemsSource = lb_requestItems;
-    }
-
-    private void btnSendRequestToAPI_Click(object sender, RoutedEventArgs e)
-    {
-        //X: if (cb_endpoint.Text == "")
-        if(true)
-        {
-            MessageBox.Show("[WARNING]: Please select an endpoint!");
-        }
-        else
-        {
-            // Flush response list item
-            //X: lb_responseList.Items.Clear();
-
-            // Send Request to API
-            List<Item> selectedRequestItem = lb_requestItems.FindAll(item => item.isSelected == true);
-            int iterator = 0;
-            if (selectedRequestItem.Count > 0)
-            {
-                foreach (Item it in selectedRequestItem)
-                {
-                    //X: postRequestCRDE(cb_endpoint.Text, it.json, it.fileName, iterator);
-                }
-            } else
-            {
-                MessageBox.Show("[WARNING]: Please select at least one request to send!");
-            }
-        }
-    }
-    private async void postRequestCRDE(string selectedEndpoint, string json, string saveFileNameResponse, int iterator)
-    {
-        saveFileNameResponse = saveFileNameResponse + "_response";
-
-        // Parse JSON
-        JObject jsonObject = JObject.Parse(json);
-
-        // Data to send in the POST request
-        try
-        {
-            using (var package = new ExcelPackage())
-            {
-                // Call the API and get the response
-                string responseJsonText = await Api.PostApiDataAsync(selectedEndpoint, jsonObject);
-                JObject parseResponseJson = JObject.Parse(responseJsonText);
-                string responseJsonIndent = JsonConvert.SerializeObject(parseResponseJson, Formatting.Indented);
-
-                // Save Response to JSON File
-                converter.saveTextFile(@"\output\json\response\" + saveFileNameResponse + ".json", responseJsonIndent, "res");
-
-                // Convert Response to Excel
-                converter.convertJSONToExcel(package, responseJsonText, iterator);
-
-                // Save Excel file
-                string excelFilePath = GeneralMethod.getProjectDirectory() + @"\output\excel\response\" + saveFileNameResponse + "-res-" + GeneralMethod.getTimeStampNow() + ".xlsx";
-                package.SaveAs(new FileInfo(excelFilePath));
-
-                // Add to List Box Response
-                //X: lb_responseList.Items.Add(new Item { fileName = saveFileNameResponse, json = json, isSelected = false });
-
-                MessageBox.Show("[SUCCESS]: [" + saveFileNameResponse + @"] Save Response was successful! File saved to \output\json\response and \output\excel\response");
-            }
-        }
-        catch (HttpRequestException ex)
-        {
-            MessageBox.Show($"[API_FAILED]: {ex.StatusCode} : {ex.Message}", "Error");
-
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"[API_FAILED]: An error occurred: {ex.Message}", "Error");
-
-        }
     }
 
     private void t1_cb_SelectAll_Click(object sender, RoutedEventArgs e)

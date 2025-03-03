@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:local="clr-namespace:CRDEConverterJsonExcel"
-        xmlns:objectClass="clr-namespace:CRDEConverterJsonExcel.objectClass"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Style="{StaticResource MaterialDesignWindow}"
@@ -39,11 +38,7 @@
                 <StackPanel Margin="10">
                     <StackPanel Orientation="Horizontal">
                         <Button x:Name="t1_btn_BrowseFile" Content="Select JSON Files" HorizontalAlignment="Left" Click="t1_btn_BrowseFile_Click" Height="30" Margin="0,0,0,5"/>
-                        <Button x:Name="t1_btn_BrowseFolder" Content="Select JSON Folder" HorizontalAlignment="Left" Click="t1_btn_BrowseFolder_Click" Height="30" Margin="10,0,0,5">
-                            <Button.Tag>
-                                <objectClass:BrowseButton extension="json" allowedMultipleFiles="false" />
-                            </Button.Tag>
-                        </Button>
+                        <Button x:Name="t1_btn_BrowseFolder" Content="Select JSON Folder" HorizontalAlignment="Left" Click="t1_btn_BrowseFolder_Click" Height="30" Margin="10,0,0,5"/>
                     </StackPanel>
                     <Grid Margin="0,5,0,5">
                         <Grid.ColumnDefinitions>
