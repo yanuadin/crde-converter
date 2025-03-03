@@ -1,0 +1,115 @@
+﻿<Window x:Class="CRDEConverterJsonExcel.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:local="clr-namespace:CRDEConverterJsonExcel"
+        xmlns:objectClass="clr-namespace:CRDEConverterJsonExcel.objectClass"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        Style="{StaticResource MaterialDesignWindow}"
+        Title="CRDE v7.2 Tools" Height="600" Width="1000">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        
+        <materialDesign:Card Grid.Row="0">
+            <Menu materialDesign:MenuAssist.TopLevelMenuItemHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type materialDesign:Card}}, Path=ActualHeight}">
+                <MenuItem Header="Tools">
+                    <MenuItem Header="JSON Converter" Click="mi_Control_Click" Tag="t1"/>
+                    <MenuItem Header="Excel Converter" Click="mi_Control_Click" Tag="t2"/>
+                    <MenuItem Header="JSON Masking" Click="mi_Control_Click" Tag="t3"/>
+                    <MenuItem Header="S1 Log Extraction" Click="mi_Control_Click" Tag="t4"/>
+                    <MenuItem Header="Calling CRDE API" Click="mi_Control_Click" Tag="t5"/>
+                </MenuItem>
+                <MenuItem Header="Setting">
+                    <MenuItem Header="Masking" Click="mi_Control_Click" Tag="s1"/>
+                    <MenuItem Header="S1 Logs" Click="mi_Control_Click" Tag="s2"/>
+                    <MenuItem Header="CRDE API Address" Click="mi_Control_Click" Tag="s3"/>
+                    <MenuItem Header="Process Code" Click="mi_Control_Click" Tag="s4"/>
+                </MenuItem>
+            </Menu>
+        </materialDesign:Card>
+
+        <TabControl x:Name="toolsSubMenu"  Grid.Row="1" HorizontalContentAlignment="Left" Visibility="Visible">
+            <TabItem Header="JSON Converter">
+                <StackPanel Margin="10">
+                    <StackPanel Orientation="Horizontal">
+                        <Button x:Name="t1_btn_BrowseFile" Content="Select JSON Files" HorizontalAlignment="Left" Click="t1_btn_BrowseFile_Click" Height="30" Margin="0,0,0,5"/>
+                        <Button x:Name="t1_btn_BrowseFolder" Content="Select JSON Folder" HorizontalAlignment="Left" Click="t1_btn_BrowseFolder_Click" Height="30" Margin="10,0,0,5">
+                            <Button.Tag>
+                                <objectClass:BrowseButton extension="json" allowedMultipleFiles="false" />
+                            </Button.Tag>
+                        </Button>
+                    </StackPanel>
+                    <Grid Margin="0,5,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="17*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Folder : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
+                        <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t1_tb_folder" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
+                    </Grid>
+                    <ListBox x:Name="t1_lb_JSONList" HorizontalAlignment="Stretch" SelectionMode="Extended" Height="200" Margin="0,5,0,5" BorderBrush="#FF2E2C2C" BorderThickness="1">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox IsChecked="{Binding isSelected}" VerticalAlignment="Center" Margin="5,0,5,0"/>
+                                    <TextBlock Text="{Binding fileName}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Grid Margin="0,5,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox x:Name="t1_cb_selectAll" Content="Select All" HorizontalAlignment="Left" Click="t1_cb_SelectAll_Click"/>
+                        <Button Grid.Column="1" x:Name="t1_btn_ClearListBox" Content="Clear JSON" HorizontalAlignment="Right" Click="btn_ClearListBox_Click" Height="30"/>
+                    </Grid>
+                    <Button x:Name="t1_btn_ConvertJSONToExcel" Content="Convert to Excel" HorizontalAlignment="Left" Click="t1_btn_ConvertJSONToExcel_Click" Height="30" Margin="0,5,0,5"/>
+                    <Grid Margin="0,5,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="6*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Converted Excel File : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
+                        <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t1_tb_output" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
+                    </Grid>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Excel Converter">
+                <TextBlock Text="Default Tab 2" />
+            </TabItem>
+            <TabItem Header="JSON Masking">
+                <TextBlock Text="Default Tab 2" />
+            </TabItem>
+            <TabItem Header="S1 Log Extraction">
+                <TextBlock Text="Default Tab 2" />
+            </TabItem>
+            <TabItem Header="Call CRDE API">
+                <TextBlock Text="Default Tab 2" />
+            </TabItem>
+        </TabControl>
+
+        <TabControl x:Name="settingSubMenu"  Grid.Row="1" HorizontalContentAlignment="Left" Visibility="Hidden">
+            <TabItem Header="Masking">
+                <TextBlock Text="Masking" />
+            </TabItem>
+            <TabItem Header="S1 Logs">
+                <TextBlock Text="S1 Logs" />
+            </TabItem>
+            <TabItem Header="CRDE API Address">
+                <TextBlock Text="CRDE API Address" />
+            </TabItem>
+            <TabItem Header="Process Code">
+                <TextBlock Text="Process Code" />
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

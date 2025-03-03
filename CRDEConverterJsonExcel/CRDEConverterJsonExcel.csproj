@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="output\NewFolder\**" />
+    <Compile Remove="sample\**" />
+    <EmbeddedResource Remove="output\NewFolder\**" />
+    <EmbeddedResource Remove="sample\**" />
+    <None Remove="output\NewFolder\**" />
+    <None Remove="sample\**" />
+    <Page Remove="output\NewFolder\**" />
+    <Page Remove="sample\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EPPlus" Version="7.6.0" />
+    <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
+    <PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="output\excel\" />
+    <Folder Include="output\json\response\" />
+    <Folder Include="output\json\request\" />
+    <Folder Include="output\txt\" />
+  </ItemGroup>
+
+</Project>
