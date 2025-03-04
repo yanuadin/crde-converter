@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="CRDEConverterJsonExcel.src.tools.ExcelConverter"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CRDEConverterJsonExcel.src.tools"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <StackPanel Margin="10">
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="t2_btn_BrowseFile" Content="Select Excel Files" HorizontalAlignment="Left" Click="t2_btn_BrowseFile_Click" Height="30" Margin="0,0,0,5"/>
+            </StackPanel>
+            <Grid Margin="0,5,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="10*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Excel File : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
+                <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t2_tb_folder" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
+            </Grid>
+            <ListBox x:Name="t2_lb_JSONList" HorizontalAlignment="Stretch" SelectionMode="Extended" Height="200" Margin="0,5,0,5" BorderBrush="#FF2E2C2C" BorderThickness="1">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox IsChecked="{Binding isSelected}" VerticalAlignment="Center" Margin="5,0,5,0"/>
+                            <TextBlock Text="{Binding fileName}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Grid Margin="0,5,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <CheckBox x:Name="t2_cb_selectAll" Content="Select All" HorizontalAlignment="Left" Click="t2_cb_SelectAll_Click"/>
+                <Button Grid.Column="1" x:Name="t2_btn_ClearListBox" Content="Clear JSON" HorizontalAlignment="Right" Click="t2_btn_ClearListBox_Click" Height="30"/>
+            </Grid>
+            <Button x:Name="t2_btn_ConvertExcelToTxt" Content="Convert to Text File" HorizontalAlignment="Left" Click="t2_btn_ConvertExcelToTxt_Click" Height="30" Margin="0,5,0,5"/>
+            <Grid Margin="0,5,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="5*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Converted Text File : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
+                <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t2_tb_txt_output" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
+            </Grid>
+            <Button x:Name="t2_btn_ConvertExcelToJSON" Content="Convert to JSON File" HorizontalAlignment="Left" Click="t2_btn_ConvertExcelToJSON_Click" Height="30" Margin="0,5,0,5"/>
+            <Grid Margin="0,5,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="5*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Converted JSON Folder : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
+                <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t2_tb_json_output" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>

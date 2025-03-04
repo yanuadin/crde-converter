@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace CRDEConverterJsonExcel.core
 {
@@ -32,26 +33,11 @@ namespace CRDEConverterJsonExcel.core
             List<Item> listItem = new List<Item>();
 
             // Create OpenFileDialog 
-            string filter = "";
-            switch (extension)
-            {
-                case "json":
-                    filter = "Json files (*.json)|*.json";
-                    break;
-                case "excel":
-                    filter = "Excel Files|*.xls;*.xlsx";
-                    break;
-                case "completed":
-                    filter = "Completed Files|*.COMPLETED";
-                    break;
-                default:
-                    filter = "Json files (*.json)|*.json|Excel Files|*.xls;*.xlsx";
-                    break;
-            }
+            string filter = getFilterExtension(extension);
+            string json = "";
 
             OpenFileDialog dlg = new OpenFileDialog { Filter = filter, Multiselect = allowedMultipleFiles };
 
-            // Display OpenFileDialog by calling ShowDialog method 
             Nullable<bool> result = dlg.ShowDialog();
 
             // If Allowed MultipleFiles
@@ -71,8 +57,9 @@ namespace CRDEConverterJsonExcel.core
                 else
                 {
                     fileName = dlg.FileName.Split("\\").Last().Split(".").First();
+                    json = extension == "json" ? File.ReadAllText(dlg.FileName) : ""; 
 
-                    listItem.Add(new Item { fileName = fileName, filePath = dlg.FileName, json = File.ReadAllText(dlg.FileName), isSelected = false });
+                    listItem.Add(new Item { fileName = fileName, filePath = dlg.FileName, json = json, isSelected = false });
                 }
             }
 
@@ -88,7 +75,6 @@ namespace CRDEConverterJsonExcel.core
                 OpenFolderDialog folderDialog = new OpenFolderDialog();
                 JArray files = new JArray();
 
-                // Display OpenFileDialog by calling ShowDialog method 
                 Nullable<bool> result = folderDialog.ShowDialog();
 
                 if (result == true)
@@ -111,6 +97,66 @@ namespace CRDEConverterJsonExcel.core
             }
 
             return listItem;
+        }
+
+        public static string saveFileDialog(string extension, string defaultName = "")
+        {
+            string filter = getFilterExtension(extension);
+            SaveFileDialog saveFileDialog = new SaveFileDialog { Filter = filter, FileName = defaultName };
+            Nullable<bool> result = saveFileDialog.ShowDialog();
+            string filePath = "";
+
+            if (result == true)
+                filePath = saveFileDialog.FileName;
+
+            return filePath;
+        }
+
+        public static string saveFolderDialog()
+        {
+            OpenFolderDialog saveFileDialog = new OpenFolderDialog();
+            Nullable<bool> result = saveFileDialog.ShowDialog();
+            string filePath = "";
+
+            if (result == true)
+                filePath = saveFileDialog.FolderName;
+
+            return filePath;
+        }
+
+        private static string getFilterExtension(string extension)
+        {
+            string filter = "";
+            switch (extension)
+            {
+                case "json":
+                    filter = "Json files (*.json)|*.json";
+                    break;
+                case "excel":
+                    filter = "Excel Files|*.xls;*.xlsx";
+                    break;
+                case "txt":
+                    filter = "Text Files|*.txt";
+                    break;
+                case "completed":
+                    filter = "Completed Files|*.COMPLETED";
+                    break;
+                default:
+                    filter = "All files (*.*)|*.*";
+                    break;
+            }
+
+            return filter;
+        }
+
+        public static List<Item> selectAllList(List<Item> items, CheckBox checkBox)
+        {
+            foreach (Item item in items)
+            {
+                item.isSelected = (bool)checkBox.IsChecked;
+            }
+
+            return items;
         }
     }
 }

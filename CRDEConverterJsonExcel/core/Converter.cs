@@ -11,6 +11,7 @@ using System.Windows;
 using System.Diagnostics;
 using CRDEConverterJsonExcel.config;
 using System.Drawing;
+using CRDEConverterJsonExcel.objectClass;
 
 namespace CRDEConverterJsonExcel.core
 {
@@ -103,9 +104,12 @@ namespace CRDEConverterJsonExcel.core
             addSheet(iterator, (JObject)jsonObject.First.First.Last.First, package, null, 1, "#HEADER#", iterator + 2);
         }
 
-        public JArray convertExcelTo(string filePath, string convertType)
+        public string convertExcelTo(string filePath, List<Item> filteredSelected, string convertType)
         {
             JArray resultCollection = new JArray();
+            string savePath = "";
+            if (convertType == "json")
+                savePath = GeneralMethod.saveFolderDialog();
 
             // Set EPPlus license context (required for non-commercial use)
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -224,6 +228,7 @@ namespace CRDEConverterJsonExcel.core
                             JObject headerJSON = new JObject();
                             headerJSON["header"] = cleanIdParentAndParentId(excelData[iterator]["#HEADER#"].ToObject<JObject>());
                             headerJSON["name"] = headerJSON["header"].First.First.First.First["InquiryCode"];
+                            headerJSON["typeJSON"] = excelData[iterator]["#HEADER#"].ToObject<JObject>().First.First.First.First["Type"];
                             result = new JObject();
 
                             try
@@ -233,8 +238,7 @@ namespace CRDEConverterJsonExcel.core
                                     // Convert the data to JSON
                                     result["json"] = JsonConvert.SerializeObject(headerJSON["header"], Formatting.Indented);
                                     result["fileName"] = headerJSON["name"];
-                                    result["message"] = @"[SUCCESS]: Request was saved in \output\json\request";
-                                    result["success"] = true;
+                                    result["typeJSON"] = headerJSON["typeJSON"].ToString() == "StrategyOneRequest" ? "req" : "res";
 
                                     resultCollection.Add(result);
                                 }
@@ -242,27 +246,20 @@ namespace CRDEConverterJsonExcel.core
                                 {
                                     result["json"] = JsonConvert.SerializeObject(headerJSON["header"]);
                                     result["fileName"] = headerJSON["name"];
-                                    result["message"] = @"[SUCCESS]: Request was saved in \output\txt";
-                                    result["success"] = true;
+                                    result["typeJSON"] = headerJSON["typeJSON"].ToString() == "StrategyOneRequest" ? "req" : "res";
 
                                     resultCollection.Add(result);
                                 }
                                 else
                                 {
-                                    result["json"] = "";
-                                    result["fileName"] = "";
-                                    result["message"] = "[FAILED]: Invalid Convert Type";
-                                    result["success"] = false;
+                                    MessageBox.Show("[FAILED]: [" + headerJSON["name"] + "] [FAILED]: Invalid Convert Type");
 
                                     break;
                                 }
                             }
                             catch (Exception ex)
                             {
-                                result["json"] = "";
-                                result["fileName"] = "";
-                                result["message"] = "[FAILED]: [" + headerJSON["name"] + "] Convert was failed";
-                                result["success"] = false;
+                                MessageBox.Show("[FAILED]: [" + headerJSON["name"] + "] Convert was failed" + Environment.NewLine + ex.Message);
 
                                 continue;
                             }
@@ -274,37 +271,62 @@ namespace CRDEConverterJsonExcel.core
                 }
 
                 // Save File
+                string jsonTxt = "";
+                string fileNameTxt = "";
+                int successCount = 0;
+
                 foreach (JObject res in resultCollection)
                 {
-                    try
+                    Item matchingItem = filteredSelected.FirstOrDefault(item => item.fileName == res["fileName"].ToString());
+
+                    if (matchingItem != null)
                     {
                         if (convertType == "json")
                         {
-                            saveTextFile(@"\output\json\request\" + res["fileName"] + ".json", res["json"].ToString());
-                        } 
+                            saveTextFile(savePath + @"\" + res["fileName"] + ".json", res["json"].ToString(), res["typeJSON"].ToString());
+                            successCount++;
+                        }
                         else if (convertType == "txt")
                         {
-                            if (res.Previous != null)
+                            if (jsonTxt == "")
                             {
-                                resultCollection[0]["json"] += Environment.NewLine + res["json"].ToString();
-                                resultCollection[0]["fileName"] = "MultipleFiles";
+                                jsonTxt = res["json"].ToString();
+                                fileNameTxt = res["fileName"].ToString();
                             }
-
-                            if (res.Next == null)
-                                saveTextFile(@"\output\txt\" + resultCollection[0]["fileName"] + ".txt", resultCollection[0]["json"].ToString());
+                            else
+                            {
+                                jsonTxt += Environment.NewLine + res["json"].ToString();
+                                fileNameTxt = "MultipleFiles";
+                            }
                         }
                     }
-                    catch (Exception ex)
+                }
+
+                try
+                {
+                    if (convertType == "txt")
                     {
-                        result["json"] = "";
-                        result["fileName"] = "";
-                        result["message"] = "[FAILED]: Convert was failed";
-                        result["success"] = false;
+                        savePath = GeneralMethod.saveFileDialog(convertType, fileNameTxt);
+                        if (savePath != "")
+                        {
+                            saveTextFile(savePath, jsonTxt);
+                            successCount++;
+                        } else
+                        {
+                            MessageBox.Show("[FAILED]: Location not found");
+                        }
                     }
+
+                    MessageBox.Show($"[SUCCESS]: {successCount} files converted successfully");
+                }
+                catch (Exception ex)
+                {
+                    successCount = 0;
+                    MessageBox.Show("[ERROR]: " + ex.Message);
                 }
             }
 
-            return resultCollection;
+            return savePath;
         }
         private JObject cleanIdParentAndParentId(JObject data)
         {
@@ -483,7 +505,7 @@ namespace CRDEConverterJsonExcel.core
             string filePathWithoutName = string.Join(@"\", filePath.Split(@"\")[0..^1]) + @"\";
 
             string fname = fileName + "-" + typeJSON + "-" + GeneralMethod.getTimeStampNow() + "." + extension;
-            string textFilePath = GeneralMethod.getProjectDirectory() + filePathWithoutName + fname;
+            string textFilePath = filePathWithoutName + fname;
 
             // Save Text File
             File.WriteAllText(textFilePath, json);
