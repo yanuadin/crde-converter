@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -23,14 +24,19 @@ namespace CRDEConverterJsonExcel.core
             return Environment.CurrentDirectory;
         }
 
-        public static string getTimeStampNow()
+        public static string getDateTimeNow()
         {
             return DateTime.Now.ToString("dd_MM_yyyy-HH_mm");
         }
-
-        public static List<Item> browseFile(string extension, bool allowedMultipleFiles)
+        
+        public static string getTimestampNow()
         {
-            List<Item> listItem = new List<Item>();
+            return DateTime.Now.ToString("yyyyMMddHHmmss");
+        }
+
+        public static ObservableCollection<Item> browseFile(string extension, bool allowedMultipleFiles)
+        {
+            ObservableCollection<Item> listItem = new ObservableCollection<Item>();
 
             // Create OpenFileDialog 
             string filter = getFilterExtension(extension);
@@ -51,7 +57,7 @@ namespace CRDEConverterJsonExcel.core
                     {
                         fileName = filePath.Split("\\").Last().Split(".").First();
 
-                        listItem.Add(new Item { fileName = fileName, filePath = filePath, json = File.ReadAllText(filePath), isSelected = false });
+                        listItem.Add(new Item { FileName = fileName, FilePath = filePath, JSON = File.ReadAllText(filePath), IsSelected = false });
                     }
                 }
                 else
@@ -59,41 +65,44 @@ namespace CRDEConverterJsonExcel.core
                     fileName = dlg.FileName.Split("\\").Last().Split(".").First();
                     json = extension == "json" ? File.ReadAllText(dlg.FileName) : ""; 
 
-                    listItem.Add(new Item { fileName = fileName, filePath = dlg.FileName, json = json, isSelected = false });
+                    listItem.Add(new Item { FileName = fileName, FilePath = dlg.FileName, JSON = json, IsSelected = false });
                 }
             }
-
+            
             return listItem;
         }
 
-        public static List<Item> browseFolder(string extension)
+        public static ObservableCollection<Item> browseFolder(string extension)
         {
-            List<Item> listItem = new List<Item>();
+            ObservableCollection<Item> listItem = new ObservableCollection<Item>();
 
-            if (extension == "json")
+            OpenFolderDialog folderDialog = new OpenFolderDialog();
+            Nullable<bool> result = folderDialog.ShowDialog();
+
+            if (result == true)
             {
-                OpenFolderDialog folderDialog = new OpenFolderDialog();
-                JArray files = new JArray();
+                string[] filePaths = Directory.GetFiles(folderDialog.FolderName);
 
-                Nullable<bool> result = folderDialog.ShowDialog();
-
-                if (result == true)
+                foreach (string filePath in filePaths)
                 {
-                    string[] filePaths = Directory.GetFiles(folderDialog.FolderName);
+                    string fileName = filePath.Split("\\").Last().Split(".").First();
+                    string fileExt = filePath.Split("\\").Last().Split(".").Last();
+                    string dateCreated = "";
+                    FileInfo oFileInfo = new FileInfo(filePath);
 
-                    foreach (string filePath in filePaths)
+                    // Assign Date Created Properties
+                    if (oFileInfo.Exists)
                     {
-                        string fileName = filePath.Split("\\").Last().Split(".").First();
-                        string fileExt = filePath.Split("\\").Last().Split(".").Last();
-
-                        if (fileExt == extension)
-                            listItem.Add(new Item { fileName = fileName, filePath = filePath, json = File.ReadAllText(filePath), isSelected = false });
+                        DateTime dtCreationTime = oFileInfo.CreationTime;
+                        dateCreated = dtCreationTime.ToString();
                     }
+
+                    if (extension == "json" && fileExt == extension)
+                        listItem.Add(new Item { FileName = fileName, FilePath = filePath, JSON = File.ReadAllText(filePath), CreatedDate = dateCreated, IsSelected = false });
+
+                    else if (extension == "completed" && fileExt.ToUpper() == extension.ToUpper())
+                        listItem.Add(new Item { FileName = fileName, FilePath = filePath, CreatedDate = dateCreated, IsSelected = false });
                 }
-            }
-            else
-            {
-                MessageBox.Show("[ERROR]: Extension Is Not Defined");
             }
 
             return listItem;
@@ -149,11 +158,11 @@ namespace CRDEConverterJsonExcel.core
             return filter;
         }
 
-        public static List<Item> selectAllList(List<Item> items, CheckBox checkBox)
+        public static ObservableCollection<Item> selectAllList(ObservableCollection<Item> items, CheckBox checkBox)
         {
             foreach (Item item in items)
             {
-                item.isSelected = (bool)checkBox.IsChecked;
+                item.IsSelected = (bool)checkBox.IsChecked;
             }
 
             return items;

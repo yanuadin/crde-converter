@@ -74,7 +74,7 @@ namespace CRDEConverterJsonExcel.core
                     converter.convertJSONToExcel(package, responseJsonText, iterator);
 
                     // Save Excel file
-                    string excelFilePath = GeneralMethod.getProjectDirectory() + @"\output\excel\response\" + saveFileNameResponse + "-res-" + GeneralMethod.getTimeStampNow() + ".xlsx";
+                    string excelFilePath = GeneralMethod.getProjectDirectory() + @"\output\excel\response\" + saveFileNameResponse + "-res.xlsx";
                     package.SaveAs(new FileInfo(excelFilePath));
 
                     // Add to List Box Response

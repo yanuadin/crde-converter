@@ -43,5 +43,10 @@ namespace CRDEConverterJsonExcel.config
             
             return envConfig == null ? null : envConfig[env].ToObject<JObject>();
         }
+
+        public JArray getProcessCode()
+        {
+            return config["PROCESS_CODE"].ToObject<JArray>();
+        }
     }
 }

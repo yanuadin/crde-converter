@@ -277,7 +277,7 @@ namespace CRDEConverterJsonExcel.core
 
                 foreach (JObject res in resultCollection)
                 {
-                    Item matchingItem = filteredSelected.FirstOrDefault(item => item.fileName == res["fileName"].ToString());
+                    Item matchingItem = filteredSelected.FirstOrDefault(item => item.FileName == res["fileName"].ToString());
 
                     if (matchingItem != null)
                     {
@@ -497,18 +497,45 @@ namespace CRDEConverterJsonExcel.core
             }
         }
 
-        public void saveTextFile(string filePath, string json, string typeJSON = "req")
+        public string saveTextFile(string filePath, string json, string typeJSON = "req", string typeTime = "")
         {
             // Arrange File Name
             string fileName = filePath.Split(@"\").Last().Split(".").First();
             string extension = filePath.Split(@"\").Last().Split(".").Last();
             string filePathWithoutName = string.Join(@"\", filePath.Split(@"\")[0..^1]) + @"\";
+            string uniqueIdentifier = "";
+            string fname = fileName + "-" + typeJSON;
 
-            string fname = fileName + "-" + typeJSON + "-" + GeneralMethod.getTimeStampNow() + "." + extension;
+            switch (typeTime)
+            {
+                case "timestamp":
+                    uniqueIdentifier = GeneralMethod.getTimestampNow();
+                    break;
+                case "datetime":
+                    uniqueIdentifier = GeneralMethod.getDateTimeNow();
+                    break;
+                default:
+                    uniqueIdentifier = GeneralMethod.getDateTimeNow();
+                    break;
+            }
+
+
+            string[] otherFilesInFolder = Directory.GetFiles(filePathWithoutName);
+            int checkDuplicateFiles = otherFilesInFolder.Where(file => file.Contains(fname)).Count();
+            if (checkDuplicateFiles > 0)
+                fname += "-" + checkDuplicateFiles.ToString();
+
+            if (typeTime != "")
+                fname += "-" + uniqueIdentifier;
+
+            fname += "." + extension;
+
             string textFilePath = filePathWithoutName + fname;
 
             // Save Text File
             File.WriteAllText(textFilePath, json);
+
+            return textFilePath;
         }
     }
 }

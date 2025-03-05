@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -26,7 +27,7 @@ namespace CRDEConverterJsonExcel.src.tools
     /// </summary>
     public partial class ExcelConverter : UserControl
     {
-        List<Item> lb_JSONItems = new List<Item>();
+        ObservableCollection<Item> lb_JSONItems = new ObservableCollection<Item>();
 
         public ExcelConverter()
         {
@@ -37,10 +38,10 @@ namespace CRDEConverterJsonExcel.src.tools
         {
             try
             {
-                lb_JSONItems = new List<Item>();
-                List<Item> excelFile = GeneralMethod.browseFile("excel", false);
-                string fileName = excelFile.First<Item>().fileName;
-                string filePath = excelFile.First<Item>().filePath;
+                lb_JSONItems = new ObservableCollection<Item>();
+                ObservableCollection<Item> excelFile = GeneralMethod.browseFile("excel", false);
+                string fileName = excelFile.First<Item>().FileName;
+                string filePath = excelFile.First<Item>().FilePath;
                 t2_tb_folder.Text = filePath;
 
                 using (var package = new ExcelPackage(new FileInfo(filePath)))
@@ -48,7 +49,7 @@ namespace CRDEConverterJsonExcel.src.tools
                     ExcelWorksheet ws = package.Workbook.Worksheets["#HEADER#"];
                     for (int row = 3; row <= ws.Dimension.Rows; row++)
                     {
-                        lb_JSONItems.Add(new Item { fileName = ws.Cells[row, 5].Text, filePath = filePath, json = "", isSelected = false });
+                        lb_JSONItems.Add(new Item { FileName = ws.Cells[row, 5].Text, FilePath = filePath, JSON = "", IsSelected = false });
                     }
                     t2_lb_JSONList.ItemsSource = lb_JSONItems;
                 }
@@ -62,12 +63,11 @@ namespace CRDEConverterJsonExcel.src.tools
         private void t2_cb_SelectAll_Click(object sender, RoutedEventArgs e)
         {
             GeneralMethod.selectAllList(lb_JSONItems, t2_cb_selectAll);
-            t2_lb_JSONList.Items.Refresh();
         }
         
         private void t2_btn_ClearListBox_Click(object sender, RoutedEventArgs e)
         {
-            lb_JSONItems = new List<Item>();
+            lb_JSONItems = new ObservableCollection<Item>();
             t2_lb_JSONList.ItemsSource = lb_JSONItems;
             t2_tb_folder.Text = "";
         }
@@ -75,11 +75,11 @@ namespace CRDEConverterJsonExcel.src.tools
         private void t2_btn_ConvertExcelToTxt_Click(object sender, RoutedEventArgs e)
         {
             Converter converter = new Converter();
-            List<Item> filteredSelected = lb_JSONItems.Where(item => item.isSelected).ToList();
+            List<Item> filteredSelected = lb_JSONItems.Where(item => item.IsSelected).ToList();
 
             if (filteredSelected.Count > 0)
             {
-                string filePath = filteredSelected.First<Item>().filePath;
+                string filePath = filteredSelected.First<Item>().FilePath;
                 string savePath = converter.convertExcelTo(filePath, filteredSelected, "txt");
                 if (savePath != "")
                 {
@@ -97,11 +97,11 @@ namespace CRDEConverterJsonExcel.src.tools
         private void t2_btn_ConvertExcelToJSON_Click(object sender, RoutedEventArgs e)
         {
             Converter converter = new Converter();
-            List<Item> filteredSelected = lb_JSONItems.Where(item => item.isSelected).ToList();
+            List<Item> filteredSelected = lb_JSONItems.Where(item => item.IsSelected).ToList();
 
             if (filteredSelected.Count > 0)
             {
-                string filePath = filteredSelected.First<Item>().filePath;
+                string filePath = filteredSelected.First<Item>().FilePath;
                 string savePath = converter.convertExcelTo(filePath, filteredSelected, "json");
                 if (savePath != "")
                 {

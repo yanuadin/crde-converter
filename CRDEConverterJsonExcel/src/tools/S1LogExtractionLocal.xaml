@@ -1,0 +1,84 @@
+﻿<UserControl x:Class="CRDEConverterJsonExcel.src.tools.S1LogExtractionLocal"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CRDEConverterJsonExcel.src.tools"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <StackPanel Margin="10">
+            <GroupBox MinHeight="250" Header="Log">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Button x:Name="t4_btn_BrowseFolder" Content="Select Log Folder" HorizontalAlignment="Left" Click="t4_btn_BrowseFolder_Click" Height="30" Margin="0,0,0,5"/>
+                    </StackPanel>
+                    <Grid Margin="0,5,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="10*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Log Folder: " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
+                        <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t4_tb_folder" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
+                    </Grid>
+                    <DataGrid Name="t4_lb_LogList" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" CanUserAddRows="false" Height="100" Margin="0,5,0,5">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="#">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="5,0,5,0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Binding="{Binding FileName}" Header="Name" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding CreatedDate}" Header="Created Date" IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                        <DataGrid.Resources>
+                            <Style BasedOn="{StaticResource {x:Type DataGridColumnHeader}}" TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="Background" Value="BlueViolet" />
+                            </Style>
+                        </DataGrid.Resources>
+                    </DataGrid>
+                    
+                    <Grid Margin="0,5,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox x:Name="t4_cb_selectAll" Content="Select All" HorizontalAlignment="Left" Click="t4_cb_SelectAll_Click"/>
+                        <Button Grid.Column="1" x:Name="t4_btn_ClearListBox" Content="Clear Files" HorizontalAlignment="Right" Click="t4_btn_ClearListBox_Click" Height="30"/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox MinHeight="250" Header="Extract Log" Margin="0,10">
+                <StackPanel>
+                    <Grid Margin="0,5,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="10*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Process Code : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
+                        <ComboBox x:Name="t4_cb_process_code" Grid.Column="1" materialDesign:HintAssist.Hint="Select Process Code" Width="300" HorizontalAlignment="Left"/>
+                    </Grid>
+                    <Button x:Name="t4_btn_ExtractLog" Content="Convert to Text File" HorizontalAlignment="Left" Click="t4_btn_ExtractLog_Click" Height="30" Margin="0,5,0,5"/>
+                    <DataGrid Name="t4_lb_JSONList" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" CanUserAddRows="false" Height="200" Margin="0,5,0,5">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Binding="{Binding FileName}" Header="Name" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding AdditionalField}" Header="Type" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding FilePath}" Header="File Location" IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                        <DataGrid.Resources>
+                            <Style BasedOn="{StaticResource {x:Type DataGridColumnHeader}}" TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="Background" Value="BlueViolet" />
+                            </Style>
+                        </DataGrid.Resources>
+                    </DataGrid>
+                    <Button x:Name="t4_btn_ClearJSONListBox" Content="Clear JSON" HorizontalAlignment="Right" Click="t4_btn_ClearJSONListBox_Click" Height="30"/>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+    </Grid>
+</UserControl>

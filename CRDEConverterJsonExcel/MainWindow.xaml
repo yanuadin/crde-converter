@@ -9,7 +9,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Style="{StaticResource MaterialDesignWindow}"
-        Title="CRDE v7.2 Tools" Height="650" Width="1000">
+        Title="CRDE v7.2 Tools" Height="800" Width="1200">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="25"/>
@@ -45,10 +45,10 @@
                 <TextBlock Text="Default Tab 2" />
             </TabItem>
             <TabItem Header="S1 Log Extraction">
-                <TextBlock Text="Default Tab 2" />
+                <src_tools:S1LogExtractionLocal/>
             </TabItem>
             <TabItem Header="Call CRDE API">
-                <TextBlock Text="Default Tab 2" />
+                <src_tools:CallingCRDEAPI/>
             </TabItem>
         </TabControl>
 
