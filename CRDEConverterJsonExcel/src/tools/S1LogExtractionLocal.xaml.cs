@@ -37,8 +37,14 @@ namespace CRDEConverterJsonExcel.src.tools
         {
             InitializeComponent();
 
-            t4_cb_process_code.ItemsSource = config.getProcessCode().ToList();
+            t4_cb_process_code.ItemsSource = config.getProcessCode();
         }
+
+        public void refreshConfig()
+        {
+            config = new CRDE();
+            t4_cb_process_code.ItemsSource = config.getProcessCode();
+        } 
 
         private void t4_btn_BrowseFolder_Click(object sender, RoutedEventArgs e)
         {

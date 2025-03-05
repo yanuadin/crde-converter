@@ -14,8 +14,7 @@ namespace CRDEConverterJsonExcel.config
     {
         private JObject config;
         public CRDE() {
-            string jsonContent = File.ReadAllText(GeneralMethod.getProjectDirectory() + @"\config\CRDE.json");
-            config = JObject.Parse(jsonContent);
+            readFileConfig();
         }
 
         public JArray getColorCells()
@@ -50,6 +49,24 @@ namespace CRDEConverterJsonExcel.config
         public JArray getProcessCode()
         {
             return config["PROCESS_CODE"].ToObject<JArray>();
+        }
+
+        public void setProcessCode(JArray processCode)
+        {
+            config["PROCESS_CODE"] = processCode;
+            
+            File.WriteAllText(getFilePathConfig(), config.ToString());
+        }
+
+        private string getFilePathConfig()
+        {
+            return GeneralMethod.getProjectDirectory() + @"\config\CRDE.json";
+        }
+
+        private void readFileConfig()
+        {
+            string jsonContent = File.ReadAllText(getFilePathConfig());
+            config = JObject.Parse(jsonContent);
         }
     }
 }

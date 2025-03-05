@@ -6,6 +6,7 @@
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:local="clr-namespace:CRDEConverterJsonExcel"
         xmlns:src_tools="clr-namespace:CRDEConverterJsonExcel.src.tools"
+        xmlns:src_setting="clr-namespace:CRDEConverterJsonExcel.src.setting"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Style="{StaticResource MaterialDesignWindow}"
@@ -34,25 +35,25 @@
             </Menu>
         </materialDesign:Card>
 
-        <TabControl x:Name="toolsSubMenu"  Grid.Row="1" HorizontalContentAlignment="Left" Visibility="Visible">
+        <TabControl x:Name="toolsSubMenu"  Grid.Row="1" HorizontalContentAlignment="Left" Visibility="Hidden" SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="JSON Converter">
-                <src_tools:JSONConverter/>
+                <src_tools:JSONConverter x:Name="t4_uc_JSONConverter"/>
             </TabItem>
             <TabItem Header="Excel Converter">
-                <src_tools:ExcelConverter/>
+                <src_tools:ExcelConverter x:Name="t4_uc_ExcelConverter"/>
             </TabItem>
             <TabItem Header="JSON Masking">
                 <TextBlock Text="Default Tab 2" />
             </TabItem>
             <TabItem Header="S1 Log Extraction">
-                <src_tools:S1LogExtractionLocal/>
+                <src_tools:S1LogExtractionLocal x:Name="t4_uc_S1LogExtractionLocal"/>
             </TabItem>
             <TabItem Header="Calling CRDE API">
-                <src_tools:CallingCRDEAPI/>
+                <src_tools:CallingCRDEAPI x:Name="t4_uc_CallingCRDEAPI"/>
             </TabItem>
         </TabControl>
 
-        <TabControl x:Name="settingSubMenu"  Grid.Row="1" HorizontalContentAlignment="Left" Visibility="Hidden">
+        <TabControl x:Name="settingSubMenu"  Grid.Row="1" HorizontalContentAlignment="Left" Visibility="Visible" SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="Masking">
                 <TextBlock Text="Masking" />
             </TabItem>
@@ -63,7 +64,7 @@
                 <TextBlock Text="CRDE API Address" />
             </TabItem>
             <TabItem Header="Process Code">
-                <TextBlock Text="Process Code" />
+                <src_setting:ProcessCodeSetting x:Name="t4_uc_ProcessCodeSetting"/>
             </TabItem>
         </TabControl>
     </Grid>

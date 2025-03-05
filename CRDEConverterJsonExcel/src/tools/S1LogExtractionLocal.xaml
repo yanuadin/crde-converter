@@ -62,7 +62,7 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Process Code : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
-                        <ComboBox x:Name="t4_cb_process_code" Grid.Column="1" materialDesign:HintAssist.Hint="Select Process Code" Width="300" HorizontalAlignment="Left"/>
+                        <ComboBox x:Name="t4_cb_process_code" Grid.Column="1" DisplayMemberPath="Name" SelectedValuePath="Name" materialDesign:HintAssist.Hint="Select Process Code" Width="300" HorizontalAlignment="Left"/>
                     </Grid>
                     <Button x:Name="t4_btn_ExtractLog" Content="Convert to Text File" HorizontalAlignment="Left" Click="t4_btn_ExtractLog_Click" Height="30" Margin="0,5,0,5"/>
                     <DataGrid Name="t4_lb_JSONList" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" CanUserAddRows="false" Height="200" Margin="0,5,0,5">

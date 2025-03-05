@@ -40,14 +40,10 @@ namespace CRDEConverterJsonExcel;
 
 public partial class MainWindow : Window
 {
-    Converter converter = new Converter();
-    List<Item> lb_requestItems = new List<Item>();
-    private CRDE config = new CRDE();
-
     public MainWindow()
     {
         InitializeComponent();
-        ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // Set license context for EPPlus
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
     }
 
     private void mi_Control_Click(object sender, RoutedEventArgs e)
@@ -71,10 +67,12 @@ public partial class MainWindow : Window
             case "t4":
                 toolsSubMenu.Visibility = Visibility.Visible;
                 settingSubMenu.Visibility = Visibility.Hidden;
+                t4_uc_S1LogExtractionLocal.refreshConfig();
                 break;
             case "t5":
                 toolsSubMenu.Visibility = Visibility.Visible;
                 settingSubMenu.Visibility = Visibility.Hidden;
+                t4_uc_CallingCRDEAPI.refreshConfig();
                 break;
             case "s1":
                 settingSubMenu.Visibility = Visibility.Visible;
@@ -96,5 +94,12 @@ public partial class MainWindow : Window
                 MessageBox.Show("[ERROR]: Menu is not available");
                 break;
         }
+    }
+
+    private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        // Refreshing user control that use config
+        t4_uc_S1LogExtractionLocal.refreshConfig();
+        t4_uc_CallingCRDEAPI.refreshConfig();
     }
 }

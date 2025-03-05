@@ -44,6 +44,12 @@ namespace CRDEConverterJsonExcel.src.tools
             t5_cb_environment.ItemsSource = config.getEnvironmentList();
         }
 
+        public void refreshConfig()
+        {
+            config = new CRDE();
+            t5_cb_environment.ItemsSource = config.getEnvironmentList();
+        }
+
         private void t5_btn_BrowseFile_Click(object sender, RoutedEventArgs e)
         {
             try

@@ -1,0 +1,52 @@
+﻿<UserControl x:Class="CRDEConverterJsonExcel.src.setting.ProcessCodeSetting"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CRDEConverterJsonExcel.src.setting"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <StackPanel Margin="10">
+            <Grid Margin="0,5,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="10*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Process Code : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
+                <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="s4_tb_process_code_name" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
+            </Grid>
+            <DataGrid Name="s4_lb_ProcessCode" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" MinHeight="300" MaxHeight="500" Margin="0,5,0,5">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Process Code" Width="300"/>
+                    <DataGridTemplateColumn Header="">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Style="{StaticResource MaterialDesignIconButton}" Click="s4_btn_deleteProcessCode" Width="30" Height="30">
+                                    <materialDesign:PackIcon Kind="Delete" Width="20" Height="20"/>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+                <DataGrid.Resources>
+                    <Style BasedOn="{StaticResource {x:Type DataGridColumnHeader}}" TargetType="{x:Type DataGridColumnHeader}">
+                        <Setter Property="Background" Value="BlueViolet" />
+                        <Setter Property="Foreground" Value="Azure" />
+                    </Style>
+                </DataGrid.Resources>
+            </DataGrid>
+            <Grid Margin="0,5,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" x:Name="s4_btn_Restore" Content="Restore" HorizontalAlignment="Left" Click="s4_btn_Restore_Click" Width="100" Height="30" Margin="0,0,5,0"/>
+                <Button Grid.Column="1" x:Name="s4_btn_Save" Content="Save" HorizontalAlignment="Right" Click="s4_btn_Save_Click" Width="100" Height="30" Margin="5,0,0,0"/>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>

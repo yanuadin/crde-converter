@@ -8,6 +8,6 @@ namespace CRDEConverterJsonExcel.objectClass
 {
     class ProcessCode
     {
-        public string name { get; set; }
+        public string Name { get; set; }
     }
 }
