@@ -66,6 +66,8 @@ namespace CRDEConverterJsonExcel.src.tools
             lb_JSONItems = new ObservableCollection<Item>();
             t1_lb_JSONList.ItemsSource = lb_JSONItems;
             t1_tb_folder.Text = "";
+            t1_tb_output.Text = "";
+            t1_cb_selectAll.IsChecked = false;
         }
 
         private void t1_cb_SelectAll_Click(object sender, RoutedEventArgs e)
@@ -116,9 +118,6 @@ namespace CRDEConverterJsonExcel.src.tools
                             package.SaveAs(new FileInfo(savePath));
                             t1_tb_output.Text = savePath;
                             MessageBox.Show(@"[SUCCESS]: Conversion successful");
-                        } else
-                        {
-                            MessageBox.Show("[FAILED]: Location not found");
                         }
                     }
                 }

@@ -48,37 +48,6 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // Set license context for EPPlus
-        // Initialize Endpoint Combobox
-        //X: cb_endpoint.Items.Add(config.getEnvironment()["ENDPOINT_REQUEST"]);
-    }
-
-    private void btnSendRequestToAPI_Click(object sender, RoutedEventArgs e)
-    {
-        //X: if (cb_endpoint.Text == "")
-        if (true)
-        {
-            MessageBox.Show("[WARNING]: Please select an endpoint!");
-        }
-        else
-        {
-            // Flush response list item
-            //X: lb_responseList.Items.Clear();
-
-            // Send Request to API
-            List<Item> selectedRequestItem = lb_requestItems.FindAll(item => item.IsSelected == true);
-            int iterator = 0;
-            if (selectedRequestItem.Count > 0)
-            {
-                foreach (Item it in selectedRequestItem)
-                {
-                    //X: Api.postRequestCRDE(cb_endpoint.Text, it.json, it.fileName, iterator);
-                }
-            }
-            else
-            {
-                MessageBox.Show("[WARNING]: Please select at least one request to send!");
-            }
-        }
     }
 
     private void mi_Control_Click(object sender, RoutedEventArgs e)

@@ -46,13 +46,14 @@
                         <DataGrid.Resources>
                             <Style BasedOn="{StaticResource {x:Type DataGridColumnHeader}}" TargetType="{x:Type DataGridColumnHeader}">
                                 <Setter Property="Background" Value="BlueViolet" />
+                                <Setter Property="Foreground" Value="Azure" />
                             </Style>
                         </DataGrid.Resources>
                     </DataGrid>
                     <CheckBox x:Name="t5_cb_selectAllRequest" Content="Select All" HorizontalAlignment="Left" Click="t5_cb_SelectAllRequest_Click" Margin="0,5,0,5"/>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock HorizontalAlignment="Left" Text="CRDE Environment : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
-                        <ComboBox x:Name="t5_cb_process_code" materialDesign:HintAssist.Hint="Select Environment" Width="200" HorizontalAlignment="Left"/>
+                        <ComboBox x:Name="t5_cb_environment" materialDesign:HintAssist.Hint="Select Environment" Width="200" HorizontalAlignment="Left"/>
                     </StackPanel>
                     <Button x:Name="t5_btn_Run" Content="Run" HorizontalAlignment="Left" Click="t5_btn_Run_Click" Width="100" Height="30" Margin="0,10,0,10"/>
                 </StackPanel>
@@ -73,6 +74,7 @@
                         <DataGrid.Resources>
                             <Style BasedOn="{StaticResource {x:Type DataGridColumnHeader}}" TargetType="{x:Type DataGridColumnHeader}">
                                 <Setter Property="Background" Value="BlueViolet" />
+                                <Setter Property="Foreground" Value="Azure" />
                             </Style>
                         </DataGrid.Resources>
                     </DataGrid>

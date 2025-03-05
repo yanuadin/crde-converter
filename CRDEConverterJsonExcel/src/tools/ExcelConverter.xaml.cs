@@ -70,6 +70,9 @@ namespace CRDEConverterJsonExcel.src.tools
             lb_JSONItems = new ObservableCollection<Item>();
             t2_lb_JSONList.ItemsSource = lb_JSONItems;
             t2_tb_folder.Text = "";
+            t2_tb_json_output.Text = "";
+            t2_tb_txt_output.Text = "";
+            t2_cb_selectAll.IsChecked = false;
         }
 
         private void t2_btn_ConvertExcelToTxt_Click(object sender, RoutedEventArgs e)

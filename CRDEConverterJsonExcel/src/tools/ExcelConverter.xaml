@@ -34,6 +34,7 @@
                 <DataGrid.Resources>
                     <Style BasedOn="{StaticResource {x:Type DataGridColumnHeader}}" TargetType="{x:Type DataGridColumnHeader}">
                         <Setter Property="Background" Value="BlueViolet" />
+                        <Setter Property="Foreground" Value="Azure" />
                     </Style>
                 </DataGrid.Resources>
             </DataGrid>

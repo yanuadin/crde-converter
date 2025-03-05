@@ -59,6 +59,7 @@ namespace CRDEConverterJsonExcel.src.tools
             lb_LogFiles = new ObservableCollection<Item>();
             t4_lb_LogList.ItemsSource = lb_LogFiles;
             t4_tb_folder.Text = "";
+            t4_cb_selectAll.IsChecked = false;
         }
 
         private void t4_cb_SelectAll_Click(object sender, RoutedEventArgs e)

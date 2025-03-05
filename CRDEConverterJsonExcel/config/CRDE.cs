@@ -18,20 +18,23 @@ namespace CRDEConverterJsonExcel.config
             config = JObject.Parse(jsonContent);
         }
 
-        public string getCurrentEnv()
-        {
-            return config["CURRENT_ENV"].ToObject<string>();
-        }
-
         public JArray getColorCells()
         {
             return config["COLOR_CELLS"].ToObject<JArray>();
         }
 
-        public JObject getEnvironment(string env = "")
+        public JArray getEnvironmentList()
         {
-            env = env == "" ? getCurrentEnv() : env;
+            JArray environmentList = new JArray();
+            foreach (JObject env in config["ENVIRONMENT"])
+                foreach (var envToken in env)
+                    environmentList.Add(envToken.Key);
 
+            return environmentList;
+        }
+
+        public JObject getEnvironment(string env)
+        {
             JObject envConfig = config["ENVIRONMENT"].Children<JObject>().FirstOrDefault(child =>
             {
                 foreach (var ch in child)

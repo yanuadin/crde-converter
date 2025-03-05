@@ -47,7 +47,7 @@
             <TabItem Header="S1 Log Extraction">
                 <src_tools:S1LogExtractionLocal/>
             </TabItem>
-            <TabItem Header="Call CRDE API">
+            <TabItem Header="Calling CRDE API">
                 <src_tools:CallingCRDEAPI/>
             </TabItem>
         </TabControl>

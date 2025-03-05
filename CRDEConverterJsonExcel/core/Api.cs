@@ -49,7 +49,7 @@ namespace CRDEConverterJsonExcel.core
             }
         }
 
-        private async void postRequestCRDE(string selectedEndpoint, string json, string saveFileNameResponse, int iterator)
+        public static async void postRequestCRDE(string selectedEndpoint, string json, string saveFileNameResponse, int iterator)
         {
             saveFileNameResponse = saveFileNameResponse + "_response";
             Converter converter = new Converter();
@@ -68,13 +68,13 @@ namespace CRDEConverterJsonExcel.core
                     string responseJsonIndent = JsonConvert.SerializeObject(parseResponseJson, Formatting.Indented);
 
                     // Save Response to JSON File
-                    converter.saveTextFile(@"\output\json\response\" + saveFileNameResponse + ".json", responseJsonIndent, "res");
+                    converter.saveTextFile(@"E:\Yanu\temp_sample\" + saveFileNameResponse + ".json", responseJsonIndent, "res");
 
                     // Convert Response to Excel
                     converter.convertJSONToExcel(package, responseJsonText, iterator);
 
                     // Save Excel file
-                    string excelFilePath = GeneralMethod.getProjectDirectory() + @"\output\excel\response\" + saveFileNameResponse + "-res.xlsx";
+                    string excelFilePath = @"E:\Yanu\temp_sample\" + saveFileNameResponse + "-res.xlsx";
                     package.SaveAs(new FileInfo(excelFilePath));
 
                     // Add to List Box Response
