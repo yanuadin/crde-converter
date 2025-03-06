@@ -5,8 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:local="clr-namespace:CRDEConverterJsonExcel"
-        xmlns:src_tools="clr-namespace:CRDEConverterJsonExcel.src.tools"
-        xmlns:src_setting="clr-namespace:CRDEConverterJsonExcel.src.setting"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Style="{StaticResource MaterialDesignWindow}"
