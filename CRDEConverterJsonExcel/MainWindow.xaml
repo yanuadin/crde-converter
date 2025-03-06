@@ -35,37 +35,22 @@
             </Menu>
         </materialDesign:Card>
 
-        <TabControl x:Name="toolsSubMenu"  Grid.Row="1" HorizontalContentAlignment="Left" Visibility="Hidden" SelectionChanged="TabControl_SelectionChanged">
-            <TabItem Header="JSON Converter">
-                <src_tools:JSONConverter x:Name="t4_uc_JSONConverter"/>
-            </TabItem>
-            <TabItem Header="Excel Converter">
-                <src_tools:ExcelConverter x:Name="t4_uc_ExcelConverter"/>
-            </TabItem>
-            <TabItem Header="JSON Masking">
-                <TextBlock Text="Default Tab 2" />
-            </TabItem>
-            <TabItem Header="S1 Log Extraction">
-                <src_tools:S1LogExtractionLocal x:Name="t4_uc_S1LogExtractionLocal"/>
-            </TabItem>
-            <TabItem Header="Calling CRDE API">
-                <src_tools:CallingCRDEAPI x:Name="t4_uc_CallingCRDEAPI"/>
-            </TabItem>
-        </TabControl>
-
-        <TabControl x:Name="settingSubMenu"  Grid.Row="1" HorizontalContentAlignment="Left" Visibility="Visible" SelectionChanged="TabControl_SelectionChanged">
-            <TabItem Header="Masking">
-                <TextBlock Text="Masking" />
-            </TabItem>
-            <TabItem Header="S1 Logs">
-                <TextBlock Text="S1 Logs" />
-            </TabItem>
-            <TabItem Header="CRDE API Address">
-                <src_setting:CRDEAPIAddressSetting x:Name="t3_uc_CRDEAPIAddress"/>
-            </TabItem>
-            <TabItem Header="Process Code">
-                <src_setting:ProcessCodeSetting x:Name="t4_uc_ProcessCodeSetting"/>
-            </TabItem>
+        <TabControl x:Name="subMenu"  Grid.Row="1" HorizontalContentAlignment="Left">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Header}" Margin="0,0,5,0"/>
+                        <Button Style="{StaticResource MaterialDesignIconButton}" Click="btn_DeleteTabClick" Width="20" Height="20">
+                            <materialDesign:PackIcon Kind="Close" Foreground="Red" Background="Transparent" Width="10" Height="10"/>
+                        </Button>
+                    </StackPanel>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <ContentPresenter Content="{Binding Content}"/>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
         </TabControl>
     </Grid>
 </Window>
