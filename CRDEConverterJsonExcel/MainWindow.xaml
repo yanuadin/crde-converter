@@ -61,7 +61,7 @@
                 <TextBlock Text="S1 Logs" />
             </TabItem>
             <TabItem Header="CRDE API Address">
-                <TextBlock Text="CRDE API Address" />
+                <src_setting:CRDEAPIAddressSetting x:Name="t3_uc_CRDEAPIAddress"/>
             </TabItem>
             <TabItem Header="Process Code">
                 <src_setting:ProcessCodeSetting x:Name="t4_uc_ProcessCodeSetting"/>

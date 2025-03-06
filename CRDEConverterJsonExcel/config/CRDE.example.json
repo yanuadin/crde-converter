@@ -1,13 +1,17 @@
 {
   "COLOR_CELLS": [
-    "#FFFFFF",
-    "#000000"
+    "#FFF5F5DC",
   ],
   "ENVIRONMENT": [
     {
       "X": {
-        "ENDPOINT_REQUEST": "https://www.google.com"
+        "ENDPOINT_REQUEST": "X"
       }
-    }
+    },
+  ],
+  "PROCESS_CODE": [
+    {
+      "Name": "X"
+    },
   ]
 }

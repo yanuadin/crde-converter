@@ -36,9 +36,9 @@
                             <DataGridTextColumn Binding="{Binding CreatedDate}" Header="Created Date" IsReadOnly="True"/>
                         </DataGrid.Columns>
                         <DataGrid.Resources>
-                            <Style BasedOn="{StaticResource {x:Type DataGridColumnHeader}}" TargetType="{x:Type DataGridColumnHeader}">
-                                <Setter Property="Background" Value="BlueViolet" />
-                                <Setter Property="Foreground" Value="Azure" />
+                            <Style BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}" TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="Background" Value="OrangeRed" />
+                                <Setter Property="FontWeight" Value="Bold" />
                             </Style>
                         </DataGrid.Resources>
                     </DataGrid>
@@ -72,9 +72,9 @@
                             <DataGridTextColumn Binding="{Binding FilePath}" Header="File Location" IsReadOnly="True"/>
                         </DataGrid.Columns>
                         <DataGrid.Resources>
-                            <Style BasedOn="{StaticResource {x:Type DataGridColumnHeader}}" TargetType="{x:Type DataGridColumnHeader}">
-                                <Setter Property="Background" Value="BlueViolet" />
-                                <Setter Property="Foreground" Value="Azure" />
+                            <Style BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}" TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="Background" Value="OrangeRed" />
+                                <Setter Property="FontWeight" Value="Bold" />
                             </Style>
                         </DataGrid.Resources>
                     </DataGrid>

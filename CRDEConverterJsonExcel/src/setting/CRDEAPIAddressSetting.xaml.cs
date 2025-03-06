@@ -21,42 +21,42 @@ using System.Windows.Shapes;
 namespace CRDEConverterJsonExcel.src.setting
 {
     /// <summary>
-    /// Interaction logic for ProcessCodeSetting.xaml
+    /// Interaction logic for CRDEAPIAddressSetting.xaml
     /// </summary>
-    public partial class ProcessCodeSetting : UserControl
+    public partial class CRDEAPIAddressSetting : UserControl
     {
-        private CRDE config = new CRDE();
-        ObservableCollection<ProcessCode> processCodeList = new ObservableCollection<ProcessCode>();
+        CRDE config = new CRDE();
+        ObservableCollection<Env> environmentList = new ObservableCollection<Env>();
 
-        public ProcessCodeSetting()
+        public CRDEAPIAddressSetting()
         {
             InitializeComponent();
 
-            processCodeList = config.getProcessCodeList().ToObject<ObservableCollection<ProcessCode>>();
-            s4_lb_ProcessCode.ItemsSource = processCodeList;
+            environmentList = config.getApiAddressList().ToObject<ObservableCollection<Env>>();
+            s3_dg_environment.ItemsSource = environmentList;
         }
 
-        private void s4_btn_deleteProcessCode(object sender, RoutedEventArgs e)
+        private void s3_btn_deleteProcessCode(object sender, RoutedEventArgs e)
         {
             MessageBoxResult messageBoxResult = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo);
             if (messageBoxResult == MessageBoxResult.Yes)
             {
                 Button button = sender as Button;
-                ProcessCode processCode = button.DataContext as ProcessCode;
-                if (processCode != null)
-                    processCodeList.Remove(processCode);
+                Env env = button.DataContext as Env;
+                if (env != null)
+                    environmentList.Remove(env);
             }
         }
 
-        private void s4_btn_Save_Click(object sender, RoutedEventArgs e)
+        private void s3_btn_Save_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 MessageBoxResult messageBoxResult = MessageBox.Show("Are you sure?", "Save Confirmation", MessageBoxButton.YesNo);
                 if (messageBoxResult == MessageBoxResult.Yes)
                 {
-                    if (config.setProcessCode(JArray.FromObject(processCodeList)))
-                        MessageBox.Show("[SUCCESS]: Process code has been saved successfully");
+                    if(config.setApiAddress(JArray.FromObject(environmentList)))
+                        MessageBox.Show("[SUCCESS]: API address has been saved successfully");
                 }
             }
             catch (Exception ex)
@@ -65,10 +65,10 @@ namespace CRDEConverterJsonExcel.src.setting
             }
         }
 
-        private void s4_btn_Restore_Click(object sender, RoutedEventArgs e)
+        private void s3_btn_Restore_Click(object sender, RoutedEventArgs e)
         {
-            processCodeList = config.getProcessCodeList().ToObject<ObservableCollection<ProcessCode>>();
-            s4_lb_ProcessCode.ItemsSource = processCodeList;
+            environmentList = config.getApiAddressList().ToObject<ObservableCollection<Env>>();
+            s3_dg_environment.ItemsSource = environmentList;
         }
     }
 }

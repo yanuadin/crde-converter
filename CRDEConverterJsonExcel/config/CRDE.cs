@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 using System.IO;
 using CRDEConverterJsonExcel.core;
 using System.Diagnostics;
+using CRDEConverterJsonExcel.objectClass;
+using System.Collections.ObjectModel;
+using System.Windows;
+using System.ComponentModel.DataAnnotations;
+using System.Windows.Input;
 
 namespace CRDEConverterJsonExcel.config
 {
@@ -34,7 +39,7 @@ namespace CRDEConverterJsonExcel.config
 
         public JObject getEnvironment(string env)
         {
-            JObject envConfig = config["ENVIRONMENT"].Children<JObject>().FirstOrDefault(child =>
+            var envConfig = config["ENVIRONMENT"].Children<JObject>().FirstOrDefault(child =>
             {
                 foreach (var ch in child)
                 {
@@ -46,16 +51,119 @@ namespace CRDEConverterJsonExcel.config
             return envConfig == null ? null : envConfig[env].ToObject<JObject>();
         }
 
-        public JArray getProcessCode()
+        public JArray getProcessCodeList()
         {
             return config["PROCESS_CODE"].ToObject<JArray>();
         }
 
-        public void setProcessCode(JArray processCode)
+        public bool setProcessCode(JArray processCode)
         {
-            config["PROCESS_CODE"] = processCode;
-            
-            File.WriteAllText(getFilePathConfig(), config.ToString());
+            try
+            {
+                ObservableCollection<ProcessCode> processCodeRequest = processCode.ToObject<ObservableCollection<ProcessCode>>();
+
+                bool isValidated = false;
+                string validateMessage = "";
+                foreach (ProcessCode pCode in processCodeRequest)
+                {
+                    var validationErrors = new List<ValidationResult>();
+                    if (!Validator.TryValidateObject(pCode, new ValidationContext(pCode), validationErrors))
+                    {
+                        //Look at all of the validation errors
+                        foreach (var error in validationErrors)
+                            validateMessage += error.ErrorMessage + Environment.NewLine;
+
+                        isValidated = false;
+                        break;
+                    }
+                    else
+                        isValidated = true;
+                }
+
+                if (isValidated)
+                {
+                    config["PROCESS_CODE"] = processCode;
+
+                    File.WriteAllText(getFilePathConfig(), config.ToString());
+                } else
+                    MessageBox.Show("[FAILED]: " + Environment.NewLine + validateMessage);
+
+                return isValidated;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("[ERROR]: " + e.Message);
+
+                return false;
+            }
+        }
+
+        public JArray getApiAddressList()
+        {
+            JArray apiAddressList = new JArray();
+            foreach (JObject env in config["ENVIRONMENT"])
+            {
+                JObject environment = new JObject();
+                foreach (var envToken in env)
+                {
+                    environment["Name"] = envToken.Key;
+                    environment["API"] = envToken.Value["ENDPOINT_REQUEST"].ToString();
+                }
+                apiAddressList.Add(environment);
+            }
+
+            return apiAddressList;
+        }
+
+        public bool setApiAddress(JArray environment)
+        {
+            try
+            {
+                ObservableCollection<Env> env = environment.ToObject<ObservableCollection<Env>>();
+
+                bool isValidated = false;
+                string validateMessage = "";
+                JArray newEnvConfig = new JArray();
+                foreach (Env e in env)
+                {
+                    var validationErrors = new List<ValidationResult>();
+                    if (!Validator.TryValidateObject(e, new ValidationContext(e) { Items = { { "EnvironmentList", env } }}, validationErrors))
+                    {
+                        //Look at all of the validation errors
+                        foreach (var error in validationErrors)
+                            validateMessage += error.ErrorMessage + Environment.NewLine;
+                        
+                        isValidated = false;
+                        break;
+                    } else
+                    {
+                        JObject newEndPoint = new JObject();
+                        JObject newEnvName = new JObject();
+
+                        newEndPoint["ENDPOINT_REQUEST"] = e.API;
+                        newEnvName[e.Name] = newEndPoint;
+                        newEnvConfig.Add(newEnvName);
+                        isValidated = true;
+                    }
+                }
+
+                if (isValidated)
+                {
+                    config["ENVIRONMENT"] = newEnvConfig;
+
+                    File.WriteAllText(getFilePathConfig(), config.ToString());
+                }
+                else
+                    MessageBox.Show("[FAILED]: " + Environment.NewLine + validateMessage);
+
+                return isValidated;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("[ERROR]: " + e.Message);
+
+                return false;
+            }
         }
 
         private string getFilePathConfig()
