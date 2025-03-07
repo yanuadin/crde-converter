@@ -86,7 +86,7 @@ namespace CRDEConverterJsonExcel.core
                     {
                         fileName = filePath.Split("\\").Last().Split(".").First();
 
-                        listItem.Add(new Item { FileName = fileName, FilePath = filePath, JSON = File.ReadAllText(filePath), IsSelected = false });
+                        listItem.Add(new Item { FileName = fileName, FilePath = filePath, CreatedDate = getCreatedDateOfFile(filePath), JSON = File.ReadAllText(filePath), IsSelected = false });
                     }
                 }
                 else
@@ -94,7 +94,7 @@ namespace CRDEConverterJsonExcel.core
                     fileName = dlg.FileName.Split("\\").Last().Split(".").First();
                     json = extension == "json" ? File.ReadAllText(dlg.FileName) : ""; 
 
-                    listItem.Add(new Item { FileName = fileName, FilePath = dlg.FileName, JSON = json, IsSelected = false });
+                    listItem.Add(new Item { FileName = fileName, FilePath = dlg.FileName, CreatedDate = getCreatedDateOfFile(dlg.FileName), JSON = json, IsSelected = false });
                 }
             }
             
@@ -117,17 +117,9 @@ namespace CRDEConverterJsonExcel.core
                     string fileName = filePath.Split("\\").Last().Split(".").First();
                     string fileExt = filePath.Split("\\").Last().Split(".").Last();
                     string dateCreated = "";
-                    FileInfo oFileInfo = new FileInfo(filePath);
-
-                    // Assign Date Created Properties
-                    if (oFileInfo.Exists)
-                    {
-                        DateTime dtCreationTime = oFileInfo.CreationTime;
-                        dateCreated = dtCreationTime.ToString();
-                    }
 
                     if (extension == "json" && fileExt == extension)
-                        listItem.Add(new Item { FileName = fileName, FilePath = filePath, JSON = File.ReadAllText(filePath), CreatedDate = dateCreated, IsSelected = false });
+                        listItem.Add(new Item { FileName = fileName, FilePath = filePath, JSON = File.ReadAllText(filePath), CreatedDate = getCreatedDateOfFile(filePath), IsSelected = false });
 
                     else if (extension == "completed" && fileExt.ToUpper() == extension.ToUpper())
                         listItem.Add(new Item { FileName = fileName, FilePath = filePath, CreatedDate = dateCreated, IsSelected = false });
@@ -195,6 +187,21 @@ namespace CRDEConverterJsonExcel.core
             }
 
             return items;
+        }
+
+        private static string getCreatedDateOfFile(string filePath)
+        {
+            string dateCreated = "";
+            FileInfo oFileInfo = new FileInfo(filePath);
+
+            // Assign Date Created Properties
+            if (oFileInfo.Exists)
+            {
+                DateTime dtCreationTime = oFileInfo.CreationTime;
+                dateCreated = dtCreationTime.ToString();
+            }
+
+            return dateCreated;
         }
     }
 }

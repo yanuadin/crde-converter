@@ -116,14 +116,17 @@ namespace CRDEConverterJsonExcel.src.tools
                         string endpoint = config.getEnvironment(t5_cb_environment.Text)["ENDPOINT_REQUEST"].ToString();
                         foreach (Item request in filteredSelected)
                         {
-                            string responseJSONText = await Api.PostApiDataAsync(endpoint, JObject.Parse(request.JSON));
-                            JObject responseJSON = JObject.Parse(responseJSONText);
-                            string responseJSONTextIndent = JsonConvert.SerializeObject(responseJSON, Formatting.Indented);
-                            string responseName = responseJSON.First.First.First.First["InquiryCode"].ToString();
+                            string responseJSONText = await Api.PostApiDataAsync(endpoint, JObject.Parse(request.JSON), request.FileName);
+                            if(responseJSONText != "")
+                            {
+                                JObject responseJSON = JObject.Parse(responseJSONText);
+                                string responseJSONTextIndent = JsonConvert.SerializeObject(responseJSON, Formatting.Indented);
+                                string responseName = responseJSON.First.First.First.First["InquiryCode"].ToString();
 
-                            // Save Response to JSON File
-                            string fileOutputPath = converter.saveTextFile(savePath + @"\" + responseName + ".json", responseJSONTextIndent, "res");
-                            lb_JSONResponseItems.Add(new Item { FileName = responseName, FilePath = fileOutputPath, JSON = responseJSONText, IsSelected = false });
+                                // Save Response to JSON File
+                                string fileOutputPath = converter.saveTextFile(savePath + @"\" + responseName + ".json", responseJSONTextIndent, "res");
+                                lb_JSONResponseItems.Add(new Item { FileName = responseName, FilePath = fileOutputPath, JSON = responseJSONText, IsSelected = false });
+                            }
                         }
                         t5_lb_ResponseList.ItemsSource = lb_JSONResponseItems;
                     }

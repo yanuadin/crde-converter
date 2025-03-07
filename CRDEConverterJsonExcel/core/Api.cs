@@ -30,7 +30,7 @@ namespace CRDEConverterJsonExcel.core
             }
         }
 
-        public static async Task<string> PostApiDataAsync(string url, object data)
+        public static async Task<string> PostApiDataAsync(string url, object data, string fileName = "")
         {
             using (HttpClient client = new HttpClient())
             {
@@ -38,14 +38,23 @@ namespace CRDEConverterJsonExcel.core
                 string jsonData = JsonConvert.SerializeObject(data);
                 var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
-                // Send a POST request to the API
-                HttpResponseMessage response = await client.PostAsync(url, content);
+                try
+                {
+                    // Send a POST request to the API
+                    HttpResponseMessage response = await client.PostAsync(url, content);
 
-                // Ensure the request was successful
-                response.EnsureSuccessStatusCode();
+                    // Ensure the request was successful
+                    response.EnsureSuccessStatusCode();
 
-                // Read and return the response content as a string
-                return await response.Content.ReadAsStringAsync();
+                    // Read and return the response content as a string
+                    return await response.Content.ReadAsStringAsync();
+                }
+                catch (HttpRequestException ex)
+                {
+                    MessageBox.Show($"[ERROR] [{fileName}]: {ex.Message}");
+
+                    return "";
+                }
             }
         }
 

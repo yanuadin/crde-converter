@@ -42,6 +42,7 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                             <DataGridTextColumn Binding="{Binding FileName}" Header="Name" IsReadOnly="True"/>
+                            <DataGridTextColumn Binding="{Binding CreatedDate}" Header="Created Date" IsReadOnly="True"/>
                         </DataGrid.Columns>
                         <DataGrid.Resources>
                             <Style BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}" TargetType="{x:Type DataGridColumnHeader}">

@@ -39,13 +39,21 @@ namespace CRDEConverterJsonExcel.core
             hdr.Remove("Application_Header");
 
             // Set Header To Sheet
-            ws.Cells[1, 1].Value = "Id";
-            ws.Cells[1, 2].Value = "Parent";
-            ws.Cells[1, 3].Value = "ParentId";
-            
-            ws.Cells[2, 1].Value = "Integer";
-            ws.Cells[2, 2].Value = "String";
-            ws.Cells[2, 3].Value = "Integer";
+            ws.Cells[1, 1].Value = "Integer";
+            ws.Cells[1, 2].Value = "String";
+            ws.Cells[1, 3].Value = "Integer";
+
+            ws.Cells[2, 1].Value = "Id";
+            ws.Cells[2, 2].Value = "Parent";
+            ws.Cells[2, 3].Value = "ParentId";
+
+            // Coloring Header Background Cell
+            ws.Cells[2, 1].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            ws.Cells[2, 1].Style.Fill.BackgroundColor.SetColor(Color.Silver);
+            ws.Cells[2, 2].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            ws.Cells[2, 2].Style.Fill.BackgroundColor.SetColor(Color.Silver);
+            ws.Cells[2, 3].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            ws.Cells[2, 3].Style.Fill.BackgroundColor.SetColor(Color.Silver);
 
             // Add Dictionary Header Header
             if (!dictionaryHeader.ContainsKey("#HEADER#"))
@@ -54,13 +62,13 @@ namespace CRDEConverterJsonExcel.core
             // Type Data Header
             dictionaryHeader["#HEADER#"].Add("Type");
             int colType = dictionaryHeader["#HEADER#"].IndexOf("Type") + 4;
-            ws.Cells[1, colType].Value = "Type";
-            ws.Cells[2, colType].Value = "String";
+            ws.Cells[2, colType].Value = "Type";
+            ws.Cells[1, colType].Value = "String";
             ws.Cells[rowHeader, colType].Value = header.First.ToObject<JProperty>().Name;
 
             // Coloring Type Data Header Background Cell
-            ws.Cells[1, colType].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            ws.Cells[1, colType].Style.Fill.BackgroundColor.SetColor(Color.Silver);
+            ws.Cells[2, colType].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            ws.Cells[2, colType].Style.Fill.BackgroundColor.SetColor(Color.Silver);
 
             // Coloring Type Data Background Cell
             ws.Cells[rowHeader, colType].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
@@ -72,13 +80,13 @@ namespace CRDEConverterJsonExcel.core
                 if (!dictionaryHeader["#HEADER#"].Contains(prop.Key))
                 {
                     int colHeader = dictionaryHeader["#HEADER#"].Count() + 4;
-                    ws.Cells[1, colHeader].Value = prop.Key;
-                    ws.Cells[2, colHeader].Value = prop.Value.Type;
+                    ws.Cells[2, colHeader].Value = prop.Key;
+                    ws.Cells[1, colHeader].Value = prop.Value.Type;
                     dictionaryHeader["#HEADER#"].Add(prop.Key);
 
                     // Coloring Header Background Cell
-                    ws.Cells[1, colHeader].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                    ws.Cells[1, colHeader].Style.Fill.BackgroundColor.SetColor(Color.Silver);
+                    ws.Cells[2, colHeader].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                    ws.Cells[2, colHeader].Style.Fill.BackgroundColor.SetColor(Color.Silver);
                 }
 
                 int col = dictionaryHeader["#HEADER#"].IndexOf(prop.Key) + 4;
@@ -89,19 +97,31 @@ namespace CRDEConverterJsonExcel.core
                 ws.Cells[rowHeader, col].Value = prop.Value.ToString();
 
                 // Coloring  Background Cell
+                ws.Cells[rowHeader, 1].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                ws.Cells[rowHeader, 1].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml(config.getColorCells()[iterator].ToString()));
+                ws.Cells[rowHeader, 2].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                ws.Cells[rowHeader, 2].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml(config.getColorCells()[iterator].ToString()));
+                ws.Cells[rowHeader, 3].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                ws.Cells[rowHeader, 3].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml(config.getColorCells()[iterator].ToString()));
                 ws.Cells[rowHeader, col].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
                 ws.Cells[rowHeader, col].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml(config.getColorCells()[iterator].ToString()));
             }
 
             // Hide Parent Child Pointer and Freeze Header
-            ws.Row(2).Hidden = true;
-            ws.Column(1).Hidden = true;
-            ws.Column(2).Hidden = true;
-            ws.Column(3).Hidden = true;
-            ws.View.FreezePanes(2, 1);
+            ws.Row(1).Hidden = true;
+            ws.View.FreezePanes(3, 1);
 
             // Start Recursive Looping with parameter Application Header as JObject
             addSheet(iterator, (JObject)jsonObject.First.First.Last.First, package, null, 1, "#HEADER#", iterator + 2);
+
+            // Fit Column Every Sheet
+            for (int sheet = package.Workbook.Worksheets.Count - 1; sheet >= 0; sheet--)
+            {
+                // Get the worksheet by name
+                var worksheet = package.Workbook.Worksheets[sheet];
+                if (worksheet != null && worksheet.Dimension != null)
+                    worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+            }
         }
 
         public string convertExcelTo(string filePath, List<Item> filteredSelected, string convertType)
@@ -137,8 +157,8 @@ namespace CRDEConverterJsonExcel.core
                         var typeDatas = new List<string>();
                         for (int col = 1; col <= colCount; col++)
                         {
-                            headers.Add(worksheet.Cells[1, col].Text);
-                            typeDatas.Add(worksheet.Cells[2, col].Text);
+                            typeDatas.Add(worksheet.Cells[1, col].Text);
+                            headers.Add(worksheet.Cells[2, col].Text);
                         }
 
                         // Empty Data
@@ -148,9 +168,9 @@ namespace CRDEConverterJsonExcel.core
                             JObject cover = new JObject();
                             JObject variable = new JObject();
 
-                            emptyData["Id"] = GeneralMethod.convertTryParse(worksheet.Cells[2, 1].Text, "Integer");
-                            emptyData["Parent"] = worksheet.Cells[2, 2].Text;
-                            emptyData["ParentId"] = GeneralMethod.convertTryParse(worksheet.Cells[2, 1].Text, "Integer");
+                            emptyData["Id"] = GeneralMethod.convertTryParse(worksheet.Cells[1, 1].Text, "Integer");
+                            emptyData["Parent"] = worksheet.Cells[1, 2].Text;
+                            emptyData["ParentId"] = GeneralMethod.convertTryParse(worksheet.Cells[1, 3].Text, "Integer");
                             variable["Variables"] = emptyData;
                             cover[worksheet.Name] = variable;
                             excelData.Add(cover);
@@ -373,9 +393,16 @@ namespace CRDEConverterJsonExcel.core
                     int row = startRow + 1;
                     int valueStartRow = startRow;
 
-                    worksheet.Cells[1, 1].Value = "Id";
-                    worksheet.Cells[1, 2].Value = "Parent";
-                    worksheet.Cells[1, 3].Value = "ParentId";
+                    worksheet.Cells[2, 1].Value = "Id";
+                    worksheet.Cells[2, 2].Value = "Parent";
+                    worksheet.Cells[2, 3].Value = "ParentId";
+                    worksheet.Cells[2, 1].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                    worksheet.Cells[2, 1].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Silver);
+                    worksheet.Cells[2, 2].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                    worksheet.Cells[2, 2].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Silver);
+                    worksheet.Cells[2, 3].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                    worksheet.Cells[2, 3].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Silver);
+
                     if (property.Value.Count() == 0)
                     {
                         if (startRow == 1)
@@ -385,12 +412,18 @@ namespace CRDEConverterJsonExcel.core
                         else
                             valueStartRow = startRow - 1;
 
-                        worksheet.Cells[2, 1].Value = "Integer";
-                        worksheet.Cells[2, 2].Value = "String";
-                        worksheet.Cells[2, 3].Value = "Integer";
+                        worksheet.Cells[1, 1].Value = "Integer";
+                        worksheet.Cells[1, 2].Value = "String";
+                        worksheet.Cells[1, 3].Value = "Integer";
                         worksheet.Cells[row, 1].Value = valueStartRow;
                         worksheet.Cells[row, 2].Value = parent;
                         worksheet.Cells[row, 3].Value = parentId;
+                        worksheet.Cells[row, 1].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        worksheet.Cells[row, 1].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml(config.getColorCells()[iterator].ToString()));
+                        worksheet.Cells[row, 2].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        worksheet.Cells[row, 2].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml(config.getColorCells()[iterator].ToString()));
+                        worksheet.Cells[row, 3].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        worksheet.Cells[row, 3].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml(config.getColorCells()[iterator].ToString()));
                     }
 
                     // DictionaryHeader
@@ -404,27 +437,27 @@ namespace CRDEConverterJsonExcel.core
                             dictionaryHeader[worksheet.Name].Add(variable.Key);
 
                         col = dictionaryHeader[worksheet.Name].IndexOf(variable.Key) + 4;
-                        worksheet.Cells[1, col].Value = variable.Key;
+                        worksheet.Cells[2, col].Value = variable.Key;
 
                         // Coloring Header Background Cell
-                        worksheet.Cells[1, col].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                        worksheet.Cells[1, col].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Silver);
+                        worksheet.Cells[2, col].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        worksheet.Cells[2, col].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Silver);
 
                         if (startRow == 1)
                         {
                             // Set Header
-                            worksheet.Cells[row, 1].Value = "Integer";
-                            worksheet.Cells[row, 2].Value = "String";
-                            worksheet.Cells[row, 3].Value = "Integer";
-                            worksheet.Cells[2, col].Value = variable.Value.Type;
+                            worksheet.Cells[1, 1].Value = "Integer";
+                            worksheet.Cells[1, 2].Value = "String";
+                            worksheet.Cells[1, 3].Value = "Integer";
+                            worksheet.Cells[1, col].Value = variable.Value.Type;
                             row = startRow + 2;
                         }
                         else
                             valueStartRow = startRow - 1;
 
                         // Re-Check Type If Empty Cell
-                        if (variable.Value.Type.ToString() != worksheet.Cells[2, col].Text && worksheet.Cells[2, col].Text == "String")
-                            worksheet.Cells[2, col].Value = variable.Value.Type;
+                        if (variable.Value.Type.ToString() != worksheet.Cells[1, col].Text && worksheet.Cells[1, col].Text == "String")
+                            worksheet.Cells[1, col].Value = variable.Value.Type;
 
                         worksheet.Cells[row, 1].Value = valueStartRow;
                         worksheet.Cells[row, 2].Value = parent;
@@ -432,16 +465,19 @@ namespace CRDEConverterJsonExcel.core
                         worksheet.Cells[row, col].Value = variable.Value.ToString();
 
                         // Coloring  Background Cell
+                        worksheet.Cells[row, 1].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        worksheet.Cells[row, 1].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml(config.getColorCells()[iterator].ToString()));
+                        worksheet.Cells[row, 2].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        worksheet.Cells[row, 2].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml(config.getColorCells()[iterator].ToString()));
+                        worksheet.Cells[row, 3].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                        worksheet.Cells[row, 3].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml(config.getColorCells()[iterator].ToString()));
                         worksheet.Cells[row, col].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
                         worksheet.Cells[row, col].Style.Fill.BackgroundColor.SetColor(ColorTranslator.FromHtml(config.getColorCells()[iterator].ToString()));
                     }
 
                     // Hide Parent Child Pointer and Freeze Header
-                    worksheet.Row(2).Hidden = true;
-                    worksheet.Column(1).Hidden = true;
-                    worksheet.Column(2).Hidden = true;
-                    worksheet.Column(3).Hidden = true;
-                    worksheet.View.FreezePanes(2, 1);
+                    worksheet.Row(1).Hidden = true;
+                    worksheet.View.FreezePanes(3, 1);
                 }
                 else if (property.Key == "Categories")
                 {
