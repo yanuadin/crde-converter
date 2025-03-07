@@ -48,6 +48,8 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+        addTabItem(new TabItemControl { Header = "JSON Masking", Content = new JSONMasking() });
     }
 
     private void mi_Control_Click(object sender, RoutedEventArgs e)
@@ -63,7 +65,7 @@ public partial class MainWindow : Window
                 addTabItem(new TabItemControl { Header = "Excel Converter", Content = new ExcelConverter() });
                 break;
             case "t3":
-                addTabItem(new TabItemControl { Header = "JSON Masking", Content = new UserControl() });
+                addTabItem(new TabItemControl { Header = "JSON Masking", Content = new JSONMasking() });
                 break;
             case "t4":
                 addTabItem(new TabItemControl { Header = "S1 Log Extraction", Content = new S1LogExtractionLocal() });

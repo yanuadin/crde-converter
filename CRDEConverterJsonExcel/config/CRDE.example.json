@@ -1,6 +1,6 @@
 {
   "COLOR_CELLS": [
-    "#FFF5F5DC",
+    "#FFF5F5DC" //Beige
   ],
   "ENVIRONMENT": [
     {
@@ -13,5 +13,16 @@
     {
       "Name": "X"
     },
+  ],
+  "MASKING_TEMPLATE": [
+    {
+      "Name": "X",
+      "Mask": [
+        {
+          "Variable": "X",
+          "Value": "X"
+        },
+      ]
+    }
   ]
 }

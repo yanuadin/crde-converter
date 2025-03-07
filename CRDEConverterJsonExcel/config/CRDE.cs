@@ -166,6 +166,13 @@ namespace CRDEConverterJsonExcel.config
             }
         }
 
+        public JObject getMaskingTemplate(string maskingTemplateName)
+        {
+            var resultMaskingTemplate = config["MASKING_TEMPLATE"].ToObject<JArray>().Children<JObject>().FirstOrDefault(template => template["Name"].ToString() == maskingTemplateName);
+
+            return resultMaskingTemplate == null ? null : resultMaskingTemplate.ToObject<JObject>();
+        }
+
         public JArray getMaskingTemplateList()
         {
             return config["MASKING_TEMPLATE"].ToObject<JArray>();
