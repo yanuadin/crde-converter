@@ -74,7 +74,7 @@ public partial class MainWindow : Window
                 refreshAllComponentConfig();
                 break;
             case "s1":
-                addTabItem(new TabItemControl { Header = "Masking", Content = new UserControl() });
+                addTabItem(new TabItemControl { Header = "Masking", Content = new MaskingSetting() });
                 break;
             case "s2":
                 addTabItem(new TabItemControl { Header = "S1 Logs", Content = new UserControl() });
@@ -105,11 +105,13 @@ public partial class MainWindow : Window
 
     private void addTabItem(TabItemControl itemControl)
     {
-        if (tabItemControls.FirstOrDefault(item => item.Header == itemControl.Header) == null)
+        var oldItemControl = tabItemControls.FirstOrDefault(item => item.Header == itemControl.Header);
+        if (oldItemControl == null)
         {
             tabItemControls.Add(itemControl);
             subMenu.SelectedItem = itemControl;
-        }
+        } else
+            subMenu.SelectedItem = oldItemControl;
 
         subMenu.ItemsSource = tabItemControls;
     }

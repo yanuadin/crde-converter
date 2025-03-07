@@ -148,9 +148,9 @@ namespace CRDEConverterJsonExcel.core
                             JObject cover = new JObject();
                             JObject variable = new JObject();
 
-                            emptyData["Id"] = convertTryParse(worksheet.Cells[2, 1].Text, "Integer");
+                            emptyData["Id"] = GeneralMethod.convertTryParse(worksheet.Cells[2, 1].Text, "Integer");
                             emptyData["Parent"] = worksheet.Cells[2, 2].Text;
-                            emptyData["ParentId"] = convertTryParse(worksheet.Cells[2, 1].Text, "Integer");
+                            emptyData["ParentId"] = GeneralMethod.convertTryParse(worksheet.Cells[2, 1].Text, "Integer");
                             variable["Variables"] = emptyData;
                             cover[worksheet.Name] = variable;
                             excelData.Add(cover);
@@ -170,7 +170,7 @@ namespace CRDEConverterJsonExcel.core
                                 if (cellValue == "")
                                     rowData[header] = cellValue;
                                 else
-                                    rowData[header] = convertTryParse(cellValue, typeData);
+                                    rowData[header] = GeneralMethod.convertTryParse(cellValue, typeData);
                             }
 
                             JObject cover = new JObject();
@@ -192,8 +192,8 @@ namespace CRDEConverterJsonExcel.core
                     foreach (var item in data)
                     {
                         JObject variable = item.Key == "#HEADER#" ? (JObject)item.Value.First.First.First.First : (JObject)item.Value["Variables"];
-                        Int64 idExcel = convertTryParse(variable["Id"].ToString(), "Integer");
-                        Int64 parentIdExcel = convertTryParse(variable["ParentId"].ToString(), "Integer");
+                        Int64 idExcel = GeneralMethod.convertTryParse(variable["Id"].ToString(), "Integer");
+                        Int64 parentIdExcel = GeneralMethod.convertTryParse(variable["ParentId"].ToString(), "Integer");
                         string parentExcel = variable["Parent"].ToString();
 
                         if (parentExcel != null && parentExcel != "" && parentExcel != "-")
@@ -359,35 +359,6 @@ namespace CRDEConverterJsonExcel.core
             }
 
             return data;
-        }
-
-        private dynamic convertTryParse(dynamic value, string typeData)
-        {
-            double tempDouble;
-            Int64 tempInt;
-            DateTime tempDateTime;
-            dynamic result;
-
-            switch (typeData)
-            {
-                case "Integer":
-                    Int64.TryParse(value, out tempInt);
-                    result = tempInt;
-                    break;
-                case "Float":
-                    double.TryParse(value, out tempDouble);
-                    result = tempDouble;
-                    break;
-                case "Date":
-                    DateTime.TryParse(value, out tempDateTime);
-                    result = tempDateTime.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss");
-                    break;
-                default:
-                    result = value;
-                    break;
-            }
-
-            return result;
         }
 
         // Recursive Looping

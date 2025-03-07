@@ -37,7 +37,7 @@
                         </DataGrid.Columns>
                         <DataGrid.Resources>
                             <Style BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}" TargetType="{x:Type DataGridColumnHeader}">
-                                <Setter Property="Background" Value="OrangeRed" />
+                                <Setter Property="Background" Value="DodgerBlue" />
                                 <Setter Property="FontWeight" Value="Bold" />
                             </Style>
                         </DataGrid.Resources>
@@ -73,7 +73,7 @@
                         </DataGrid.Columns>
                         <DataGrid.Resources>
                             <Style BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}" TargetType="{x:Type DataGridColumnHeader}">
-                                <Setter Property="Background" Value="OrangeRed" />
+                                <Setter Property="Background" Value="DodgerBlue" />
                                 <Setter Property="FontWeight" Value="Bold" />
                             </Style>
                         </DataGrid.Resources>

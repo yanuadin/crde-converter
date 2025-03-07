@@ -34,6 +34,35 @@ namespace CRDEConverterJsonExcel.core
             return DateTime.Now.ToString("yyyyMMddHHmmss");
         }
 
+        public static dynamic convertTryParse(dynamic value, string typeData)
+        {
+            double tempDouble;
+            Int64 tempInt;
+            DateTime tempDateTime;
+            dynamic result;
+
+            switch (typeData)
+            {
+                case "Integer":
+                    Int64.TryParse(value, out tempInt);
+                    result = tempInt;
+                    break;
+                case "Float":
+                    double.TryParse(value, out tempDouble);
+                    result = tempDouble;
+                    break;
+                case "Date":
+                    DateTime.TryParse(value, out tempDateTime);
+                    result = tempDateTime.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss");
+                    break;
+                default:
+                    result = value;
+                    break;
+            }
+
+            return result;
+        }
+
         public static ObservableCollection<Item> browseFile(string extension, bool allowedMultipleFiles)
         {
             ObservableCollection<Item> listItem = new ObservableCollection<Item>();
