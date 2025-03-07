@@ -48,8 +48,6 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-        addTabItem(new TabItemControl { Header = "JSON Masking", Content = new JSONMasking() });
     }
 
     private void mi_Control_Click(object sender, RoutedEventArgs e)
