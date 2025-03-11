@@ -77,7 +77,7 @@ public partial class MainWindow : Window
                 addTabItem(new TabItemControl { Header = "Masking", Content = new MaskingSetting() });
                 break;
             case "s2":
-                addTabItem(new TabItemControl { Header = "S1 Logs", Content = new UserControl() });
+                addTabItem(new TabItemControl { Header = "S1 Logs", Content = new S1LogSetting() });
                 break;
             case "s3":
                 addTabItem(new TabItemControl { Header = "CRDE API Address", Content = new CRDEAPIAddressSetting() });

@@ -33,7 +33,7 @@
             </Menu>
         </materialDesign:Card>
 
-        <TabControl x:Name="subMenu" Grid.Row="1" HorizontalContentAlignment="Left">
+        <TabControl x:Name="subMenu" Grid.Row="1" HorizontalContentAlignment="Left" SelectionChanged="TabControl_SelectionChanged">
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">

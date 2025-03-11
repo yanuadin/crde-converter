@@ -1,0 +1,47 @@
+﻿<UserControl x:Class="CRDEConverterJsonExcel.src.setting.S1LogSetting"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CRDEConverterJsonExcel.src.setting"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <StackPanel Margin="10">
+            <DataGrid Name="s2_dg_S1Log" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" MaxHeight="500" Margin="0,5,0,5">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Environment Name"/>
+                    <DataGridTextColumn Binding="{Binding HostName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Host Name"/>
+                    <DataGridTextColumn Binding="{Binding Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Port No"/>
+                    <DataGridTextColumn Binding="{Binding AccessKeyID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Access Key ID"/>
+                    <DataGridTextColumn Binding="{Binding SecretAccessKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Secret Access Key"/>
+                    <DataGridTemplateColumn Header="">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Style="{StaticResource MaterialDesignIconButton}" Click="s2_btn_S1Log" Width="30" Height="30">
+                                    <materialDesign:PackIcon Kind="Delete" Width="20" Height="20"/>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+                <DataGrid.Resources>
+                    <Style BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}" TargetType="{x:Type DataGridColumnHeader}">
+                        <Setter Property="Background" Value="DodgerBlue" />
+                        <Setter Property="FontWeight" Value="Bold" />
+                    </Style>
+                </DataGrid.Resources>
+            </DataGrid>
+            <Grid Margin="0,5,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" x:Name="s2_btn_Restore" Content="Restore" HorizontalAlignment="Left" Click="s2_btn_Restore_Click" Width="100" Height="30" Margin="0,0,5,0"/>
+                <Button Grid.Column="1" x:Name="s2_btn_Save" Content="Save" HorizontalAlignment="Right" Click="s2_btn_Save_Click" Width="100" Height="30" Margin="5,0,0,0"/>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>

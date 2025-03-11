@@ -27,7 +27,7 @@ namespace CRDEConverterJsonExcel.config
             return config["COLOR_CELLS"].ToObject<JArray>();
         }
 
-        public JArray getEnvironmentList()
+        public JArray getEnvironmentNameList()
         {
             JArray environmentList = new JArray();
             foreach (JObject env in config["ENVIRONMENT"])
@@ -98,7 +98,7 @@ namespace CRDEConverterJsonExcel.config
             }
         }
 
-        public JArray getApiAddressList()
+        public JArray getEnvironmentList()
         {
             JArray apiAddressList = new JArray();
             foreach (JObject env in config["ENVIRONMENT"])
@@ -107,7 +107,11 @@ namespace CRDEConverterJsonExcel.config
                 foreach (var envToken in env)
                 {
                     environment["Name"] = envToken.Key;
-                    environment["API"] = envToken.Value["ENDPOINT_REQUEST"].ToString();
+                    environment["API"] = envToken.Value["ENDPOINT_REQUEST"]?.ToString() ?? "";
+                    environment["HostName"] = envToken.Value["HOST_NAME"]?.ToString() ?? "";
+                    environment["Port"] = envToken.Value["PORT_NO"]?.ToString() ?? "";
+                    environment["AccessKeyID"] = envToken.Value["ACCESS_KEY_ID"]?.ToString() ?? "";
+                    environment["SecretAccessKey"] = envToken.Value["SECRET_ACCESS_KEY"]?.ToString() != "" ? "XXXXX" : "" ?? "";
                 }
                 apiAddressList.Add(environment);
             }
@@ -141,6 +145,10 @@ namespace CRDEConverterJsonExcel.config
                         JObject newEnvName = new JObject();
 
                         newEndPoint["ENDPOINT_REQUEST"] = e.API;
+                        newEndPoint["HOST_NAME"] = e.HostName;
+                        newEndPoint["PORT_NO"] = e.Port;
+                        newEndPoint["ACCESS_KEY_ID"] = e.AccessKeyID;
+                        newEndPoint["SECRET_ACCESS_KEY"] = e.SecretAccessKey;
                         newEnvName[e.Name] = newEndPoint;
                         newEnvConfig.Add(newEnvName);
                         isValidated = true;
@@ -246,6 +254,7 @@ namespace CRDEConverterJsonExcel.config
                 return false;
             }
         }
+
 
         private string getFilePathConfig()
         {

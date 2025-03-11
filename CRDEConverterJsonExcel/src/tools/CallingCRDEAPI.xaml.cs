@@ -41,13 +41,13 @@ namespace CRDEConverterJsonExcel.src.tools
         {
             InitializeComponent();
 
-            t5_cb_environment.ItemsSource = config.getEnvironmentList();
+            t5_cb_environment.ItemsSource = config.getEnvironmentNameList();
         }
 
         public void refreshConfig()
         {
             config = new CRDE();
-            t5_cb_environment.ItemsSource = config.getEnvironmentList();
+            t5_cb_environment.ItemsSource = config.getEnvironmentNameList();
         }
 
         private void t5_btn_BrowseFile_Click(object sender, RoutedEventArgs e)
@@ -114,21 +114,28 @@ namespace CRDEConverterJsonExcel.src.tools
 
                         // Send Request to API
                         string endpoint = config.getEnvironment(t5_cb_environment.Text)["ENDPOINT_REQUEST"].ToString();
-                        foreach (Item request in filteredSelected)
+                        
+                        if(endpoint != "" && endpoint != null)
                         {
-                            string responseJSONText = await Api.PostApiDataAsync(endpoint, JObject.Parse(request.JSON), request.FileName);
-                            if(responseJSONText != "")
+                            foreach (Item request in filteredSelected)
                             {
-                                JObject responseJSON = JObject.Parse(responseJSONText);
-                                string responseJSONTextIndent = JsonConvert.SerializeObject(responseJSON, Formatting.Indented);
-                                string responseName = responseJSON.First.First.First.First["InquiryCode"].ToString();
+                                string responseJSONText = await Api.PostApiDataAsync(endpoint, JObject.Parse(request.JSON), request.FileName);
+                                if (responseJSONText != "")
+                                {
+                                    JObject responseJSON = JObject.Parse(responseJSONText);
+                                    string responseJSONTextIndent = JsonConvert.SerializeObject(responseJSON, Formatting.Indented);
+                                    string responseName = responseJSON.First.First.First.First["InquiryCode"].ToString();
 
-                                // Save Response to JSON File
-                                string fileOutputPath = converter.saveTextFile(savePath + @"\" + responseName + ".json", responseJSONTextIndent, "res");
-                                lb_JSONResponseItems.Add(new Item { FileName = responseName, FilePath = fileOutputPath, JSON = responseJSONText, IsSelected = false });
+                                    // Save Response to JSON File
+                                    string fileOutputPath = converter.saveTextFile(savePath + @"\" + responseName + ".json", responseJSONTextIndent, "res");
+                                    lb_JSONResponseItems.Add(new Item { FileName = responseName, FilePath = fileOutputPath, JSON = responseJSONText, IsSelected = false });
+                                }
                             }
+                            t5_lb_ResponseList.ItemsSource = lb_JSONResponseItems;
+                        } else
+                        {
+                            MessageBox.Show("[FAILED]: API address not found");
                         }
-                        t5_lb_ResponseList.ItemsSource = lb_JSONResponseItems;
                     }
                 }
                 else
