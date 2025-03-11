@@ -5,7 +5,11 @@
   "ENVIRONMENT": [
     {
       "X": {
-        "ENDPOINT_REQUEST": "X"
+        "ENDPOINT_REQUEST": "X",
+        "HOST_NAME": "X",
+        "PORT_NO": "X",
+        "ACCESS_KEY_ID": "X",
+        "SECRET_ACCESS_KEY": "X"
       }
     },
   ],
