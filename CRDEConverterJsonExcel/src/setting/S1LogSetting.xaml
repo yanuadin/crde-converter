@@ -17,7 +17,7 @@
                     <DataGridTextColumn Binding="{Binding AccessKeyID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Access Key ID"/>
                     <DataGridTextColumn Binding="{Binding SecretAccessKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Secret Access Key"/>
                     <DataGridTemplateColumn Header="">
-                        <DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellTemplate> 
                             <DataTemplate>
                                 <Button Style="{StaticResource MaterialDesignIconButton}" Click="s2_btn_S1Log" Width="30" Height="30">
                                     <materialDesign:PackIcon Kind="Delete" Width="20" Height="20"/>
