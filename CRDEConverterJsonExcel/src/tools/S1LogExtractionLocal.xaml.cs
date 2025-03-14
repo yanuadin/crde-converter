@@ -7,8 +7,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Diagnostics;
-using System.Windows.Media.TextFormatting;
 
 namespace CRDEConverterJsonExcel.src.tools
 {
@@ -142,7 +140,8 @@ namespace CRDEConverterJsonExcel.src.tools
                                                 // Save Response to JSON File
                                                 string typeJSON = i == 0 ? "req" : "res";
                                                 string additionalField = typeJSON == "req" ? "Request" : "Response";
-                                                string formattingIndentJSON = JsonConvert.SerializeObject(content["IO_JSON"][i], Formatting.Indented);
+                                                JObject json = JObject.Parse(content["IO_JSON"][i].ToString());
+                                                string formattingIndentJSON = JsonConvert.SerializeObject(json, Formatting.Indented);
                                                 string JSONFileName = content["REQUESTID"].ToString();
                                                 string saveFilePath = converter.saveTextFile(savePath + @"\" + JSONFileName + ".json", formattingIndentJSON, typeJSON);
                                                 lb_JSONFiles.Add(new Item { FilePath = saveFilePath, FileName = content["REQUESTID"].ToString(), AdditionalField = additionalField });

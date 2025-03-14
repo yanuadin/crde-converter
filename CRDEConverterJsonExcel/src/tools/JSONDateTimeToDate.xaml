@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="CRDEConverterJsonExcel.src.tools.JSONMasking"
+﻿<UserControl x:Class="CRDEConverterJsonExcel.src.tools.JSONDateTimeToDate"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -10,8 +10,8 @@
     <Grid>
         <StackPanel Margin="10" Grid.Row="1">
             <StackPanel Orientation="Horizontal">
-                <Button x:Name="t3_btn_BrowseFile" Content="Select JSON Files" HorizontalAlignment="Left" Click="t3_btn_BrowseFile_Click" Height="30" Margin="0,0,0,5"/>
-                <Button x:Name="t3_btn_BrowseFolder" Content="Select JSON Folder" HorizontalAlignment="Left" Click="t3_btn_BrowseFolder_Click" Height="30" Margin="10,0,0,5"/>
+                <Button x:Name="t6_btn_BrowseFile" Content="Select JSON Files" HorizontalAlignment="Left" Click="t6_btn_BrowseFile_Click" Height="30" Margin="0,0,0,5"/>
+                <Button x:Name="t6_btn_BrowseFolder" Content="Select JSON Folder" HorizontalAlignment="Left" Click="t6_btn_BrowseFolder_Click" Height="30" Margin="10,0,0,5"/>
             </StackPanel>
             <Grid Margin="0,5,0,5">
                 <Grid.ColumnDefinitions>
@@ -20,9 +20,9 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Folder : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
-                <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t3_tb_folder" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
+                <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t6_tb_folder" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
             </Grid>
-            <DataGrid Name="t3_dg_JSONList" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" CanUserAddRows="false" Height="300" Margin="0,5,0,5">
+            <DataGrid Name="t6_dg_JSONList" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" CanUserAddRows="false" Height="300" Margin="0,5,0,5">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="#">
                         <DataGridTemplateColumn.CellTemplate>
@@ -46,21 +46,17 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <CheckBox x:Name="t3_cb_selectAll" Content="Select All" HorizontalAlignment="Left" Click="t3_cb_SelectAll_Click"/>
-                <Button Grid.Column="1" x:Name="t3_btn_ClearListBox" Content="Clear JSON" HorizontalAlignment="Right" Click="t3_btn_ClearListBox_Click" Height="30"/>
+                <CheckBox x:Name="t6_cb_selectAll" Content="Select All" HorizontalAlignment="Left" Click="t6_cb_SelectAll_Click"/>
+                <Button Grid.Column="1" x:Name="t6_btn_ClearListBox" Content="Clear JSON" HorizontalAlignment="Right" Click="t6_btn_ClearListBox_Click" Height="30"/>
             </Grid>
-            <StackPanel Orientation="Horizontal">
-                <TextBlock HorizontalAlignment="Left" Text="Masking Template : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
-                <ComboBox x:Name="t3_cb_maskingTemplate" materialDesign:HintAssist.Hint="Select Masking Template" DisplayMemberPath="Name" SelectedValuePath="Name" Width="200" HorizontalAlignment="Left"/>
-            </StackPanel>
-            <Button x:Name="t3_btn_MaskJSON" Content="Mask JSON" HorizontalAlignment="Left" Click="t3_btn_MaskJSON_Click" Height="30" Margin="0,5,0,5"/>
+            <Button x:Name="t6_btn_ConvertDate" Content="Convert to Date" HorizontalAlignment="Left" Click="t6_btn_ConvertDate_Click" Height="30" Margin="0,5,0,5"/>
             <Grid Margin="0,5,0,5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="6*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Masking Output Folder : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
-                <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t3_tb_output" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
+                <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t6_tb_output" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
             </Grid>
         </StackPanel>
     </Grid>

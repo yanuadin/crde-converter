@@ -89,7 +89,7 @@ namespace CRDEConverterJsonExcel.src.tools
                                 JObject jsonItem = JObject.Parse(item.FileContent);
                                 foreach (Masking masking in maskingTemplate.Mask)
                                 {
-                                    jsonItem = MaskingVariableJSON(jsonItem, masking);
+                                    jsonItem = maskingVariableJSON(jsonItem, masking);
                                 }
 
                                 // Save Response to JSON File
@@ -114,7 +114,7 @@ namespace CRDEConverterJsonExcel.src.tools
             }
         }
 
-        private JObject MaskingVariableJSON(JObject json, Masking masking, string key = "")
+        private JObject maskingVariableJSON(JObject json, Masking masking, string key = "")
         {
             foreach (var property in json)
             {
@@ -133,20 +133,14 @@ namespace CRDEConverterJsonExcel.src.tools
                         }
                     }
                     else
-                        MaskingVariableJSON((JObject)property.Value, masking, property.Key);
+                        maskingVariableJSON((JObject)property.Value, masking, property.Key);
                 }
                 else if (property.Value.GetType().ToString() == "Newtonsoft.Json.Linq.JArray" && property.Key == "Categories")
                     foreach (var category in property.Value)
-                        MaskingVariableJSON((JObject)category, masking, key);
+                        maskingVariableJSON((JObject)category, masking, key);
             }
 
             return json;
-        }
-
-        public void refreshConfig()
-        {
-            config = new CRDE();
-            t3_cb_maskingTemplate.ItemsSource = config.getMaskingTemplateList();
         }
     }
 }

@@ -15,7 +15,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-        addTabItem(new TabItemControl { Header = "S1 Log Extraction", Content = new S1LogExtractionLocal() });
+        addTabItem(new TabItemControl { Header = "JSON Datetime to Date", Content = new JSONDateTimeToDate() });
     }
 
     private void mi_Control_Click(object sender, RoutedEventArgs e)
@@ -25,31 +25,34 @@ public partial class MainWindow : Window
         switch (menuItem.Tag)
         {
             case "t1":
-                addTabItem(new TabItemControl { Header = "JSON Converter", Content = new JSONConverter() });
+                addTabItem(new TabItemControl { Header = menuItem.Header.ToString(), Content = new JSONConverter() });
                 break;
             case "t2":
-                addTabItem(new TabItemControl { Header = "Excel Converter", Content = new ExcelConverter() });
+                addTabItem(new TabItemControl { Header = menuItem.Header.ToString(), Content = new ExcelConverter() });
                 break;
             case "t3":
-                addTabItem(new TabItemControl { Header = "JSON Masking", Content = new JSONMasking() });
+                addTabItem(new TabItemControl { Header = menuItem.Header.ToString(), Content = new JSONMasking() });
                 break;
             case "t4":
-                addTabItem(new TabItemControl { Header = "S1 Log Extraction", Content = new S1LogExtractionLocal() });
+                addTabItem(new TabItemControl { Header = menuItem.Header.ToString(), Content = new S1LogExtractionLocal() });
                 break;
             case "t5":
-                addTabItem(new TabItemControl { Header = "Calling CRDE API", Content = new CallingCRDEAPI() });
+                addTabItem(new TabItemControl { Header = menuItem.Header.ToString(), Content = new CallingCRDEAPI() });
+                break;
+            case "t6":
+                addTabItem(new TabItemControl { Header = menuItem.Header.ToString(), Content = new JSONDateTimeToDate() });
                 break;
             case "s1":
-                addTabItem(new TabItemControl { Header = "Masking", Content = new MaskingSetting() });
+                addTabItem(new TabItemControl { Header = menuItem.Header.ToString(), Content = new MaskingSetting() });
                 break;
             case "s2":
-                addTabItem(new TabItemControl { Header = "S1 Logs", Content = new S1LogSetting() });
+                addTabItem(new TabItemControl { Header = menuItem.Header.ToString(), Content = new S1LogSetting() });
                 break;
             case "s3":
-                addTabItem(new TabItemControl { Header = "CRDE API Address", Content = new CRDEAPIAddressSetting() });
+                addTabItem(new TabItemControl { Header = menuItem.Header.ToString(), Content = new CRDEAPIAddressSetting() });
                 break;
             case "s4":
-                addTabItem(new TabItemControl { Header = "Process Code", Content = new ProcessCodeSetting() });
+                addTabItem(new TabItemControl { Header = menuItem.Header.ToString(), Content = new ProcessCodeSetting() });
                 break;
             default:
                 MessageBox.Show("[ERROR]: Menu is not available");
