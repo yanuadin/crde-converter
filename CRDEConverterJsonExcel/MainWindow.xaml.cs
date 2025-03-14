@@ -15,7 +15,6 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-        addTabItem(new TabItemControl { Header = "JSON Datetime to Date", Content = new JSONDateTimeToDate() });
     }
 
     private void mi_Control_Click(object sender, RoutedEventArgs e)
