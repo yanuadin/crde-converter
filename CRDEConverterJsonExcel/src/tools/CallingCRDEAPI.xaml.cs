@@ -4,10 +4,12 @@ using CRDEConverterJsonExcel.objectClass;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeOpenXml;
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Shapes;
 
 namespace CRDEConverterJsonExcel.src.tools
 {
@@ -31,7 +33,7 @@ namespace CRDEConverterJsonExcel.src.tools
         {
             try
             {
-                string[] extension = { "json" };
+                string[] extension = { "json", "txt" };
                 lb_JSONRequestItems = GeneralMethod.browseFile(extension, true);
                 t5_lb_RequestList.ItemsSource = lb_JSONRequestItems;
                 t5_tb_folder.Text = string.Join(@"\", lb_JSONRequestItems.First<Item>().FilePath.Split(@"\")[0..^1]);
@@ -46,7 +48,7 @@ namespace CRDEConverterJsonExcel.src.tools
         {
             try
             {
-                string[] extension = { "json" };
+                string[] extension = { "json", "txt" };
                 lb_JSONRequestItems = GeneralMethod.browseFolder(extension);
                 t5_lb_RequestList.ItemsSource = lb_JSONRequestItems;
                 t5_tb_folder.Text = string.Join(@"\", lb_JSONRequestItems.First<Item>().FilePath.Split(@"\")[0..^1]);
@@ -77,7 +79,6 @@ namespace CRDEConverterJsonExcel.src.tools
         private async void t5_btn_Run_Click(object sender, RoutedEventArgs e)
         {
             List<Item> filteredSelected = lb_JSONRequestItems.Where(item => item.IsSelected).ToList();
-            Converter converter = new Converter();
 
             if (filteredSelected.Count > 0)
             {
@@ -98,16 +99,21 @@ namespace CRDEConverterJsonExcel.src.tools
                         {
                             foreach (Item request in filteredSelected)
                             {
-                                string responseJSONText = await Api.PostApiDataAsync(endpoint, JObject.Parse(request.FileContent), request.FileName);
-                                if (responseJSONText != "")
+                                string fileExt = request.FilePath.Split("\\").Last().Split(".").Last();
+                                if (fileExt == "txt")
                                 {
-                                    JObject responseJSON = JObject.Parse(responseJSONText);
-                                    string responseJSONTextIndent = JsonConvert.SerializeObject(responseJSON, Formatting.Indented);
-                                    string responseName = responseJSON.First.First.First.First["InquiryCode"].ToString();
-
-                                    // Save Response to JSON File
-                                    string fileOutputPath = converter.saveTextFile(savePath + @"\" + responseName + ".json", responseJSONTextIndent, "res");
-                                    lb_JSONResponseItems.Add(new Item { FileName = responseName, FilePath = fileOutputPath, FileContent = responseJSONText, IsSelected = false });
+                                    using (StringReader reader = new StringReader(request.FileContent))
+                                    {
+                                        string line;
+                                        int lineNumber = 1;
+                                        while ((line = reader.ReadLine()) != null)
+                                        {
+                                            sendRequestToAPI(endpoint, line, savePath);
+                                        }
+                                    }
+                                } else
+                                {
+                                    sendRequestToAPI(endpoint, request.FileContent, savePath);
                                 }
                             }
                             t5_lb_ResponseList.ItemsSource = lb_JSONResponseItems;
@@ -125,6 +131,24 @@ namespace CRDEConverterJsonExcel.src.tools
             else
             {
                 MessageBox.Show("[WARNING]: No one item were selected");
+            }
+        }
+
+        private async void sendRequestToAPI(string endpoint, string requestContent, string savePath)
+        {
+            Converter converter = new Converter();
+
+            JObject jsonContent = JObject.Parse(requestContent);
+            string jsonName = jsonContent.First.First.First.First["InquiryCode"].ToString();
+            string responseJSONText = await Api.PostApiDataAsync(endpoint, jsonContent, jsonName);
+            if (responseJSONText != "")
+            {
+                JObject responseJSON = JObject.Parse(responseJSONText);
+                string responseJSONTextIndent = JsonConvert.SerializeObject(responseJSON, Formatting.Indented);
+
+                // Save Response to JSON File
+                string fileOutputPath = converter.saveTextFile(savePath + @"\" + jsonName + ".json", responseJSONTextIndent, "res");
+                lb_JSONResponseItems.Add(new Item { FileName = jsonName, FilePath = fileOutputPath, FileContent = responseJSONText, IsSelected = false });
             }
         }
 

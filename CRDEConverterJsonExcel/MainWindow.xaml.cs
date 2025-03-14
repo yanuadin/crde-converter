@@ -15,6 +15,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        addTabItem(new TabItemControl { Header = "Calling CRDE API", Content = new CallingCRDEAPI() });
     }
 
     private void mi_Control_Click(object sender, RoutedEventArgs e)

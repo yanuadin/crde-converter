@@ -1,6 +1,7 @@
 ﻿using CRDEConverterJsonExcel.objectClass;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Windows;
@@ -103,7 +104,7 @@ namespace CRDEConverterJsonExcel.core
                         listItem.Add(new Item { FileName = fileName, FilePath = dlg.FileName, CreatedDate = getCreatedDateOfFile(dlg.FileName), FileContent = json, IsSelected = false });
                 }
             }
-            
+
             return listItem;
         }
 

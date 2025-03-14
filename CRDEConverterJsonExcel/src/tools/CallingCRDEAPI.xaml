@@ -10,8 +10,8 @@
     <Grid>
         <StackPanel Margin="10">
             <StackPanel Orientation="Horizontal">
-                <Button x:Name="t5_btn_BrowseFile" Content="Select JSON Files" HorizontalAlignment="Left" Click="t5_btn_BrowseFile_Click" Height="30" Margin="0,0,0,5"/>
-                <Button x:Name="t5_btn_BrowseFolder" Content="Select JSON Folder" HorizontalAlignment="Left" Click="t5_btn_BrowseFolder_Click" Height="30" Margin="10,0,0,5"/>
+                <Button x:Name="t5_btn_BrowseFile" Content="Select JSON Files" HorizontalAlignment="Left" Click="t5_btn_BrowseFile_Click" Height="30" Margin="0,0,5,5"/>
+                <Button x:Name="t5_btn_BrowseFolder" Content="Select JSON Folder" HorizontalAlignment="Left" Click="t5_btn_BrowseFolder_Click" Height="30" Margin="5,0,0,5"/>
             </StackPanel>
             <Grid Margin="0,5,0,5">
                 <Grid.ColumnDefinitions>
