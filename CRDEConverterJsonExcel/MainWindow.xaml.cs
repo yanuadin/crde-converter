@@ -15,6 +15,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        addTabItem(new TabItemControl { Header = "S1 Log Extraction", Content = new S1LogExtractionLocal() });
     }
 
     private void mi_Control_Click(object sender, RoutedEventArgs e)
@@ -34,11 +35,9 @@ public partial class MainWindow : Window
                 break;
             case "t4":
                 addTabItem(new TabItemControl { Header = "S1 Log Extraction", Content = new S1LogExtractionLocal() });
-                refreshAllComponentConfig();
                 break;
             case "t5":
                 addTabItem(new TabItemControl { Header = "Calling CRDE API", Content = new CallingCRDEAPI() });
-                refreshAllComponentConfig();
                 break;
             case "s1":
                 addTabItem(new TabItemControl { Header = "Masking", Content = new MaskingSetting() });
@@ -81,23 +80,5 @@ public partial class MainWindow : Window
             subMenu.SelectedItem = oldItemControl;
 
         subMenu.ItemsSource = tabItemControls;
-    }
-
-    private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        refreshAllComponentConfig();
-    }
-
-    private void refreshAllComponentConfig()
-    {
-        // Refreshing user control that use config
-        foreach (TabItemControl itemControl in tabItemControls)
-        {
-            var method = itemControl.Content.GetType().GetMethod("refreshConfig");
-            if (method != null)
-            {
-                method.Invoke(itemControl.Content, null);
-            }
-        }
     }
 }

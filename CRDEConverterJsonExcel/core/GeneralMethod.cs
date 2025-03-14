@@ -1,7 +1,10 @@
 ﻿using CRDEConverterJsonExcel.objectClass;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace CRDEConverterJsonExcel.core
@@ -52,7 +55,7 @@ namespace CRDEConverterJsonExcel.core
             return result;
         }
 
-        public static ObservableCollection<Item> browseFile(string extension, bool allowedMultipleFiles)
+        public static ObservableCollection<Item> browseFile(string[] extension, bool allowedMultipleFiles)
         {
             ObservableCollection<Item> listItem = new ObservableCollection<Item>();
 
@@ -66,6 +69,7 @@ namespace CRDEConverterJsonExcel.core
 
             // If Allowed MultipleFiles
             string fileName = "";
+            string fileExt = "";
             if (result == true)
             {
                 if (allowedMultipleFiles)
@@ -74,23 +78,37 @@ namespace CRDEConverterJsonExcel.core
                     foreach (string filePath in dlg.FileNames)
                     {
                         fileName = filePath.Split("\\").Last().Split(".").First();
+                        fileExt = filePath.Split("\\").Last().Split(".").Last();
 
-                        listItem.Add(new Item { FileName = fileName, FilePath = filePath, CreatedDate = getCreatedDateOfFile(filePath), JSON = File.ReadAllText(filePath), IsSelected = false });
+                        if (fileExt == "zip")
+                        {
+                            Item zipItem = readZipFile(filePath, extension);
+                            if (zipItem != null)
+                                listItem.Add(zipItem);
+                        } else 
+                            listItem.Add(new Item { FileName = fileName, FilePath = filePath, CreatedDate = getCreatedDateOfFile(filePath), FileContent = File.ReadAllText(filePath), IsSelected = false });
                     }
                 }
                 else
                 {
                     fileName = dlg.FileName.Split("\\").Last().Split(".").First();
-                    json = extension == "json" ? File.ReadAllText(dlg.FileName) : ""; 
+                    fileExt = dlg.FileName.Split("\\").Last().Split(".").Last();
+                    json = extension.Contains("json") ? File.ReadAllText(dlg.FileName) : "";
 
-                    listItem.Add(new Item { FileName = fileName, FilePath = dlg.FileName, CreatedDate = getCreatedDateOfFile(dlg.FileName), JSON = json, IsSelected = false });
+                    if (fileExt == "zip")
+                    {
+                        Item zipItem = readZipFile(dlg.FileName, extension);
+                        if (zipItem != null)
+                            listItem.Add(zipItem);
+                    } else 
+                        listItem.Add(new Item { FileName = fileName, FilePath = dlg.FileName, CreatedDate = getCreatedDateOfFile(dlg.FileName), FileContent = json, IsSelected = false });
                 }
             }
             
             return listItem;
         }
 
-        public static ObservableCollection<Item> browseFolder(string extension)
+        public static ObservableCollection<Item> browseFolder(string[] extension)
         {
             ObservableCollection<Item> listItem = new ObservableCollection<Item>();
 
@@ -107,18 +125,52 @@ namespace CRDEConverterJsonExcel.core
                     string fileExt = filePath.Split("\\").Last().Split(".").Last();
                     string dateCreated = "";
 
-                    if (extension == "json" && fileExt == extension)
-                        listItem.Add(new Item { FileName = fileName, FilePath = filePath, JSON = File.ReadAllText(filePath), CreatedDate = getCreatedDateOfFile(filePath), IsSelected = false });
-
-                    else if (extension == "completed" && fileExt.ToUpper() == extension.ToUpper())
-                        listItem.Add(new Item { FileName = fileName, FilePath = filePath, CreatedDate = dateCreated, IsSelected = false });
+                    if (fileExt == "zip")
+                    {
+                        Item zipItem = readZipFile(filePath, extension);
+                        if (zipItem != null)
+                            listItem.Add(zipItem);
+                    }
+                    else if (extension.Contains(fileExt.ToLower()))
+                        listItem.Add(new Item { FileName = fileName, FilePath = filePath, FileContent = File.ReadAllText(filePath), CreatedDate = getCreatedDateOfFile(filePath), IsSelected = false });
                 }
             }
 
             return listItem;
         }
 
-        public static string saveFileDialog(string extension, string defaultName = "")
+        public static Item readZipFile(string zipFilePath, string[] extension)
+        {
+            try
+            {
+                // Open the zip file
+                using (ZipArchive archive = ZipFile.OpenRead(zipFilePath))
+                {
+                    // Iterate through each entry in the zip file
+                    foreach (ZipArchiveEntry entry in archive.Entries)
+                    {
+                        using (Stream stream = entry.Open())
+                        {
+                            using (StreamReader reader = new StreamReader(stream))
+                            {
+                                string fileName = entry.FullName.Split("\\").Last().Split(".").First();
+                                string fileExt = entry.FullName.Split("\\").Last().Split(".").Last();
+
+                                if (extension.Contains(fileExt.ToLower()))
+                                    return new Item { FileName = fileName, FileContent = reader.ReadToEnd(), CreatedDate = getCreatedDateOfFile(zipFilePath), IsSelected = false };
+                            }
+                        }
+                    }
+                }
+            } catch (Exception ex)
+            {
+                MessageBox.Show("[ERROR]: " + ex.Message);
+            }
+
+            return null;
+        }
+
+        public static string saveFileDialog(string[] extension, string defaultName = "")
         {
             string filter = getFilterExtension(extension);
             SaveFileDialog saveFileDialog = new SaveFileDialog { Filter = filter, FileName = defaultName };
@@ -143,29 +195,37 @@ namespace CRDEConverterJsonExcel.core
             return filePath;
         }
 
-        private static string getFilterExtension(string extension)
+        private static string getFilterExtension(string[] extension)
         {
-            string filter = "";
-            switch (extension)
+            string resultFilter = "";
+            for (int i = 0; i < extension.Length; i++)
             {
-                case "json":
-                    filter = "Json files (*.json)|*.json";
-                    break;
-                case "excel":
-                    filter = "Excel Files|*.xls;*.xlsx";
-                    break;
-                case "txt":
-                    filter = "Text Files|*.txt";
-                    break;
-                case "completed":
-                    filter = "Completed Files|*.COMPLETED";
-                    break;
-                default:
-                    filter = "All files (*.*)|*.*";
-                    break;
+                string filter = i == 0 ? "" : "|";
+                switch (extension[i])
+                {
+                    case "json":
+                        filter += "Json files (*.json)|*.json";
+                        break;
+                    case "excel":
+                        filter += "Excel Files|*.xls;*.xlsx";
+                        break;
+                    case "txt":
+                        filter += "Text Files|*.txt";
+                        break;
+                    case "completed":
+                        filter += "Completed Files|*.COMPLETED";
+                        break;
+                    case "zip":
+                        filter += "ZIP Files|*.zip";
+                        break;
+                    default:
+                        filter += "All files (*.*)|*.*";
+                        break;
+                }
+                resultFilter += filter;
             }
 
-            return filter;
+            return resultFilter;
         }
 
         public static ObservableCollection<Item> selectAllList(ObservableCollection<Item> items, CheckBox checkBox)

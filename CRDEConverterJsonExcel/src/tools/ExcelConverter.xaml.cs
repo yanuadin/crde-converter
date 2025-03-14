@@ -25,7 +25,8 @@ namespace CRDEConverterJsonExcel.src.tools
             try
             {
                 lb_JSONItems = new ObservableCollection<Item>();
-                ObservableCollection<Item> excelFile = GeneralMethod.browseFile("excel", false);
+                string[] extension = { "excel" };
+                ObservableCollection<Item> excelFile = GeneralMethod.browseFile(extension, false);
                 string fileName = excelFile.First<Item>().FileName;
                 string filePath = excelFile.First<Item>().FilePath;
                 t2_tb_folder.Text = filePath;
@@ -35,7 +36,7 @@ namespace CRDEConverterJsonExcel.src.tools
                     ExcelWorksheet ws = package.Workbook.Worksheets["#HEADER#"];
                     for (int row = 3; row <= ws.Dimension.Rows; row++)
                     {
-                        lb_JSONItems.Add(new Item { FileName = ws.Cells[row, 5].Text, FilePath = filePath, JSON = "", IsSelected = false });
+                        lb_JSONItems.Add(new Item { FileName = ws.Cells[row, 5].Text, FilePath = filePath, FileContent = "", IsSelected = false });
                     }
                     t2_lb_JSONList.ItemsSource = lb_JSONItems;
                 }

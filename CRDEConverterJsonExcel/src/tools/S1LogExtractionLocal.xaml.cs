@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Diagnostics;
+using System.Windows.Media.TextFormatting;
 
 namespace CRDEConverterJsonExcel.src.tools
 {
@@ -26,17 +28,12 @@ namespace CRDEConverterJsonExcel.src.tools
             t4_cb_process_code.ItemsSource = config.getProcessCodeList();
         }
 
-        public void refreshConfig()
-        {
-            config = new CRDE();
-            t4_cb_process_code.ItemsSource = config.getProcessCodeList();
-        } 
-
         private void t4_btn_BrowseFolder_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                lb_LogFiles = GeneralMethod.browseFolder("completed");
+                string[] extension = { "completed", "zip" };
+                lb_LogFiles = GeneralMethod.browseFolder(extension);
                 t4_lb_LogList.ItemsSource = lb_LogFiles;
                 t4_tb_folder.Text = string.Join(@"\", lb_LogFiles.First<Item>().FilePath.Split(@"\")[0..^1]);
             }
@@ -79,7 +76,7 @@ namespace CRDEConverterJsonExcel.src.tools
                     {
                         // Clear List
                         lb_JSONFiles = new ObservableCollection<Item>();
-                        t4_lb_JSONList.ItemsSource = lb_LogFiles;
+                        t4_lb_JSONList.ItemsSource = lb_JSONFiles;
                         int successCount = 0;
 
                         foreach (Item file in filteredSelected)
@@ -90,7 +87,7 @@ namespace CRDEConverterJsonExcel.src.tools
                                 string fileName = file.FileName;
                                 JArray contentFile = new JArray();
 
-                                using (TextReader reader = new StreamReader(filePath))
+                                using (StringReader reader = new StringReader(file.FileContent))
                                 {
                                     string line;
                                     int lineNumber = 1;

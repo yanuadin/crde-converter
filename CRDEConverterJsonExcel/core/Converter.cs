@@ -320,7 +320,8 @@ namespace CRDEConverterJsonExcel.core
                 {
                     if (convertType == "txt")
                     {
-                        savePath = GeneralMethod.saveFileDialog(convertType, fileNameTxt);
+                        string[] extension = { convertType };
+                        savePath = GeneralMethod.saveFileDialog(extension, fileNameTxt);
                         if (savePath != "")
                         {
                             saveTextFile(savePath, jsonTxt);

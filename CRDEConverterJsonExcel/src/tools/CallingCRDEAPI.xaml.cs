@@ -27,17 +27,12 @@ namespace CRDEConverterJsonExcel.src.tools
             t5_cb_environment.ItemsSource = config.getEnvironmentNameList();
         }
 
-        public void refreshConfig()
-        {
-            config = new CRDE();
-            t5_cb_environment.ItemsSource = config.getEnvironmentNameList();
-        }
-
         private void t5_btn_BrowseFile_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                lb_JSONRequestItems = GeneralMethod.browseFile("json", true);
+                string[] extension = { "json" };
+                lb_JSONRequestItems = GeneralMethod.browseFile(extension, true);
                 t5_lb_RequestList.ItemsSource = lb_JSONRequestItems;
                 t5_tb_folder.Text = string.Join(@"\", lb_JSONRequestItems.First<Item>().FilePath.Split(@"\")[0..^1]);
             }
@@ -51,7 +46,8 @@ namespace CRDEConverterJsonExcel.src.tools
         {
             try
             {
-                lb_JSONRequestItems = GeneralMethod.browseFolder("json");
+                string[] extension = { "json" };
+                lb_JSONRequestItems = GeneralMethod.browseFolder(extension);
                 t5_lb_RequestList.ItemsSource = lb_JSONRequestItems;
                 t5_tb_folder.Text = string.Join(@"\", lb_JSONRequestItems.First<Item>().FilePath.Split(@"\")[0..^1]);
             }
@@ -102,7 +98,7 @@ namespace CRDEConverterJsonExcel.src.tools
                         {
                             foreach (Item request in filteredSelected)
                             {
-                                string responseJSONText = await Api.PostApiDataAsync(endpoint, JObject.Parse(request.JSON), request.FileName);
+                                string responseJSONText = await Api.PostApiDataAsync(endpoint, JObject.Parse(request.FileContent), request.FileName);
                                 if (responseJSONText != "")
                                 {
                                     JObject responseJSON = JObject.Parse(responseJSONText);
@@ -111,7 +107,7 @@ namespace CRDEConverterJsonExcel.src.tools
 
                                     // Save Response to JSON File
                                     string fileOutputPath = converter.saveTextFile(savePath + @"\" + responseName + ".json", responseJSONTextIndent, "res");
-                                    lb_JSONResponseItems.Add(new Item { FileName = responseName, FilePath = fileOutputPath, JSON = responseJSONText, IsSelected = false });
+                                    lb_JSONResponseItems.Add(new Item { FileName = responseName, FilePath = fileOutputPath, FileContent = responseJSONText, IsSelected = false });
                                 }
                             }
                             t5_lb_ResponseList.ItemsSource = lb_JSONResponseItems;
@@ -149,12 +145,13 @@ namespace CRDEConverterJsonExcel.src.tools
                     // Loop through the multiple files
                     int iterator = 0;
                     foreach (Item file in filteredSelected)
-                        converter.convertJSONToExcel(package, file.JSON, iterator++);
+                        converter.convertJSONToExcel(package, file.FileContent, iterator++);
 
                     string fname = filteredSelected.Count > 1 ? "MultipleFiles" : filteredSelected.First<Item>().FileName;
 
                     // Save Excel file
-                    string savePath = GeneralMethod.saveFileDialog("excel", fname + "-res.xlsx");
+                    string[] extension = { "excel" };
+                    string savePath = GeneralMethod.saveFileDialog(extension, fname + "-res.xlsx");
 
                     if (savePath != "")
                     {

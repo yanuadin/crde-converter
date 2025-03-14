@@ -25,7 +25,8 @@ namespace CRDEConverterJsonExcel.src.tools
         {
             try
             {
-                lb_JSONItems = GeneralMethod.browseFile("json", true);
+                string[] extension = { "json" };
+                lb_JSONItems = GeneralMethod.browseFile(extension, true);
                 t1_lb_JSONList.ItemsSource = lb_JSONItems;
                 t1_tb_folder.Text = string.Join(@"\", lb_JSONItems.First<Item>().FilePath.Split(@"\")[0..^1]);
             }
@@ -39,7 +40,8 @@ namespace CRDEConverterJsonExcel.src.tools
         {
             try
             {
-                lb_JSONItems = GeneralMethod.browseFolder("json");
+                string[] extension = { "json" };
+                lb_JSONItems = GeneralMethod.browseFolder(extension);
                 t1_lb_JSONList.ItemsSource = lb_JSONItems;
                 t1_tb_folder.Text = string.Join(@"\", lb_JSONItems.First<Item>().FilePath.Split(@"\")[0..^1]);
             }
@@ -79,7 +81,7 @@ namespace CRDEConverterJsonExcel.src.tools
                         string fname = "";
                         if (filteredSelected.Count == 1)
                         {
-                            JObject parseJSON = JObject.Parse(filteredSelected.First<Item>().JSON);
+                            JObject parseJSON = JObject.Parse(filteredSelected.First<Item>().FileContent);
                             fname = parseJSON.First.First.First.First["InquiryCode"].ToString();
                         }
                         else
@@ -99,7 +101,8 @@ namespace CRDEConverterJsonExcel.src.tools
                         }
 
                         // Save Excel file
-                        string savePath = GeneralMethod.saveFileDialog("excel", fname);
+                        string[] extension = { "excel" };
+                        string savePath = GeneralMethod.saveFileDialog(extension, fname);
 
                         if (savePath != "")
                         {

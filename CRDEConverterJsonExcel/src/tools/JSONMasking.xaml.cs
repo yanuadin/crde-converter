@@ -28,7 +28,8 @@ namespace CRDEConverterJsonExcel.src.tools
         {
             try
             {
-                JSONItemList = GeneralMethod.browseFile("json", true);
+                string[] extension = { "json" };
+                JSONItemList = GeneralMethod.browseFile(extension, true);
                 t3_dg_JSONList.ItemsSource = JSONItemList;
                 t3_tb_folder.Text = string.Join(@"\", JSONItemList.First<Item>().FilePath.Split(@"\")[0..^1]);
             }
@@ -42,7 +43,8 @@ namespace CRDEConverterJsonExcel.src.tools
         {
             try
             {
-                JSONItemList = GeneralMethod.browseFolder("json");
+                string[] extension = { "json" };
+                JSONItemList = GeneralMethod.browseFolder(extension);
                 t3_dg_JSONList.ItemsSource = JSONItemList;
                 t3_tb_folder.Text = string.Join(@"\", JSONItemList.First<Item>().FilePath.Split(@"\")[0..^1]);
             }
@@ -84,7 +86,7 @@ namespace CRDEConverterJsonExcel.src.tools
                         {
                             foreach (Item item in filteredSelected)
                             {
-                                JObject jsonItem = JObject.Parse(item.JSON);
+                                JObject jsonItem = JObject.Parse(item.FileContent);
                                 foreach (Masking masking in maskingTemplate.Mask)
                                 {
                                     jsonItem = MaskingVariableJSON(jsonItem, masking);
