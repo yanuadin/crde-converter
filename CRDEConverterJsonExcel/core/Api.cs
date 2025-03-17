@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using CRDEConverterJsonExcel.objectClass;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeOpenXml;
 using System.IO;
@@ -10,7 +11,7 @@ namespace CRDEConverterJsonExcel.core
 {
     class Api
     {
-        public static async Task<string> GetApiDataAsync(string url)
+        public static async Task<APIResponse> GetApiDataAsync(string url)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -21,11 +22,13 @@ namespace CRDEConverterJsonExcel.core
                 response.EnsureSuccessStatusCode();
 
                 // Read and return the response content as a string
-                return await response.Content.ReadAsStringAsync();
+                string responseData = await response.Content.ReadAsStringAsync();
+
+                return new APIResponse { success = true, message = "SUCCESS", data = responseData };
             }
         }
 
-        public static async Task<string> PostApiDataAsync(string url, object data, string fileName = "")
+        public static async Task<APIResponse> PostApiDataAsync(string url, object data)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -42,60 +45,14 @@ namespace CRDEConverterJsonExcel.core
                     response.EnsureSuccessStatusCode();
 
                     // Read and return the response content as a string
-                    return await response.Content.ReadAsStringAsync();
+                    string responseData = await response.Content.ReadAsStringAsync();
+
+                    return new APIResponse { success = true, message = "SUCCESS", data = responseData };
                 }
                 catch (HttpRequestException ex)
                 {
-                    MessageBox.Show($"[ERROR] [{fileName}]: {ex.Message}");
-
-                    return "";
+                    return new APIResponse { success = false, message = $"[ERROR] : {ex.Message}", data = "" };
                 }
-            }
-        }
-
-        public static async void postRequestCRDE(string selectedEndpoint, string json, string saveFileNameResponse, int iterator)
-        {
-            saveFileNameResponse = saveFileNameResponse + "_response";
-            Converter converter = new Converter();
-
-            // Parse JSON
-            JObject jsonObject = JObject.Parse(json);
-
-            // Data to send in the POST request
-            try
-            {
-                using (var package = new ExcelPackage())
-                {
-                    // Call the API and get the response
-                    string responseJsonText = await Api.PostApiDataAsync(selectedEndpoint, jsonObject);
-                    JObject parseResponseJson = JObject.Parse(responseJsonText);
-                    string responseJsonIndent = JsonConvert.SerializeObject(parseResponseJson, Formatting.Indented);
-
-                    // Save Response to JSON File
-                    converter.saveTextFile(@"E:\Yanu\temp_sample\" + saveFileNameResponse + ".json", responseJsonIndent, "res");
-
-                    // Convert Response to Excel
-                    converter.convertJSONToExcel(package, responseJsonText, iterator);
-
-                    // Save Excel file
-                    string excelFilePath = @"E:\Yanu\temp_sample\" + saveFileNameResponse + "-res.xlsx";
-                    package.SaveAs(new FileInfo(excelFilePath));
-
-                    // Add to List Box Response
-                    //X: lb_responseList.Items.Add(new Item { fileName = saveFileNameResponse, json = json, isSelected = false });
-
-                    MessageBox.Show("[SUCCESS]: [" + saveFileNameResponse + @"] Save Response was successful! File saved to \output\json\response and \output\excel\response");
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                MessageBox.Show($"[API_FAILED]: {ex.StatusCode} : {ex.Message}", "Error");
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"[API_FAILED]: An error occurred: {ex.Message}", "Error");
-
             }
         }
     }

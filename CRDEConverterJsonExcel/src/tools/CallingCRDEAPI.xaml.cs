@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Shapes;
 
 namespace CRDEConverterJsonExcel.src.tools
@@ -78,78 +79,142 @@ namespace CRDEConverterJsonExcel.src.tools
 
         private async void t5_btn_Run_Click(object sender, RoutedEventArgs e)
         {
-            List<Item> filteredSelected = lb_JSONRequestItems.Where(item => item.IsSelected).ToList();
+            // Disable the cursor and set it to "Wait" (spinning circle)
+            t5_sp_main.IsEnabled = false;
+            Mouse.OverrideCursor = Cursors.Wait;
 
-            if (filteredSelected.Count > 0)
+            try
             {
-                if (t5_cb_environment.SelectedValue != null)
+                List<Item> filteredSelected = lb_JSONRequestItems.Where(item => item.IsSelected).ToList();
+
+                if (filteredSelected.Count > 0)
                 {
-                    string savePath = GeneralMethod.saveFolderDialog();
-
-                    if (savePath != "")
+                    if (t5_cb_environment.SelectedValue != null)
                     {
-                        // Flush response list item
-                        lb_JSONResponseItems = new ObservableCollection<Item>();
-                        t5_lb_ResponseList.ItemsSource = lb_JSONResponseItems;
+                        string savePath = GeneralMethod.saveFolderDialog();
 
-                        // Send Request to API
-                        string endpoint = config.getEnvironment(t5_cb_environment.Text)["ENDPOINT_REQUEST"].ToString();
-                        
-                        if(endpoint != "" && endpoint != null)
+                        if (savePath != "")
                         {
-                            foreach (Item request in filteredSelected)
+                            // Flush response list item
+                            lb_JSONResponseItems.Clear();
+
+                            // Initialize progress reporting
+                            var progress = new Progress<int>(value =>
                             {
-                                string fileExt = request.FilePath.Split("\\").Last().Split(".").Last();
-                                if (fileExt == "txt")
+                                t5_progressBar.Value = value;
+                            });
+
+                            // Send Request to API
+                            string endpoint = config.getEnvironment(t5_cb_environment.Text)["ENDPOINT_REQUEST"].ToString();
+
+                            if (endpoint != "" && endpoint != null)
+                            {
+                                // Initialize Progress Bar
+                                t5_progressBar.Value = 0;
+                                t5_progressBar.Visibility = Visibility.Visible;
+
+                                // Calculate total work items
+                                int totalItems = filteredSelected.Count;
+                                int completedItems = 0;
+                                bool error = false;
+                                string errorMessage = "";
+
+                                foreach (Item request in filteredSelected)
                                 {
-                                    using (StringReader reader = new StringReader(request.FileContent))
+                                    string fileExt = request.FilePath.Split("\\").Last().Split(".").Last();
+                                    if (fileExt == "txt")
                                     {
-                                        string line;
-                                        int lineNumber = 1;
-                                        while ((line = reader.ReadLine()) != null)
+                                        using (StringReader reader = new StringReader(request.FileContent))
                                         {
-                                            sendRequestToAPI(endpoint, line, savePath);
+                                            string line;
+                                            int lineNumber = 1;
+                                            while ((line = reader.ReadLine()) != null)
+                                            {
+                                                APIResponse responseAPI = await sendRequestToAPI(endpoint, line, savePath);
+                                                if (!responseAPI.success)
+                                                {
+                                                    error = true;
+                                                    errorMessage = responseAPI.message;
+                                                    break;
+                                                }
+                                            }
                                         }
                                     }
-                                } else
-                                {
-                                    sendRequestToAPI(endpoint, request.FileContent, savePath);
+                                    else
+                                    {
+                                        APIResponse responseAPI = await sendRequestToAPI(endpoint, request.FileContent, savePath);
+                                        if (!responseAPI.success)
+                                        {
+                                            error = true;
+                                            errorMessage = responseAPI.message;
+                                            break;
+                                        }
+                                    }
+
+                                    if (error)
+                                        break;
+                                    else
+                                    {
+                                        // Update progress
+                                        completedItems++;
+                                        int progressPercentage = (int)((double)completedItems / totalItems * 100);
+                                        ((IProgress<int>)progress).Report(progressPercentage);
+                                    }
                                 }
+
+                                if (error)
+                                {
+                                    MessageBox.Show(errorMessage);
+                                }
+                                else
+                                {
+                                    t5_lb_ResponseList.ItemsSource = lb_JSONResponseItems;
+                                    MessageBox.Show($"[SUCCESS]: Success send ({completedItems}/{totalItems}) request to API");
+                                }
+
+                                t5_progressBar.Visibility = Visibility.Hidden;
                             }
-                            t5_lb_ResponseList.ItemsSource = lb_JSONResponseItems;
-                        } else
-                        {
-                            MessageBox.Show("[FAILED]: API address not found");
+                            else
+                            {
+                                MessageBox.Show("[FAILED]: API address not found");
+                            }
                         }
+                    }
+                    else
+                    {
+                        MessageBox.Show("[WARNING]: Please select environment");
                     }
                 }
                 else
                 {
-                    MessageBox.Show("[WARNING]: Please select environment");
+                    MessageBox.Show("[WARNING]: No one item were selected");
                 }
-            } 
-            else
+            } finally
             {
-                MessageBox.Show("[WARNING]: No one item were selected");
+                // Re-enable the cursor and reset it to the default
+                t5_sp_main.IsEnabled = true;
+                Mouse.OverrideCursor = null;
             }
         }
 
-        private async void sendRequestToAPI(string endpoint, string requestContent, string savePath)
+        private async Task<APIResponse> sendRequestToAPI(string endpoint, string requestContent, string savePath)
         {
             Converter converter = new Converter();
 
             JObject jsonContent = JObject.Parse(requestContent);
             string jsonName = jsonContent.First.First.First.First["InquiryCode"].ToString();
-            string responseJSONText = await Api.PostApiDataAsync(endpoint, jsonContent, jsonName);
-            if (responseJSONText != "")
+            APIResponse responseAPI = await Api.PostApiDataAsync(endpoint, jsonContent);
+            if (responseAPI.success)
             {
-                JObject responseJSON = JObject.Parse(responseJSONText);
+                JObject responseJSON = JObject.Parse(responseAPI.data);
                 string responseJSONTextIndent = JsonConvert.SerializeObject(responseJSON, Formatting.Indented);
 
                 // Save Response to JSON File
                 string fileOutputPath = converter.saveTextFile(savePath + @"\" + jsonName + ".json", responseJSONTextIndent, "res");
-                lb_JSONResponseItems.Add(new Item { FileName = jsonName, FilePath = fileOutputPath, FileContent = responseJSONText, IsSelected = false });
+                lb_JSONResponseItems.Add(new Item { FileName = jsonName, FilePath = fileOutputPath, FileContent = responseAPI.data, IsSelected = false });
             }
+
+            return responseAPI;
         }
 
         private void t5_cb_SelectAllResponse_Click(object sender, RoutedEventArgs e)
@@ -183,7 +248,7 @@ namespace CRDEConverterJsonExcel.src.tools
                         t5_tb_output_file.Text = savePath;
                         MessageBox.Show(@"[SUCCESS]: Conversion successful");
                     }
-                }   
+                }
             }
             else
             {
