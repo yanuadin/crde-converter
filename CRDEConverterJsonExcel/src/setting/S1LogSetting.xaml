@@ -16,6 +16,7 @@
                     <DataGridTextColumn Binding="{Binding Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Port No"/>
                     <DataGridTextColumn Binding="{Binding AccessKeyID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Access Key ID"/>
                     <DataGridTextColumn Binding="{Binding SecretAccessKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Secret Access Key"/>
+                    <DataGridTextColumn Binding="{Binding DirectoryS1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Directory"/>
                     <DataGridTemplateColumn Header="">
                         <DataGridTemplateColumn.CellTemplate> 
                             <DataTemplate>

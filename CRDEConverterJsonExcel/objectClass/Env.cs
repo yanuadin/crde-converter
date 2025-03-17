@@ -15,6 +15,7 @@ namespace CRDEConverterJsonExcel.objectClass
         public string AccessKeyID { get; set; } = "";
 
         public string SecretAccessKey { get; set; } = "";
+        public string DirectoryS1 { get; set; } = "";
 
         // Unique Validate
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

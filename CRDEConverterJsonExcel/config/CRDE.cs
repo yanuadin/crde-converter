@@ -111,7 +111,8 @@ namespace CRDEConverterJsonExcel.config
                     environment["HostName"] = envToken.Value["HOST_NAME"]?.ToString() ?? "";
                     environment["Port"] = envToken.Value["PORT_NO"]?.ToString() ?? "";
                     environment["AccessKeyID"] = envToken.Value["ACCESS_KEY_ID"]?.ToString() ?? "";
-                    environment["SecretAccessKey"] = envToken.Value["SECRET_ACCESS_KEY"]?.ToString() != "" ? "XXXXX" : "" ?? "";
+                    environment["SecretAccessKey"] = envToken.Value["SECRET_ACCESS_KEY"]?.ToString() != null && envToken.Value["SECRET_ACCESS_KEY"]?.ToString() != "" ? "XXXXX" : "" ?? "";
+                    environment["DirectoryS1"] = envToken.Value["DIRECTORY_S1"]?.ToString() ?? "";
                 }
                 apiAddressList.Add(environment);
             }
@@ -143,12 +144,14 @@ namespace CRDEConverterJsonExcel.config
                     {
                         JObject newEndPoint = new JObject();
                         JObject newEnvName = new JObject();
+                        JObject oldEnv = getEnvironment(e.Name);
 
                         newEndPoint["ENDPOINT_REQUEST"] = e.API;
                         newEndPoint["HOST_NAME"] = e.HostName;
                         newEndPoint["PORT_NO"] = e.Port;
                         newEndPoint["ACCESS_KEY_ID"] = e.AccessKeyID;
-                        newEndPoint["SECRET_ACCESS_KEY"] = e.SecretAccessKey;
+                        newEndPoint["SECRET_ACCESS_KEY"] = e.SecretAccessKey == "XXXXX" ? oldEnv["SECRET_ACCESS_KEY"] : e.SecretAccessKey;
+                        newEndPoint["DIRECTORY_S1"] = e.DirectoryS1;
                         newEnvName[e.Name] = newEndPoint;
                         newEnvConfig.Add(newEnvName);
                         isValidated = true;
