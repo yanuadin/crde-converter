@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace CRDEConverterJsonExcel.src.tools
 {
@@ -70,20 +71,39 @@ namespace CRDEConverterJsonExcel.src.tools
 
         private void t3_btn_MaskJSON_Click(object sender, RoutedEventArgs e)
         {
-            List<Item> filteredSelected = JSONItemList.Where(item => item.IsSelected).ToList();
-            Converter converter = new Converter();
+            // Disable the cursor and set it to "Wait" (spinning circle)
+            t3_sp_main.IsEnabled = false;
+            Mouse.OverrideCursor = Cursors.Wait;
 
             try
             {
-                if (filteredSelected.Count > 0)
+                Converter converter = new Converter();
+                List<Item> filteredSelected = JSONItemList.Where(item => item.IsSelected).ToList();
+                int filteredCount = filteredSelected.Count;
+
+                if (filteredCount > 0)
                 {
                     if (t3_cb_maskingTemplate.SelectedValue != null)
                     {
+                        // Initialize progress reporting
+                        var progress = new Progress<int>(value =>
+                        {
+                            t3_progressBar.Value = (int)((double)value / filteredCount * 100);
+                            t3_progressText.Text = $"{value}/{filteredCount}";
+                        });
+
+                        // Initialize Progress Bar
+                        t3_progressBar.Value = 0;
+                        t3_progressText.Text = "0/0";
+                        t3_progressBar.Visibility = Visibility.Visible;
+                        t3_progressText.Visibility = Visibility.Visible;
+
                         MaskingTemplate maskingTemplate = config.getMaskingTemplate(t3_cb_maskingTemplate.Text).ToObject<MaskingTemplate>();
                         string savePath = GeneralMethod.saveFolderDialog();
 
                         if (savePath != "")
                         {
+                            int completedItems = 0;
                             foreach (Item item in filteredSelected)
                             {
                                 JObject jsonItem = JObject.Parse(item.FileContent);
@@ -95,22 +115,28 @@ namespace CRDEConverterJsonExcel.src.tools
                                 // Save Response to JSON File
                                 string JSONTextIndent = JsonConvert.SerializeObject(jsonItem, Formatting.Indented);
                                 string fileOutputPath = converter.saveTextFile(savePath + @"\" + item.FileName + "-mask" + ".json", JSONTextIndent, "req");
+
+                                // Update progress
+                                completedItems++;
+                                ((IProgress<int>)progress).Report(completedItems);
                             }
                             t3_tb_output.Text = savePath;
                             MessageBox.Show("[SUCCESS]: JSON Masking has been saved");
                         }
                     } else
-                    {
                         MessageBox.Show("[WARNING]: Please select masking template");
-                    }
                 } else
-                {
                     MessageBox.Show("[WARNING]: No one item were selected");
-                }
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 MessageBox.Show("[ERROR]: " + ex.Message);
+            } finally
+            {
+                // Re-enable the cursor and reset it to the default
+                t3_sp_main.IsEnabled = true;
+                Mouse.OverrideCursor = null;
+                t3_progressBar.Visibility = Visibility.Hidden;
+                t3_progressText.Visibility = Visibility.Hidden;
             }
         }
 

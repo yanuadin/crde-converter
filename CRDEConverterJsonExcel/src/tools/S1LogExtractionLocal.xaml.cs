@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace CRDEConverterJsonExcel.src.tools
 {
@@ -56,30 +57,47 @@ namespace CRDEConverterJsonExcel.src.tools
 
         private void t4_btn_ExtractLog_Click(object sender, RoutedEventArgs e)
         {
-            if (t4_cb_process_code.SelectedValue == null)
-            {
-                MessageBox.Show("[WARNING]: Please select the process code");
-            }
-            else
-            {
-                Converter converter = new Converter();
-                string processCode = t4_cb_process_code.SelectedValue.ToString();
-                List<Item> filteredSelected = lb_LogFiles.Where(item => item.IsSelected).ToList();
+            // Disable the cursor and set it to "Wait" (spinning circle)
+            t4_sp_main.IsEnabled = false;
+            Mouse.OverrideCursor = Cursors.Wait;
 
-                if (filteredSelected.Count > 0)
+            try
+            {
+                if (t4_cb_process_code.SelectedValue == null)
+                    MessageBox.Show("[WARNING]: Please select the process code");
+                else
                 {
-                    string savePath = GeneralMethod.saveFolderDialog();
+                    Converter converter = new Converter();
+                    string processCode = t4_cb_process_code.SelectedValue.ToString();
+                    List<Item> filteredSelected = lb_LogFiles.Where(item => item.IsSelected).ToList();
+                    int filteredCount = filteredSelected.Count;
 
-                    if (savePath != "")
+                    if (filteredCount > 0)
                     {
-                        // Clear List
-                        lb_JSONFiles = new ObservableCollection<Item>();
-                        t4_lb_JSONList.ItemsSource = lb_JSONFiles;
-                        int successCount = 0;
-
-                        foreach (Item file in filteredSelected)
+                        // Initialize progress reporting
+                        var progress = new Progress<int>(value =>
                         {
-                            try
+                            t4_progressBar.Value = (int)((double)value / filteredCount * 100);
+                            t4_progressText.Text = $"{value}/{filteredCount}";
+                        });
+
+                        // Initialize Progress Bar
+                        t4_progressBar.Value = 0;
+                        t4_progressText.Text = "0/0";
+                        t4_progressBar.Visibility = Visibility.Visible;
+                        t4_progressText.Visibility = Visibility.Visible;
+
+                        string savePath = GeneralMethod.saveFolderDialog();
+
+                        if (savePath != "")
+                        {
+                            // Clear List
+                            lb_JSONFiles = new ObservableCollection<Item>();
+                            t4_lb_JSONList.ItemsSource = lb_JSONFiles;
+                            int successCount = 0;
+                            int completedItems = 0;
+
+                            foreach (Item file in filteredSelected)
                             {
                                 string filePath = file.FilePath;
                                 string fileName = file.FileName;
@@ -149,22 +167,27 @@ namespace CRDEConverterJsonExcel.src.tools
                                             }
                                         }
                                     }
-                                    t4_lb_JSONList.ItemsSource = lb_JSONFiles;
                                 }
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show("[FAILED]: " + ex.Message);
-                                break;
-                            }
-                        }
 
-                        MessageBox.Show($"[SUCCESS]: {successCount} file was saved successfully");
+                                // Update progress
+                                completedItems++;
+                                ((IProgress<int>)progress).Report(completedItems);
+                            }
+                            t4_lb_JSONList.ItemsSource = lb_JSONFiles;
+
+                            MessageBox.Show($"[SUCCESS]: {successCount} file was saved successfully");
+                        }
                     }
-                } else
-                {
-                    MessageBox.Show("[FAILED]: Please select at least one item");
+                    else
+                        MessageBox.Show("[FAILED]: Please select at least one item");
                 }
+            } finally
+            {
+                // Re-enable the cursor and reset it to the default
+                t4_sp_main.IsEnabled = true;
+                Mouse.OverrideCursor = null;
+                t4_progressBar.Visibility = Visibility.Hidden;
+                t4_progressText.Visibility = Visibility.Hidden;
             }
         }
 

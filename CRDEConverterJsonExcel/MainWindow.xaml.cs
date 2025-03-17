@@ -15,7 +15,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-        addTabItem(new TabItemControl { Header = "S1 Log", Content = new S1LogSetting() });
+        addTabItem(new TabItemControl { Header = "ASD", Content = new JSONConverter() });
     }
 
     private void mi_Control_Click(object sender, RoutedEventArgs e)

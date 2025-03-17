@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Text.RegularExpressions;
+using System.Windows.Input;
 
 namespace CRDEConverterJsonExcel.src.tools
 {
@@ -67,19 +68,38 @@ namespace CRDEConverterJsonExcel.src.tools
 
         private void t6_btn_ConvertDate_Click(object sender, RoutedEventArgs e)
         {
-            List<Item> filteredSelected = JSONItemList.Where(item => item.IsSelected).ToList();
+            // Disable the cursor and set it to "Wait" (spinning circle)
+            t6_sp_main.IsEnabled = false;
+            Mouse.OverrideCursor = Cursors.Wait;
+
             Converter converter = new Converter();
+            List<Item> filteredSelected = JSONItemList.Where(item => item.IsSelected).ToList();
+            int filteredCount = filteredSelected.Count;
 
             try
             {
-                if (filteredSelected.Count > 0)
+                if (filteredCount > 0)
                 {
+                    // Initialize progress reporting
+                    var progress = new Progress<int>(value =>
+                    {
+                        t6_progressBar.Value = (int)((double)value / filteredCount * 100);
+                        t6_progressText.Text = $"{value}/{filteredCount}";
+                    });
+
+                    // Initialize Progress Bar
+                    t6_progressBar.Value = 0;
+                    t6_progressText.Text = "0/0";
+                    t6_progressBar.Visibility = Visibility.Visible;
+                    t6_progressText.Visibility = Visibility.Visible;
+
                     string savePath = GeneralMethod.saveFolderDialog();
 
                     if (savePath != "")
                     {
                         int successCount = 0;
                         int failedCount = 0;
+                        int completedItems = 0;
                         foreach (Item item in filteredSelected)
                         {
                             // Save Response to JSON File
@@ -92,6 +112,10 @@ namespace CRDEConverterJsonExcel.src.tools
                                 successCount++;
                             } else
                                 failedCount++;
+
+                            // Update progress
+                            completedItems++;
+                            ((IProgress<int>)progress).Report(completedItems);
                         }
                         t6_tb_output.Text = savePath;
                         MessageBox.Show($"[SUCCESS]: {successCount} / {successCount + failedCount} JSON Date Format has been saved");
@@ -101,10 +125,16 @@ namespace CRDEConverterJsonExcel.src.tools
                 {
                     MessageBox.Show("[WARNING]: No one item were selected");
                 }
-            }
-            catch (Exception ex)
+            } catch (Exception ex)
             {
                 MessageBox.Show("[ERROR]: " + ex.Message);
+            } finally
+            {
+                // Re-enable the cursor and reset it to the default
+                t6_sp_main.IsEnabled = true;
+                Mouse.OverrideCursor = null;
+                t6_progressBar.Visibility = Visibility.Hidden;
+                t6_progressText.Visibility = Visibility.Hidden;
             }
         }
 

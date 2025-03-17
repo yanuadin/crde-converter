@@ -118,7 +118,7 @@ namespace CRDEConverterJsonExcel.core
             }
         }
 
-        public string convertExcelTo(string filePath, List<Item> filteredSelected, string convertType)
+        public string convertExcelTo(string filePath, List<Item> filteredSelected, string convertType, Progress<int> progress = null)
         {
             JArray resultCollection = new JArray();
             string savePath = "";
@@ -312,7 +312,12 @@ namespace CRDEConverterJsonExcel.core
                                 jsonTxt += Environment.NewLine + res["json"].ToString();
                                 fileNameTxt = "MultipleFiles";
                             }
+                            successCount++;
                         }
+
+                        // Update progress bar
+                        if (progress != null)
+                            ((IProgress<int>)progress).Report(successCount);
                     }
                 }
 
@@ -323,13 +328,9 @@ namespace CRDEConverterJsonExcel.core
                         string[] extension = { convertType };
                         savePath = GeneralMethod.saveFileDialog(extension, fileNameTxt);
                         if (savePath != "")
-                        {
                             saveTextFile(savePath, jsonTxt);
-                            successCount++;
-                        } else
-                        {
+                        else
                             MessageBox.Show("[FAILED]: Location not found");
-                        }
                     }
 
                     MessageBox.Show($"[SUCCESS]: {successCount} files converted successfully");

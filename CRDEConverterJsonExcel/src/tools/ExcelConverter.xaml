@@ -7,7 +7,16 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <StackPanel Margin="10">
+        <StackPanel x:Name="t2_sp_main" Margin="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="9.5*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                </Grid.ColumnDefinitions>
+
+                <ProgressBar Grid.Column="0" x:Name="t2_progressBar" Margin="0,0,0,10" Visibility="Hidden"/>
+                <TextBlock Grid.Column="1" x:Name="t2_progressText" Text="0/0" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Hidden" Margin="10,0,0,10"/>
+            </Grid>
             <StackPanel Orientation="Horizontal">
                 <Button x:Name="t2_btn_BrowseFile" Content="Select Excel Files" HorizontalAlignment="Left" Click="t2_btn_BrowseFile_Click" Height="30" Margin="0,0,0,5"/>
             </StackPanel>

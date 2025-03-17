@@ -4,13 +4,11 @@ using CRDEConverterJsonExcel.objectClass;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeOpenXml;
-using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Shapes;
 
 namespace CRDEConverterJsonExcel.src.tools
 {
@@ -86,11 +84,25 @@ namespace CRDEConverterJsonExcel.src.tools
             try
             {
                 List<Item> filteredSelected = lb_JSONRequestItems.Where(item => item.IsSelected).ToList();
+                int filteredCount = filteredSelected.Count;
 
-                if (filteredSelected.Count > 0)
+                if (filteredCount > 0)
                 {
                     if (t5_cb_environment.SelectedValue != null)
                     {
+                        // Initialize progress reporting
+                        var progress = new Progress<int>(value =>
+                        {
+                            t5_progressBar.Value = (int)((double)value / filteredCount * 100);
+                            t5_progressText.Text = $"{value}/{filteredCount}";
+                        });
+
+                        // Initialize Progress Bar
+                        t5_progressBar.Value = 0;
+                        t5_progressText.Text = "0/0";
+                        t5_progressBar.Visibility = Visibility.Visible;
+                        t5_progressText.Visibility = Visibility.Visible;
+
                         string savePath = GeneralMethod.saveFolderDialog();
 
                         if (savePath != "")
@@ -98,23 +110,12 @@ namespace CRDEConverterJsonExcel.src.tools
                             // Flush response list item
                             lb_JSONResponseItems.Clear();
 
-                            // Initialize progress reporting
-                            var progress = new Progress<int>(value =>
-                            {
-                                t5_progressBar.Value = value;
-                            });
-
                             // Send Request to API
                             string endpoint = config.getEnvironment(t5_cb_environment.Text)["ENDPOINT_REQUEST"].ToString();
 
                             if (endpoint != "" && endpoint != null)
                             {
-                                // Initialize Progress Bar
-                                t5_progressBar.Value = 0;
-                                t5_progressBar.Visibility = Visibility.Visible;
-
                                 // Calculate total work items
-                                int totalItems = filteredSelected.Count;
                                 int completedItems = 0;
                                 bool error = false;
                                 string errorMessage = "";
@@ -157,43 +158,34 @@ namespace CRDEConverterJsonExcel.src.tools
                                     {
                                         // Update progress
                                         completedItems++;
-                                        int progressPercentage = (int)((double)completedItems / totalItems * 100);
-                                        ((IProgress<int>)progress).Report(progressPercentage);
+                                        ((IProgress<int>)progress).Report(completedItems);
                                     }
                                 }
 
                                 if (error)
-                                {
                                     MessageBox.Show(errorMessage);
-                                }
                                 else
                                 {
                                     t5_lb_ResponseList.ItemsSource = lb_JSONResponseItems;
-                                    MessageBox.Show($"[SUCCESS]: Success send ({completedItems}/{totalItems}) request to API");
+                                    MessageBox.Show($"[SUCCESS]: Success send ({completedItems}/{filteredCount}) request to API");
                                 }
-
-                                t5_progressBar.Visibility = Visibility.Hidden;
                             }
                             else
-                            {
                                 MessageBox.Show("[FAILED]: API address not found");
-                            }
                         }
                     }
                     else
-                    {
                         MessageBox.Show("[WARNING]: Please select environment");
-                    }
                 }
                 else
-                {
                     MessageBox.Show("[WARNING]: No one item were selected");
-                }
             } finally
             {
                 // Re-enable the cursor and reset it to the default
                 t5_sp_main.IsEnabled = true;
                 Mouse.OverrideCursor = null;
+                t5_progressBar.Visibility = Visibility.Hidden;
+                t5_progressText.Visibility = Visibility.Hidden;
             }
         }
 

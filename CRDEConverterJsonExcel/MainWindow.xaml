@@ -8,48 +8,50 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Style="{StaticResource MaterialDesignWindow}"
-        Title="CRDE v7.2 Tools" Height="800" Width="1200">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="25"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        
-        <materialDesign:Card Grid.Row="0">
-            <Menu materialDesign:MenuAssist.TopLevelMenuItemHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type materialDesign:Card}}, Path=ActualHeight}">
-                <MenuItem Header="Tools">
-                    <MenuItem Header="JSON Converter" Click="mi_Control_Click" Tag="t1"/>
-                    <MenuItem Header="Excel Converter" Click="mi_Control_Click" Tag="t2"/>
-                    <MenuItem Header="JSON Datetime to Date" Click="mi_Control_Click" Tag="t6"/>
-                    <MenuItem Header="JSON Masking" Click="mi_Control_Click" Tag="t3"/>
-                    <MenuItem Header="S1 Log Extraction" Click="mi_Control_Click" Tag="t4"/>
-                    <MenuItem Header="Calling CRDE API" Click="mi_Control_Click" Tag="t5"/>
-                </MenuItem>
-                <MenuItem Header="Setting">
-                    <MenuItem Header="Masking" Click="mi_Control_Click" Tag="s1"/>
-                    <MenuItem Header="S1 Logs" Click="mi_Control_Click" Tag="s2"/>
-                    <MenuItem Header="CRDE API Address" Click="mi_Control_Click" Tag="s3"/>
-                    <MenuItem Header="Process Code" Click="mi_Control_Click" Tag="s4"/>
-                </MenuItem>
-            </Menu>
-        </materialDesign:Card>
+        Title="CRDE v7.2 Tools" Height="900" Width="1350">
+    <ScrollViewer>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="25"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
 
-        <TabControl x:Name="subMenu" Grid.Row="1" HorizontalContentAlignment="Left">
-            <TabControl.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Header}" Margin="0,0,5,0"/>
-                        <Button Style="{StaticResource MaterialDesignIconButton}" Click="btn_DeleteTabClick" Width="20" Height="20">
-                            <materialDesign:PackIcon Kind="Close" Foreground="Red" Background="Transparent" Width="10" Height="10"/>
-                        </Button>
-                    </StackPanel>
-                </DataTemplate>
-            </TabControl.ItemTemplate>
-            <TabControl.ContentTemplate>
-                <DataTemplate>
-                    <ContentPresenter Content="{Binding Content}"/>
-                </DataTemplate>
-            </TabControl.ContentTemplate>
-        </TabControl>
-    </Grid>
+            <materialDesign:Card Grid.Row="0">
+                <Menu materialDesign:MenuAssist.TopLevelMenuItemHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type materialDesign:Card}}, Path=ActualHeight}">
+                    <MenuItem Header="Tools">
+                        <MenuItem Header="JSON Converter" Click="mi_Control_Click" Tag="t1"/>
+                        <MenuItem Header="Excel Converter" Click="mi_Control_Click" Tag="t2"/>
+                        <MenuItem Header="JSON Datetime to Date" Click="mi_Control_Click" Tag="t6"/>
+                        <MenuItem Header="JSON Masking" Click="mi_Control_Click" Tag="t3"/>
+                        <MenuItem Header="S1 Log Extraction" Click="mi_Control_Click" Tag="t4"/>
+                        <MenuItem Header="Calling CRDE API" Click="mi_Control_Click" Tag="t5"/>
+                    </MenuItem>
+                    <MenuItem Header="Setting">
+                        <MenuItem Header="Masking" Click="mi_Control_Click" Tag="s1"/>
+                        <MenuItem Header="S1 Logs" Click="mi_Control_Click" Tag="s2"/>
+                        <MenuItem Header="CRDE API Address" Click="mi_Control_Click" Tag="s3"/>
+                        <MenuItem Header="Process Code" Click="mi_Control_Click" Tag="s4"/>
+                    </MenuItem>
+                </Menu>
+            </materialDesign:Card>
+
+            <TabControl x:Name="subMenu" Grid.Row="1" HorizontalContentAlignment="Left">
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Header}" Margin="0,0,5,0"/>
+                            <Button Style="{StaticResource MaterialDesignIconButton}" Click="btn_DeleteTabClick" Width="20" Height="20">
+                                <materialDesign:PackIcon Kind="Close" Foreground="Red" Background="Transparent" Width="10" Height="10"/>
+                            </Button>
+                        </StackPanel>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <ContentPresenter Content="{Binding Content}"/>
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
+        </Grid>
+    </ScrollViewer>
 </Window>
