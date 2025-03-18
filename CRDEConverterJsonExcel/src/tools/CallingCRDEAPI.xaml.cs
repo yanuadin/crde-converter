@@ -111,7 +111,7 @@ namespace CRDEConverterJsonExcel.src.tools
                             lb_JSONResponseItems.Clear();
 
                             // Send Request to API
-                            string endpoint = config.getEnvironment(t5_cb_environment.Text)["ENDPOINT_REQUEST"].ToString();
+                            string endpoint = config.getEnvironment(t5_cb_environment.Text)["API"].ToString();
 
                             if (endpoint != "" && endpoint != null)
                             {

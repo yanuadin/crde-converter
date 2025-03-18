@@ -15,7 +15,6 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-        addTabItem(new TabItemControl { Header = "ASD", Content = new JSONConverter() });
     }
 
     private void mi_Control_Click(object sender, RoutedEventArgs e)
@@ -41,6 +40,9 @@ public partial class MainWindow : Window
                 break;
             case "t6":
                 addTabItem(new TabItemControl { Header = menuItem.Header.ToString(), Content = new JSONDateTimeToDate() });
+                break;
+            case "t7":
+                addTabItem(new TabItemControl { Header = menuItem.Header.ToString(), Content = new S1LogExtractionServer() });
                 break;
             case "s1":
                 addTabItem(new TabItemControl { Header = menuItem.Header.ToString(), Content = new MaskingSetting() });

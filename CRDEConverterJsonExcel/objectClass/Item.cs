@@ -7,6 +7,7 @@ namespace CRDEConverterJsonExcel.objectClass
         private bool _isSelected = false;
         public string FileName { get; set; }
         public string FilePath { get; set; } = "";
+        public string FileExt { get; set; } = "";
         public string FileContent { get; set; } = "";
         public string CreatedDate { get; set; } = "";
         public string AdditionalField { get; set; } = "";

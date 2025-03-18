@@ -47,8 +47,15 @@ namespace CRDEConverterJsonExcel.config
                 }
                 return false;
             });
+
+            JObject result = null;
+            if (envConfig !=  null)
+            {
+                result = envConfig[env].ToObject<JObject>();
+                result["Name"] = env;
+            }
             
-            return envConfig == null ? null : envConfig[env].ToObject<JObject>();
+            return result;
         }
 
         public JArray getProcessCodeList()
@@ -107,12 +114,12 @@ namespace CRDEConverterJsonExcel.config
                 foreach (var envToken in env)
                 {
                     environment["Name"] = envToken.Key;
-                    environment["API"] = envToken.Value["ENDPOINT_REQUEST"]?.ToString() ?? "";
-                    environment["HostName"] = envToken.Value["HOST_NAME"]?.ToString() ?? "";
-                    environment["Port"] = envToken.Value["PORT_NO"]?.ToString() ?? "";
-                    environment["AccessKeyID"] = envToken.Value["ACCESS_KEY_ID"]?.ToString() ?? "";
-                    environment["SecretAccessKey"] = envToken.Value["SECRET_ACCESS_KEY"]?.ToString() != null && envToken.Value["SECRET_ACCESS_KEY"]?.ToString() != "" ? "XXXXX" : "" ?? "";
-                    environment["DirectoryS1"] = envToken.Value["DIRECTORY_S1"]?.ToString() ?? "";
+                    environment["API"] = envToken.Value["API"]?.ToString() ?? "";
+                    environment["HostName"] = envToken.Value["HostName"]?.ToString() ?? "";
+                    environment["Port"] = envToken.Value["Port"]?.ToString() ?? "";
+                    environment["AccessKeyID"] = envToken.Value["AccessKeyID"]?.ToString() ?? "";
+                    environment["SecretAccessKey"] = envToken.Value["SecretAccessKey"]?.ToString() != null && envToken.Value["SecretAccessKey"]?.ToString() != "" ? "XXXXX" : "" ?? "";
+                    environment["DirectoryS1"] = envToken.Value["DirectoryS1"]?.ToString() ?? "";
                 }
                 apiAddressList.Add(environment);
             }
@@ -146,12 +153,12 @@ namespace CRDEConverterJsonExcel.config
                         JObject newEnvName = new JObject();
                         JObject oldEnv = getEnvironment(e.Name);
 
-                        newEndPoint["ENDPOINT_REQUEST"] = e.API;
-                        newEndPoint["HOST_NAME"] = e.HostName;
-                        newEndPoint["PORT_NO"] = e.Port;
-                        newEndPoint["ACCESS_KEY_ID"] = e.AccessKeyID;
-                        newEndPoint["SECRET_ACCESS_KEY"] = e.SecretAccessKey == "XXXXX" ? oldEnv["SECRET_ACCESS_KEY"] : e.SecretAccessKey;
-                        newEndPoint["DIRECTORY_S1"] = e.DirectoryS1;
+                        newEndPoint["API"] = e.API;
+                        newEndPoint["HostName"] = e.HostName;
+                        newEndPoint["Port"] = e.Port;
+                        newEndPoint["AccessKeyID"] = e.AccessKeyID;
+                        newEndPoint["SecretAccessKey"] = e.SecretAccessKey == "XXXXX" ? oldEnv["SecretAccessKey"] : e.SecretAccessKey;
+                        newEndPoint["DirectoryS1"] = e.DirectoryS1;
                         newEnvName[e.Name] = newEndPoint;
                         newEnvConfig.Add(newEnvName);
                         isValidated = true;
