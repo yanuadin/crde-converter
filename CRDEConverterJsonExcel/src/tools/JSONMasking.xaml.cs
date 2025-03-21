@@ -1,4 +1,5 @@
 ﻿using CRDEConverterJsonExcel.config;
+using CRDEConverterJsonExcel.controller;
 using CRDEConverterJsonExcel.core;
 using CRDEConverterJsonExcel.objectClass;
 using Newtonsoft.Json;
@@ -16,13 +17,13 @@ namespace CRDEConverterJsonExcel.src.tools
     public partial class JSONMasking : UserControl
     {
         private ObservableCollection<Item> JSONItemList = new ObservableCollection<Item>();
-        private CRDE config = new CRDE();
+        private MaskingTemplateController maskingTemplateController = new MaskingTemplateController();
 
         public JSONMasking()
         {
             InitializeComponent();
             
-            t3_cb_maskingTemplate.ItemsSource = config.getMaskingTemplateList();
+            t3_cb_maskingTemplate.ItemsSource = maskingTemplateController.getMaskingTemplateList();
         }
 
         private void t3_btn_BrowseFile_Click(object sender, RoutedEventArgs e)
@@ -98,7 +99,7 @@ namespace CRDEConverterJsonExcel.src.tools
                         t3_progressBar.Visibility = Visibility.Visible;
                         t3_progressText.Visibility = Visibility.Visible;
 
-                        MaskingTemplate maskingTemplate = config.getMaskingTemplate(t3_cb_maskingTemplate.Text).ToObject<MaskingTemplate>();
+                        MaskingTemplate maskingTemplate = maskingTemplateController.getMaskingTemplate("Name", t3_cb_maskingTemplate.Text).ToObject<MaskingTemplate>();
                         string savePath = GeneralMethod.saveFolderDialog();
 
                         if (savePath != "")
@@ -167,6 +168,13 @@ namespace CRDEConverterJsonExcel.src.tools
             }
 
             return json;
+        }
+
+        private void t3_dg_JSONList_CopyCell(object sender, DataGridRowClipboardEventArgs e)
+        {
+            var currentCell = e.ClipboardRowContent[t3_dg_JSONList.CurrentCell.Column.DisplayIndex];
+            e.ClipboardRowContent.Clear();
+            e.ClipboardRowContent.Add(currentCell);
         }
     }
 }

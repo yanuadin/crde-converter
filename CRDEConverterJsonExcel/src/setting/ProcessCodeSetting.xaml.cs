@@ -1,4 +1,5 @@
 ﻿using CRDEConverterJsonExcel.config;
+using CRDEConverterJsonExcel.controller;
 using CRDEConverterJsonExcel.objectClass;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
@@ -12,14 +13,14 @@ namespace CRDEConverterJsonExcel.src.setting
     /// </summary>
     public partial class ProcessCodeSetting : UserControl
     {
-        private CRDE config = new CRDE();
+        private ProcessCodeController processCodeController = new ProcessCodeController();
         ObservableCollection<ProcessCode> processCodeList = new ObservableCollection<ProcessCode>();
 
         public ProcessCodeSetting()
         {
             InitializeComponent();
 
-            processCodeList = config.getProcessCodeList().ToObject<ObservableCollection<ProcessCode>>();
+            processCodeList = processCodeController.getProcessCodeList().ToObject<ObservableCollection<ProcessCode>>();
             s4_lb_ProcessCode.ItemsSource = processCodeList;
         }
 
@@ -42,7 +43,7 @@ namespace CRDEConverterJsonExcel.src.setting
                 MessageBoxResult messageBoxResult = MessageBox.Show("Are you sure?", "Save Confirmation", MessageBoxButton.YesNo);
                 if (messageBoxResult == MessageBoxResult.Yes)
                 {
-                    if (config.setProcessCode(JArray.FromObject(processCodeList)))
+                    if (processCodeController.setProcessCode(JArray.FromObject(processCodeList)))
                         MessageBox.Show("[SUCCESS]: Process code has been saved successfully");
                 }
             }
@@ -54,7 +55,8 @@ namespace CRDEConverterJsonExcel.src.setting
 
         private void s4_btn_Restore_Click(object sender, RoutedEventArgs e)
         {
-            processCodeList = config.getProcessCodeList().ToObject<ObservableCollection<ProcessCode>>();
+            processCodeController.refreshConfig();
+            processCodeList = processCodeController.getProcessCodeList().ToObject<ObservableCollection<ProcessCode>>();
             s4_lb_ProcessCode.ItemsSource = processCodeList;
         }
     }

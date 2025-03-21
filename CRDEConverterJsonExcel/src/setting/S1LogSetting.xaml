@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CRDEConverterJsonExcel.src.setting"
+             xmlns:helper="clr-namespace:CRDEConverterJsonExcel.helper"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -15,7 +16,17 @@
                     <DataGridTextColumn Binding="{Binding HostName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Host Name"/>
                     <DataGridTextColumn Binding="{Binding Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Port No"/>
                     <DataGridTextColumn Binding="{Binding AccessKeyID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Access Key ID"/>
-                    <DataGridTextColumn Binding="{Binding SecretAccessKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Secret Access Key"/>
+                    <DataGridTemplateColumn Header="Secret Access Key">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <PasswordBox 
+                                    helper:PasswordBoxHelper.BindPassword="True" 
+                                    helper:PasswordBoxHelper.Password="{Binding SecretAccessKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                    Style="{StaticResource MaterialDesignRevealPasswordBox}"
+                                    />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTextColumn Binding="{Binding DirectoryS1, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Directory"/>
                     <DataGridTemplateColumn Header="">
                         <DataGridTemplateColumn.CellTemplate> 

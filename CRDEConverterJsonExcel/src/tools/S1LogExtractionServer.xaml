@@ -32,7 +32,7 @@
                     <StackPanel Orientation="Horizontal">
                         <Button x:Name="t7_btn_LoadFromServer" Content="Load From Server" HorizontalAlignment="Left" Click="t7_btn_LoadFromServer_Click" Height="30" Margin="0,5,0,5"/>
                     </StackPanel>
-                    <DataGrid x:Name="t7_dg_ServerLogList" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" CanUserAddRows="false" Height="150" Margin="0,5,0,5">
+                    <DataGrid x:Name="t7_dg_ServerLogList" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" CanUserAddRows="false" Height="150" Margin="0,5,0,5" CopyingRowClipboardContent="t7_dg_ServerLogList_CopyCell">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="#">
                                 <DataGridTemplateColumn.CellTemplate>
@@ -65,7 +65,7 @@
                     <StackPanel Orientation="Horizontal">
                         <Button x:Name="t7_btn_DownloadFromServer" Content="Download From Server" HorizontalAlignment="Left" Click="t7_btn_DownloadFromServer_Click" Height="30" Margin="0,5,0,5"/>
                     </StackPanel>
-                    <DataGrid x:Name="t7_dg_DownloadLogList" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" CanUserAddRows="false" Height="150" Margin="0,5,0,5">
+                    <DataGrid x:Name="t7_dg_DownloadLogList" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" CanUserAddRows="false" Height="150" Margin="0,5,0,5" CopyingRowClipboardContent="t7_dg_DownloadLogList_CopyCell">
                         <DataGrid.Columns>
                             <DataGridTextColumn Binding="{Binding FileName}" Header="Name" IsReadOnly="True"/>
                             <DataGridTextColumn Binding="{Binding FileExt}" Header="Extension" IsReadOnly="True"/>

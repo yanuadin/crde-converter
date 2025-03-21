@@ -8,6 +8,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using CRDEConverterJsonExcel.controller;
 
 namespace CRDEConverterJsonExcel.src.tools
 {
@@ -16,7 +17,7 @@ namespace CRDEConverterJsonExcel.src.tools
     /// </summary>
     public partial class S1LogExtractionLocal : UserControl
     {
-        private CRDE config = new CRDE();
+        private S1LogController s1LogController = new S1LogController();
         private ObservableCollection<Item> lb_LogFiles = new ObservableCollection<Item>();
         private ObservableCollection<Item> lb_JSONFiles = new ObservableCollection<Item>();
 
@@ -24,7 +25,7 @@ namespace CRDEConverterJsonExcel.src.tools
         {
             InitializeComponent();
 
-            t4_cb_process_code.ItemsSource = config.getProcessCodeList();
+            t4_cb_process_code.ItemsSource = s1LogController.getS1LogList();
         }
 
         private void t4_btn_BrowseFolder_Click(object sender, RoutedEventArgs e)
@@ -195,6 +196,20 @@ namespace CRDEConverterJsonExcel.src.tools
         {
             lb_JSONFiles = new ObservableCollection<Item>();
             t4_lb_JSONList.ItemsSource = lb_JSONFiles;
+        }
+
+        private void t4_lb_LogList_CopyCell(object sender, DataGridRowClipboardEventArgs e)
+        {
+            var currentCell = e.ClipboardRowContent[t4_lb_LogList.CurrentCell.Column.DisplayIndex];
+            e.ClipboardRowContent.Clear();
+            e.ClipboardRowContent.Add(currentCell);
+        }
+
+        private void t4_lb_JSONList_CopyCell(object sender, DataGridRowClipboardEventArgs e)
+        {
+            var currentCell = e.ClipboardRowContent[t4_lb_JSONList.CurrentCell.Column.DisplayIndex];
+            e.ClipboardRowContent.Clear();
+            e.ClipboardRowContent.Add(currentCell);
         }
     }
 }

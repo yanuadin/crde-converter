@@ -1,4 +1,5 @@
 ﻿using CRDEConverterJsonExcel.config;
+using CRDEConverterJsonExcel.controller;
 using CRDEConverterJsonExcel.objectClass;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
@@ -12,13 +13,13 @@ namespace CRDEConverterJsonExcel.src.setting
     /// </summary>
     public partial class MaskingSetting : UserControl
     {
-        CRDE config = new CRDE();
+        MaskingTemplateController maskingTemplateController = new MaskingTemplateController();
         ObservableCollection<MaskingTemplate> maskingTemplateList = new ObservableCollection<MaskingTemplate>();
 
         public MaskingSetting()
         {
             InitializeComponent();
-            maskingTemplateList = config.getMaskingTemplateList().ToObject<ObservableCollection<MaskingTemplate>>();
+            maskingTemplateList = maskingTemplateController.getMaskingTemplateList().ToObject<ObservableCollection<MaskingTemplate>>();
             s1_gd_template.ItemsSource = maskingTemplateList;
         }
 
@@ -66,8 +67,8 @@ namespace CRDEConverterJsonExcel.src.setting
 
         private void s1_btn_Restore_Click(object sender, RoutedEventArgs e)
         {
-
-            maskingTemplateList = config.getMaskingTemplateList().ToObject<ObservableCollection<MaskingTemplate>>();
+            maskingTemplateController.refreshConfig();
+            maskingTemplateList = maskingTemplateController.getMaskingTemplateList().ToObject<ObservableCollection<MaskingTemplate>>();
             s1_gd_template.ItemsSource = maskingTemplateList;
             s1_gd_masking.ItemsSource = new ObservableCollection<Masking>();
         }
@@ -79,7 +80,7 @@ namespace CRDEConverterJsonExcel.src.setting
                 MessageBoxResult messageBoxResult = MessageBox.Show("Are you sure?", "Save Confirmation", MessageBoxButton.YesNo);
                 if (messageBoxResult == MessageBoxResult.Yes)
                 {
-                    if (config.setMaskingTemplate(JArray.FromObject(maskingTemplateList)))
+                    if (maskingTemplateController.setMaskingTemplate(JArray.FromObject(maskingTemplateList)))
                         MessageBox.Show("[SUCCESS]: Masking template has been saved successfully");
                 }
             }

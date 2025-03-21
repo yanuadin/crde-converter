@@ -1,4 +1,5 @@
 ﻿using CRDEConverterJsonExcel.config;
+using CRDEConverterJsonExcel.controller;
 using CRDEConverterJsonExcel.core;
 using CRDEConverterJsonExcel.objectClass;
 using Newtonsoft.Json;
@@ -17,7 +18,7 @@ namespace CRDEConverterJsonExcel.src.tools
     /// </summary>
     public partial class CallingCRDEAPI : UserControl
     {
-        private CRDE config = new CRDE();
+        private APIAddressController apiAddressController = new APIAddressController();
         private ObservableCollection<Item> lb_JSONRequestItems = new ObservableCollection<Item>();
         private ObservableCollection<Item> lb_JSONResponseItems = new ObservableCollection<Item>();
 
@@ -25,7 +26,7 @@ namespace CRDEConverterJsonExcel.src.tools
         {
             InitializeComponent();
 
-            t5_cb_environment.ItemsSource = config.getEnvironmentNameList();
+            t5_cb_environment.ItemsSource = apiAddressController.getAPIAddressNameList();
         }
 
         private void t5_btn_BrowseFile_Click(object sender, RoutedEventArgs e)
@@ -111,7 +112,7 @@ namespace CRDEConverterJsonExcel.src.tools
                             lb_JSONResponseItems.Clear();
 
                             // Send Request to API
-                            string endpoint = config.getEnvironment(t5_cb_environment.Text)["API"].ToString();
+                            string endpoint = apiAddressController.getAPIAddress("Name", t5_cb_environment.Text)["API"].ToString();
 
                             if (endpoint != "" && endpoint != null)
                             {
@@ -246,6 +247,20 @@ namespace CRDEConverterJsonExcel.src.tools
             {
                 MessageBox.Show("[WARNING]: No one item were selected");
             }
+        }
+
+        private void t5_lb_RequestList_CopyCell(object sender, DataGridRowClipboardEventArgs e)
+        {
+            var currentCell = e.ClipboardRowContent[t5_lb_RequestList.CurrentCell.Column.DisplayIndex];
+            e.ClipboardRowContent.Clear();
+            e.ClipboardRowContent.Add(currentCell);
+        }
+
+        private void t5_lb_ResponseList_CopyCell(object sender, DataGridRowClipboardEventArgs e)
+        {
+            var currentCell = e.ClipboardRowContent[t5_lb_ResponseList.CurrentCell.Column.DisplayIndex];
+            e.ClipboardRowContent.Clear();
+            e.ClipboardRowContent.Add(currentCell);
         }
     }
 }

@@ -11,6 +11,7 @@ namespace CRDEConverterJsonExcel;
 public partial class MainWindow : Window
 {
     ObservableCollection<TabItemControl> tabItemControls = new ObservableCollection<TabItemControl>();
+
     public MainWindow()
     {
         InitializeComponent();

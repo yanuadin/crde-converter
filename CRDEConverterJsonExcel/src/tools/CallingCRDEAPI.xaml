@@ -41,7 +41,7 @@
 
                 <StackPanel Grid.Column="0" Margin="0,0,10,0">
                     <TextBlock HorizontalAlignment="Left" Text="JSON Request : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
-                    <DataGrid Name="t5_lb_RequestList" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" CanUserAddRows="false" Height="300" Margin="0,5,0,5">
+                    <DataGrid Name="t5_lb_RequestList" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" CanUserAddRows="false" Height="300" Margin="0,5,0,5" CopyingRowClipboardContent="t5_lb_RequestList_CopyCell">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="#">
                                 <DataGridTemplateColumn.CellTemplate>
@@ -70,7 +70,7 @@
 
                 <StackPanel Grid.Column="1" Margin="10,0,0,0">
                     <TextBlock HorizontalAlignment="Left" Text="JSON Response : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
-                    <DataGrid Name="t5_lb_ResponseList" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" CanUserAddRows="false" Height="300" Margin="0,5,0,5">
+                    <DataGrid Name="t5_lb_ResponseList" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" CanUserAddRows="false" Height="300" Margin="0,5,0,5" CopyingRowClipboardContent="t5_lb_ResponseList_CopyCell">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="#">
                                 <DataGridTemplateColumn.CellTemplate>

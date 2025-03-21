@@ -11,6 +11,7 @@ using CRDEConverterJsonExcel.objectClass;
 using Amazon.S3;
 using Amazon.S3.Model;
 using System.IO.Compression;
+using CRDEConverterJsonExcel.controller;
 
 namespace CRDEConverterJsonExcel.src.tools
 {
@@ -19,7 +20,8 @@ namespace CRDEConverterJsonExcel.src.tools
     /// </summary>
     public partial class S1LogExtractionServer : UserControl
     {
-        private CRDE config = new CRDE();
+        private S1LogController s1LogController = new S1LogController();
+        private ProcessCodeController processCodeController= new ProcessCodeController();
         private ObservableCollection<Item> lb_ServerLogFiles = new ObservableCollection<Item>();
         private ObservableCollection<Item> lb_DownloadLogFiles = new ObservableCollection<Item>();
         private ObservableCollection<Item> lb_JSONFiles = new ObservableCollection<Item>();
@@ -29,8 +31,8 @@ namespace CRDEConverterJsonExcel.src.tools
         {
             InitializeComponent();
 
-            t7_cb_process_code.ItemsSource = config.getProcessCodeList();
-            t7_cb_environment.ItemsSource = config.getEnvironmentList();
+            t7_cb_process_code.ItemsSource = processCodeController.getProcessCodeList();
+            t7_cb_environment.ItemsSource = s1LogController.getS1LogList();
         }
 
         private async void t7_btn_LoadFromServer_Click(object sender, RoutedEventArgs e)
@@ -44,16 +46,16 @@ namespace CRDEConverterJsonExcel.src.tools
                 if (t7_cb_environment.SelectedValue != null)
                 {
 					// AWS S3 Configuration
-					Env environment = config.getEnvironment(t7_cb_environment.Text)?.ToObject<Env>();
-
-                    if (environment != null)
+					S1Log s1Log = s1LogController.getS1Log("Name", t7_cb_environment.Text)?.ToObject<S1Log>();
+                    
+                    if (s1Log != null)
                     {
                         // Flush Server List
                         lb_ServerLogFiles.Clear();
 
                         // Arrange bucketName and folderPath
                         // ex : /bucket-name/path/
-                        string[] splitDirectoryS1 = environment.DirectoryS1.Split(@"/");
+                        string[] splitDirectoryS1 = s1Log.DirectoryS1.Split(@"/");
                         if (splitDirectoryS1[0] == "")
                             splitDirectoryS1 = splitDirectoryS1.Skip(1).ToArray();
 
@@ -61,8 +63,8 @@ namespace CRDEConverterJsonExcel.src.tools
                         string folderPath = string.Join(@"/", splitDirectoryS1[1..^0]);
 
                         // Config and connect to Amazon S3 Client
-						var amazonS3Config = new AmazonS3Config { ServiceURL = environment.HostName };
-                        s3Client = new AmazonS3Client(environment.AccessKeyID, environment.SecretAccessKey, amazonS3Config);
+						var amazonS3Config = new AmazonS3Config { ServiceURL = s1Log.HostName };
+                        s3Client = new AmazonS3Client(s1Log.AccessKeyID, s1Log.SecretAccessKey, amazonS3Config);
 
 						// Set up request parameter object
 						ListObjectsV2Request request = new ListObjectsV2Request
@@ -70,9 +72,9 @@ namespace CRDEConverterJsonExcel.src.tools
                             BucketName = bucketName,
                             Prefix = folderPath, // Specify the folder path
                         };
-
-						// Get response object
-						ListObjectsV2Response response = await s3Client.ListObjectsV2Async(request);
+                        
+                        // Get response object
+                        ListObjectsV2Response response = await s3Client.ListObjectsV2Async(request);
 
                         // Initialize progress reporting
                         var progress = new Progress<int>(value =>
@@ -86,7 +88,7 @@ namespace CRDEConverterJsonExcel.src.tools
                         t7_progressText.Text = "0/0";
                         t7_progressBar.Visibility = Visibility.Visible;
                         t7_progressText.Visibility = Visibility.Visible;
-
+                        
                         int completedItems = 0;
                         foreach (S3Object entry in response.S3Objects)
                         {
@@ -454,6 +456,20 @@ namespace CRDEConverterJsonExcel.src.tools
             {
                 return false;
             }
+        }
+
+        private void t7_dg_ServerLogList_CopyCell(object sender, DataGridRowClipboardEventArgs e)
+        {
+            var currentCell = e.ClipboardRowContent[t7_dg_ServerLogList.CurrentCell.Column.DisplayIndex];
+            e.ClipboardRowContent.Clear();
+            e.ClipboardRowContent.Add(currentCell);
+        }
+
+        private void t7_dg_DownloadLogList_CopyCell(object sender, DataGridRowClipboardEventArgs e)
+        {
+            var currentCell = e.ClipboardRowContent[t7_dg_DownloadLogList.CurrentCell.Column.DisplayIndex];
+            e.ClipboardRowContent.Clear();
+            e.ClipboardRowContent.Add(currentCell);
         }
     }
 }

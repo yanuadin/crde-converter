@@ -156,5 +156,12 @@ namespace CRDEConverterJsonExcel.src.tools
                 t2_progressText.Visibility = Visibility.Hidden;
             }
         }
+
+        private void t2_lb_JSONList_CopyCell(object sender, DataGridRowClipboardEventArgs e)
+        {
+            var currentCell = e.ClipboardRowContent[t2_lb_JSONList.CurrentCell.Column.DisplayIndex];
+            e.ClipboardRowContent.Clear();
+            e.ClipboardRowContent.Add(currentCell);
+        }
     }
 }

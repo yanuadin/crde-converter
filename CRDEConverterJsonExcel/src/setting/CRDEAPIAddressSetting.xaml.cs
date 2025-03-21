@@ -1,4 +1,5 @@
 ﻿using CRDEConverterJsonExcel.config;
+using CRDEConverterJsonExcel.controller;
 using CRDEConverterJsonExcel.objectClass;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
@@ -12,15 +13,15 @@ namespace CRDEConverterJsonExcel.src.setting
     /// </summary>
     public partial class CRDEAPIAddressSetting : UserControl
     {
-        CRDE config = new CRDE();
-        ObservableCollection<Env> environmentList = new ObservableCollection<Env>();
+        APIAddressController apiAddressController = new APIAddressController();
+        ObservableCollection<APIAddress> apiAddressList = new ObservableCollection<APIAddress>();
 
         public CRDEAPIAddressSetting()
         {
             InitializeComponent();
 
-            environmentList = config.getEnvironmentList().ToObject<ObservableCollection<Env>>();
-            s3_dg_environment.ItemsSource = environmentList;
+            apiAddressList = apiAddressController.getAPIAddressList().ToObject<ObservableCollection<APIAddress>>();
+            s3_dg_environment.ItemsSource = apiAddressList;
         }
 
         private void s3_btn_deleteProcessCode(object sender, RoutedEventArgs e)
@@ -29,9 +30,9 @@ namespace CRDEConverterJsonExcel.src.setting
             if (messageBoxResult == MessageBoxResult.Yes)
             {
                 Button button = sender as Button;
-                Env env = button.DataContext as Env;
-                if (env != null)
-                    environmentList.Remove(env);
+                APIAddress api = button.DataContext as APIAddress;
+                if (api != null)
+                    apiAddressList.Remove(api);
             }
         }
 
@@ -42,7 +43,7 @@ namespace CRDEConverterJsonExcel.src.setting
                 MessageBoxResult messageBoxResult = MessageBox.Show("Are you sure?", "Save Confirmation", MessageBoxButton.YesNo);
                 if (messageBoxResult == MessageBoxResult.Yes)
                 {
-                    if(config.setApiAddress(JArray.FromObject(environmentList)))
+                    if(apiAddressController.setAPIAddress(JArray.FromObject(apiAddressList)))
                         MessageBox.Show("[SUCCESS]: API address has been saved successfully");
                 }
             }
@@ -54,9 +55,9 @@ namespace CRDEConverterJsonExcel.src.setting
 
         private void s3_btn_Restore_Click(object sender, RoutedEventArgs e)
         {
-            config = new CRDE();
-            environmentList = config.getEnvironmentList().ToObject<ObservableCollection<Env>>();
-            s3_dg_environment.ItemsSource = environmentList;
+            apiAddressController.refreshConfig();
+            apiAddressList = apiAddressController.getAPIAddressList().ToObject<ObservableCollection<APIAddress>>();
+            s3_dg_environment.ItemsSource = apiAddressList;
         }
     }
 }

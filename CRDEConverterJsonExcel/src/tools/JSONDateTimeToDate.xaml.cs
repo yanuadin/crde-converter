@@ -162,5 +162,12 @@ namespace CRDEConverterJsonExcel.src.tools
 
             return input;
         }
+
+        private void t6_dg_JSONList_CopyCell(object sender, DataGridRowClipboardEventArgs e)
+        {
+            var currentCell = e.ClipboardRowContent[t6_dg_JSONList.CurrentCell.Column.DisplayIndex];
+            e.ClipboardRowContent.Clear();
+            e.ClipboardRowContent.Add(currentCell);
+        }
     }
 }

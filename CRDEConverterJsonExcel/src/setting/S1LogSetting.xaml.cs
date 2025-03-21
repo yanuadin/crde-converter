@@ -1,4 +1,5 @@
 ﻿using CRDEConverterJsonExcel.config;
+using CRDEConverterJsonExcel.controller;
 using CRDEConverterJsonExcel.objectClass;
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
@@ -12,15 +13,15 @@ namespace CRDEConverterJsonExcel.src.setting
     /// </summary>
     public partial class S1LogSetting : UserControl
     {
-        CRDE config = new CRDE();
-        ObservableCollection<Env> environmentList = new ObservableCollection<Env>();
+        S1LogController s1LogController = new S1LogController();
+        ObservableCollection<S1Log> s1LogList = new ObservableCollection<S1Log>();
 
         public S1LogSetting()
         {
             InitializeComponent();
 
-            environmentList = config.getEnvironmentList().ToObject<ObservableCollection<Env>>();
-            s2_dg_S1Log.ItemsSource = environmentList;
+            s1LogList = s1LogController.getS1LogList().ToObject<ObservableCollection<S1Log>>();
+            s2_dg_S1Log.ItemsSource = s1LogList;
         }
 
         private void s2_btn_S1Log(object sender, RoutedEventArgs e)
@@ -29,9 +30,9 @@ namespace CRDEConverterJsonExcel.src.setting
             if (messageBoxResult == MessageBoxResult.Yes)
             {
                 Button button = sender as Button;
-                Env env = button.DataContext as Env;
-                if (env != null)
-                    environmentList.Remove(env);
+                S1Log log = button.DataContext as S1Log;
+                if (log != null)
+                    s1LogList.Remove(log);
             }
         }
 
@@ -42,7 +43,7 @@ namespace CRDEConverterJsonExcel.src.setting
                 MessageBoxResult messageBoxResult = MessageBox.Show("Are you sure?", "Save Confirmation", MessageBoxButton.YesNo);
                 if (messageBoxResult == MessageBoxResult.Yes)
                 {
-                    if (config.setApiAddress(JArray.FromObject(environmentList)))
+                    if (s1LogController.setS1Log(JArray.FromObject(s1LogList)))
                         MessageBox.Show("[SUCCESS]: S1 Log has been saved successfully");
                 }
             }
@@ -54,9 +55,9 @@ namespace CRDEConverterJsonExcel.src.setting
 
         private void s2_btn_Restore_Click(object sender, RoutedEventArgs e)
         {
-            config = new CRDE();
-            environmentList = config.getEnvironmentList().ToObject<ObservableCollection<Env>>();
-            s2_dg_S1Log.ItemsSource = environmentList;
+            s1LogController.refreshConfig();
+            s1LogList = s1LogController.getS1LogList().ToObject<ObservableCollection<S1Log>>();
+            s2_dg_S1Log.ItemsSource = s1LogList;
         }
     }
 }
