@@ -8,92 +8,138 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <StackPanel x:Name="t5_sp_main" Margin="10">
+        <StackPanel Margin="10">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="9.5*"/>
+                    <ColumnDefinition Width="9.2*"/>
                     <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition Width="0.3*"/>
                 </Grid.ColumnDefinitions>
 
                 <ProgressBar Grid.Column="0" x:Name="t5_progressBar" Margin="0,0,0,10" Visibility="Hidden"/>
                 <TextBlock Grid.Column="1" x:Name="t5_progressText" Text="0/0" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Hidden" Margin="10,0,0,10"/>
+                <Button 
+                    Grid.Column="2" 
+                    x:Name="t5_btn_StopProgressBar" 
+                    Style="{StaticResource MaterialDesignIconForegroundButton}" 
+                    Click="t5_btn_StopProgressBar_Click" Width="30" Height="30" 
+                    Margin="0,-10,0,0" 
+                    Visibility="Hidden"
+                    MouseEnter="t5_btn_StopProgressBar_MouseEnter" MouseLeave="t5_btn_StopProgressBar_MouseLeave"
+                    >
+                    <materialDesign:PackIcon Kind="Stop" Width="20" Height="20"/>
+                </Button>
             </Grid>
-            <StackPanel Orientation="Horizontal">
-                <Button x:Name="t5_btn_BrowseFile" Content="Select JSON Files" HorizontalAlignment="Left" Click="t5_btn_BrowseFile_Click" Height="30" Margin="0,0,5,5"/>
-                <Button x:Name="t5_btn_BrowseFolder" Content="Select JSON Folder" HorizontalAlignment="Left" Click="t5_btn_BrowseFolder_Click" Height="30" Margin="5,0,0,5"/>
-            </StackPanel>
-            <Grid Margin="0,5,0,5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="15*"/>
-                    <ColumnDefinition Width="2*"/>
-                </Grid.ColumnDefinitions>
+            <StackPanel x:Name="t5_sp_main">
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="t5_btn_BrowseFile" Content="Select JSON Files" HorizontalAlignment="Left" Click="t5_btn_BrowseFile_Click" Height="30" Margin="0,0,5,5"/>
+                    <Button x:Name="t5_btn_BrowseFolder" Content="Select JSON Folder" HorizontalAlignment="Left" Click="t5_btn_BrowseFolder_Click" Height="30" Margin="5,0,0,5"/>
+                </StackPanel>
+                <Grid Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="15*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Folder : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
-                <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t5_tb_folder" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
-                <Button Grid.Column="2" x:Name="t5_btn_ClearListBox" Content="Clear JSON" HorizontalAlignment="Right" Click="t5_btn_ClearListBox_Click" Height="30"/>
-            </Grid>
-            <Grid Margin="0,5,0,5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Folder : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
+                    <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t5_tb_folder" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
+                    <Button Grid.Column="2" x:Name="t5_btn_ClearListBox" Content="Clear JSON" HorizontalAlignment="Right" Click="t5_btn_ClearListBox_Click" Height="30"/>
+                </Grid>
+                <Grid Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                    <TextBlock HorizontalAlignment="Left" Text="JSON Request : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
-                    <DataGrid Name="t5_lb_RequestList" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" CanUserAddRows="false" Height="300" Margin="0,5,0,5" CopyingRowClipboardContent="t5_lb_RequestList_CopyCell">
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="#">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="5,0,5,0"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTextColumn Binding="{Binding FileName}" Header="Name" IsReadOnly="True"/>
-                            <DataGridTextColumn Binding="{Binding CreatedDate}" Header="Created Date" IsReadOnly="True"/>
-                        </DataGrid.Columns>
-                        <DataGrid.Resources>
-                            <Style BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}" TargetType="{x:Type DataGridColumnHeader}">
-                                <Setter Property="Background" Value="DodgerBlue" />
-                                <Setter Property="FontWeight" Value="Bold" />
-                            </Style>
-                        </DataGrid.Resources>
-                    </DataGrid>
-                    <CheckBox x:Name="t5_cb_selectAllRequest" Content="Select All" HorizontalAlignment="Left" Click="t5_cb_SelectAllRequest_Click" Margin="0,5,0,5"/>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock HorizontalAlignment="Left" Text="CRDE Environment : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
-                        <ComboBox x:Name="t5_cb_environment" materialDesign:HintAssist.Hint="Select Environment" Width="200" HorizontalAlignment="Left"/>
+                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="JSON Request : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
+                            <TextBox 
+                                Grid.Column="1"
+                                x:Name="t5_tb_SearchRequestList"
+                                Width="200"
+                                VerticalAlignment="Center"
+                                materialDesign:HintAssist.Hint="Search"
+                                TextChanged="t5_tb_SearchRequestList_TextChanged"
+                                HorizontalAlignment="Right"
+                                Margin="0,0,20,0"/>
+                        </Grid>
+                        <DataGrid Name="t5_lb_RequestList" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" CanUserAddRows="false" Height="300" Margin="0,5,0,5" CopyingRowClipboardContent="t5_lb_RequestList_CopyCell">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="#">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="5,0,5,0"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Binding="{Binding FileName}" Header="Name" IsReadOnly="True"/>
+                                <DataGridTextColumn Binding="{Binding CreatedDate}" Header="Created Date" IsReadOnly="True"/>
+                            </DataGrid.Columns>
+                            <DataGrid.Resources>
+                                <Style BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}" TargetType="{x:Type DataGridColumnHeader}">
+                                    <Setter Property="Background" Value="DodgerBlue" />
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                </Style>
+                            </DataGrid.Resources>
+                        </DataGrid>
+                        <CheckBox x:Name="t5_cb_selectAllRequest" Content="Select All" HorizontalAlignment="Left" Click="t5_cb_SelectAllRequest_Click" Margin="0,5,0,5"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock HorizontalAlignment="Left" Text="CRDE Environment : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
+                            <ComboBox x:Name="t5_cb_environment" materialDesign:HintAssist.Hint="Select Environment" Width="200" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        <Button x:Name="t5_btn_Run" Content="Run" HorizontalAlignment="Left" Click="t5_btn_Run_Click" Width="100" Height="30" Margin="0,10,0,10"/>
                     </StackPanel>
-                    <Button x:Name="t5_btn_Run" Content="Run" HorizontalAlignment="Left" Click="t5_btn_Run_Click" Width="100" Height="30" Margin="0,10,0,10"/>
-                </StackPanel>
 
-                <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                    <TextBlock HorizontalAlignment="Left" Text="JSON Response : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
-                    <DataGrid Name="t5_lb_ResponseList" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" CanUserAddRows="false" Height="300" Margin="0,5,0,5" CopyingRowClipboardContent="t5_lb_ResponseList_CopyCell">
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="#">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="5,0,5,0"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                            <DataGridTextColumn Binding="{Binding FileName}" Header="Name" IsReadOnly="True"/>
-                        </DataGrid.Columns>
-                        <DataGrid.Resources>
-                            <Style BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}" TargetType="{x:Type DataGridColumnHeader}">
-                                <Setter Property="Background" Value="DodgerBlue" />
-                                <Setter Property="FontWeight" Value="Bold" />
-                            </Style>
-                        </DataGrid.Resources>
-                    </DataGrid>
-                    <CheckBox x:Name="t5_cb_selectAllResponse" Content="Select All" HorizontalAlignment="Left" Click="t5_cb_SelectAllResponse_Click" Margin="0,5,0,5"/>
-                    <Button x:Name="t5_btn_ConvertToExcel" Content="Convert to Excel" HorizontalAlignment="Left" Click="t5_btn_ConvertToExcel_Click" Height="30" Margin="0,10,0,10"/>
-                    <TextBlock HorizontalAlignment="Left" Text="Converted Excel File : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5" Margin="0,5,0,5"/>
-                    <TextBox HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t5_tb_output_file" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True" Margin="0,5,0,5"/>
-                </StackPanel>
-            </Grid>
+                    <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="JSON Response : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
+                            <TextBox 
+                                Grid.Column="1"
+                                x:Name="t5_tb_SearchResponseList"
+                                Width="200"
+                                VerticalAlignment="Center"
+                                materialDesign:HintAssist.Hint="Search"
+                                TextChanged="t5_tb_SearchResponseList_TextChanged"
+                                HorizontalAlignment="Right"
+                                Margin="0,0,20,0"/>
+                        </Grid>
+                        <DataGrid Name="t5_lb_ResponseList" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" CanUserAddRows="false" Height="300" Margin="0,5,0,5" CopyingRowClipboardContent="t5_lb_ResponseList_CopyCell">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="#">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="5,0,5,0"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Binding="{Binding FileName}" Header="Name" IsReadOnly="True"/>
+                            </DataGrid.Columns>
+                            <DataGrid.Resources>
+                                <Style BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}" TargetType="{x:Type DataGridColumnHeader}">
+                                    <Setter Property="Background" Value="DodgerBlue" />
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                </Style>
+                            </DataGrid.Resources>
+                        </DataGrid>
+                        <CheckBox x:Name="t5_cb_selectAllResponse" Content="Select All" HorizontalAlignment="Left" Click="t5_cb_SelectAllResponse_Click" Margin="0,5,0,5"/>
+                        <Button x:Name="t5_btn_ConvertToExcel" Content="Convert to Excel" HorizontalAlignment="Left" Click="t5_btn_ConvertToExcel_Click" Height="30" Margin="0,10,0,10"/>
+                        <TextBlock HorizontalAlignment="Left" Text="Converted Excel File : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5" Margin="0,5,0,5"/>
+                        <TextBox HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t5_tb_output_file" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True" Margin="0,5,0,5"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </UserControl>

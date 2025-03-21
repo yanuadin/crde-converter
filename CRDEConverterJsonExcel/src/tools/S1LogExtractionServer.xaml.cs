@@ -12,6 +12,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using System.IO.Compression;
 using CRDEConverterJsonExcel.controller;
+using System.Diagnostics;
 
 namespace CRDEConverterJsonExcel.src.tools
 {
@@ -25,6 +26,7 @@ namespace CRDEConverterJsonExcel.src.tools
         private ObservableCollection<Item> lb_ServerLogFiles = new ObservableCollection<Item>();
         private ObservableCollection<Item> lb_DownloadLogFiles = new ObservableCollection<Item>();
         private ObservableCollection<Item> lb_JSONFiles = new ObservableCollection<Item>();
+        private bool isInterrupted = false;
         AmazonS3Client s3Client;
 
         public S1LogExtractionServer()
@@ -88,10 +90,14 @@ namespace CRDEConverterJsonExcel.src.tools
                         t7_progressText.Text = "0/0";
                         t7_progressBar.Visibility = Visibility.Visible;
                         t7_progressText.Visibility = Visibility.Visible;
+                        t7_btn_StopProgressBar.Visibility = Visibility.Visible;
                         
                         int completedItems = 0;
                         foreach (S3Object entry in response.S3Objects)
                         {
+                            if (isInterrupted)
+                                break;
+
                             if (entry.Key != folderPath)
                             {
                                 string filePathWithoutName = string.Join(@"/", entry.Key.Split(@"/")[0..^1]);
@@ -149,10 +155,27 @@ namespace CRDEConverterJsonExcel.src.tools
                 Mouse.OverrideCursor = null;
                 t7_progressBar.Visibility = Visibility.Hidden;
                 t7_progressText.Visibility = Visibility.Hidden;
+                t7_btn_StopProgressBar.Visibility = Visibility.Hidden;
+                isInterrupted = false;
             }
         }
 
-		private void t7_btn_ClearServerLogListListBox_Click(object sender, RoutedEventArgs e)
+        private void t7_btn_StopProgressBar_Click(object sender, RoutedEventArgs e)
+        {
+            isInterrupted = true;
+        }
+
+        private async void t7_btn_StopProgressBar_MouseEnter(object sender, RoutedEventArgs e)
+        {
+            Mouse.OverrideCursor = null;
+        }
+
+        private async void t7_btn_StopProgressBar_MouseLeave(object sender, RoutedEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Wait;
+        }
+
+        private void t7_btn_ClearServerLogListListBox_Click(object sender, RoutedEventArgs e)
         {
             lb_ServerLogFiles = new ObservableCollection<Item>();
             t7_dg_ServerLogList.ItemsSource = lb_ServerLogFiles;
@@ -198,10 +221,14 @@ namespace CRDEConverterJsonExcel.src.tools
                         t7_progressText.Text = "0/0";
                         t7_progressBar.Visibility = Visibility.Visible;
                         t7_progressText.Visibility = Visibility.Visible;
+                        t7_btn_StopProgressBar.Visibility = Visibility.Visible;
 
                         int completedItems = 0;
                         foreach (Item item in filteredSelected)
                         {
+                            if (isInterrupted)
+                                break;
+
                             string saveFilePath = savePath + @"\" + item.FileName + "." + item.FileExt;
                             converter.saveTextFile(saveFilePath, item.FileContent);
                             lb_DownloadLogFiles.Add(new Item { FileName = item.FileName, FileExt = item.FileExt, FilePath = saveFilePath, CreatedDate = item.CreatedDate, AdditionalField = item.AdditionalField, IsSelected = false });
@@ -229,6 +256,8 @@ namespace CRDEConverterJsonExcel.src.tools
                 Mouse.OverrideCursor = null;
                 t7_progressBar.Visibility = Visibility.Hidden;
                 t7_progressText.Visibility = Visibility.Hidden;
+                t7_btn_StopProgressBar.Visibility = Visibility.Hidden;
+                isInterrupted = false;
             }
         }
 
@@ -269,6 +298,7 @@ namespace CRDEConverterJsonExcel.src.tools
                         t7_progressText.Text = "0/0";
                         t7_progressBar.Visibility = Visibility.Visible;
                         t7_progressText.Visibility = Visibility.Visible;
+                        t7_btn_StopProgressBar.Visibility = Visibility.Visible;
 
                         string savePath = GeneralMethod.saveFolderDialog();
 
@@ -282,6 +312,9 @@ namespace CRDEConverterJsonExcel.src.tools
 
                             foreach (Item file in filteredSelected)
                             {
+                                if (isInterrupted)
+                                    break;
+
                                 string filePath = file.FilePath;
                                 string fileName = file.FileName;
                                 JArray contentFile = new JArray();
@@ -372,6 +405,8 @@ namespace CRDEConverterJsonExcel.src.tools
                 Mouse.OverrideCursor = null;
                 t7_progressBar.Visibility = Visibility.Hidden;
                 t7_progressText.Visibility = Visibility.Hidden;
+                t7_btn_StopProgressBar.Visibility = Visibility.Hidden;
+                isInterrupted = false;
             }
         }
 
@@ -456,6 +491,30 @@ namespace CRDEConverterJsonExcel.src.tools
             {
                 return false;
             }
+        }
+
+        private void t7_tb_SearchServerLogList_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var search = lb_ServerLogFiles.Where(file => file.FileName.Contains(t7_tb_SearchServerLogList.Text, StringComparison.OrdinalIgnoreCase)).ToList<Item>();
+
+            if (search != null)
+                t7_dg_ServerLogList.ItemsSource = search;
+        }
+
+        private void t7_tb_SearchDownloadLogList_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var search = lb_DownloadLogFiles.Where(file => file.FileName.Contains(t7_tb_SearchDownloadLogList.Text, StringComparison.OrdinalIgnoreCase)).ToList<Item>();
+
+            if (search != null)
+                t7_dg_DownloadLogList.ItemsSource = search;
+        }
+
+        private void t7_tb_SearchJSONList_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var search = lb_JSONFiles.Where(file => file.FileName.Contains(t7_tb_SearchJSONList.Text, StringComparison.OrdinalIgnoreCase)).ToList<Item>();
+
+            if (search != null)
+                t7_lb_JSONList.ItemsSource = search;
         }
 
         private void t7_dg_ServerLogList_CopyCell(object sender, DataGridRowClipboardEventArgs e)

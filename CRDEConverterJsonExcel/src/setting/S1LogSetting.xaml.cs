@@ -59,5 +59,13 @@ namespace CRDEConverterJsonExcel.src.setting
             s1LogList = s1LogController.getS1LogList().ToObject<ObservableCollection<S1Log>>();
             s2_dg_S1Log.ItemsSource = s1LogList;
         }
+
+        private void s2_tb_SearchS1Log_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var search = s1LogList.Where(s1 => s1.Name.Contains(s2_tb_SearchS1Log.Text, StringComparison.OrdinalIgnoreCase)).ToList<S1Log>();
+
+            if (search != null)
+                s2_dg_S1Log.ItemsSource = search;
+        }
     }
 }

@@ -16,6 +16,7 @@ namespace CRDEConverterJsonExcel.src.tools
     public partial class JSONConverter : UserControl
     {
         private ObservableCollection<Item> lb_JSONItems = new ObservableCollection<Item>();
+        private bool isInterrupted = false;
 
         public JSONConverter()
         {
@@ -99,6 +100,7 @@ namespace CRDEConverterJsonExcel.src.tools
                     t1_progressText.Text = "0/0";
                     t1_progressBar.Visibility = Visibility.Visible;
                     t1_progressText.Visibility = Visibility.Visible;
+                    t1_btn_StopProgressBar.Visibility = Visibility.Visible;
 
                     // Create Excel package
                     using (var package = new ExcelPackage())
@@ -120,6 +122,9 @@ namespace CRDEConverterJsonExcel.src.tools
                         int completedItems = 0;
                         foreach (Item file in filteredSelected)
                         {
+                            if (isInterrupted)
+                                break;
+
                             string filePath = file.FilePath;
                             string fileName = file.FileName;
                             string jsonContent = File.ReadAllText(filePath);
@@ -153,7 +158,32 @@ namespace CRDEConverterJsonExcel.src.tools
                 Mouse.OverrideCursor = null;
                 t1_progressBar.Visibility = Visibility.Hidden;
                 t1_progressText.Visibility = Visibility.Hidden;
+                isInterrupted = false;
+                t1_btn_StopProgressBar.Visibility = Visibility.Hidden;
             }
+        }
+
+        private void t1_btn_StopProgressBar_Click(object sender, RoutedEventArgs e)
+        {
+            isInterrupted = true;
+        }
+
+        private async void t1_btn_StopProgressBar_MouseEnter(object sender, RoutedEventArgs e)
+        {
+            Mouse.OverrideCursor = null;
+        }
+
+        private async void t1_btn_StopProgressBar_MouseLeave(object sender, RoutedEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Wait;
+        }
+
+        private void t1_tb_SearchJSONList_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var search = lb_JSONItems.Where(file => file.FileName.Contains(t1_tb_SearchJSONList.Text, StringComparison.OrdinalIgnoreCase)).ToList<Item>();
+
+            if (search != null)
+                t1_lb_JSONList.ItemsSource = search;
         }
 
         private void t1_lb_JSONList_CopyCell(object sender, DataGridRowClipboardEventArgs e)

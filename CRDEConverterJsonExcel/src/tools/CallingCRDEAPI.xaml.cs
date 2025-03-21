@@ -21,6 +21,7 @@ namespace CRDEConverterJsonExcel.src.tools
         private APIAddressController apiAddressController = new APIAddressController();
         private ObservableCollection<Item> lb_JSONRequestItems = new ObservableCollection<Item>();
         private ObservableCollection<Item> lb_JSONResponseItems = new ObservableCollection<Item>();
+        private bool isInterrupted = false;
 
         public CallingCRDEAPI()
         {
@@ -110,6 +111,7 @@ namespace CRDEConverterJsonExcel.src.tools
                         t5_progressText.Text = "0/0";
                         t5_progressBar.Visibility = Visibility.Visible;
                         t5_progressText.Visibility = Visibility.Visible;
+                        t5_btn_StopProgressBar.Visibility = Visibility.Visible;
 
                         string savePath = GeneralMethod.saveFolderDialog();
 
@@ -130,6 +132,9 @@ namespace CRDEConverterJsonExcel.src.tools
 
                                 foreach (Item request in filteredSelected)
                                 {
+                                    if (isInterrupted)
+                                        break;
+
                                     string fileExt = request.FilePath.Split("\\").Last().Split(".").Last();
                                     if (fileExt == "txt")
                                     {
@@ -194,6 +199,8 @@ namespace CRDEConverterJsonExcel.src.tools
                 Mouse.OverrideCursor = null;
                 t5_progressBar.Visibility = Visibility.Hidden;
                 t5_progressText.Visibility = Visibility.Hidden;
+                t5_btn_StopProgressBar.Visibility = Visibility.Hidden;
+                isInterrupted = false;
             }
         }
 
@@ -217,6 +224,21 @@ namespace CRDEConverterJsonExcel.src.tools
             return responseAPI;
         }
 
+        private void t5_btn_StopProgressBar_Click(object sender, RoutedEventArgs e)
+        {
+            isInterrupted = true;
+        }
+
+        private async void t5_btn_StopProgressBar_MouseEnter(object sender, RoutedEventArgs e)
+        {
+            Mouse.OverrideCursor = null;
+        }
+
+        private async void t5_btn_StopProgressBar_MouseLeave(object sender, RoutedEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Wait;
+        }
+
         private void t5_cb_SelectAllResponse_Click(object sender, RoutedEventArgs e)
         {
             GeneralMethod.selectAllList(lb_JSONResponseItems, t5_cb_selectAllResponse);
@@ -224,36 +246,94 @@ namespace CRDEConverterJsonExcel.src.tools
 
         private void t5_btn_ConvertToExcel_Click(object sender, RoutedEventArgs e)
         {
-            List<Item> filteredSelected = lb_JSONResponseItems.Where(item => item.IsSelected).ToList();
-            Converter converter = new Converter();
-
-            if (filteredSelected.Count > 0)
+            try
             {
-                using (var package = new ExcelPackage())
+                List<Item> filteredSelected = lb_JSONResponseItems.Where(item => item.IsSelected).ToList();
+                int filteredCount = filteredSelected.Count;
+                Converter converter = new Converter();
+
+                if (filteredCount > 0)
                 {
-                    // Loop through the multiple files
-                    int iterator = 0;
-                    foreach (Item file in filteredSelected)
-                        converter.convertJSONToExcel(package, file.FileContent, iterator++);
-
-                    string fname = filteredSelected.Count > 1 ? "MultipleFiles" : filteredSelected.First<Item>().FileName;
-
-                    // Save Excel file
-                    string[] extension = { "excel" };
-                    string savePath = GeneralMethod.saveFileDialog(extension, fname + "-res.xlsx");
-
-                    if (savePath != "")
+                    // Initialize progress reporting
+                    var progress = new Progress<int>(value =>
                     {
-                        package.SaveAs(new FileInfo(savePath));
-                        t5_tb_output_file.Text = savePath;
-                        MessageBox.Show(@"[SUCCESS]: Conversion successful");
+                        t5_progressBar.Value = (int)((double)value / filteredCount * 100);
+                        t5_progressText.Text = $"{value}/{filteredCount}";
+                    });
+
+                    // Initialize Progress Bar
+                    t5_progressBar.Value = 0;
+                    t5_progressText.Text = "0/0";
+                    t5_progressBar.Visibility = Visibility.Visible;
+                    t5_progressText.Visibility = Visibility.Visible;
+                    t5_btn_StopProgressBar.Visibility = Visibility.Visible;
+
+                    using (var package = new ExcelPackage())
+                    {
+                        // Loop through the multiple files
+                        int iterator = 0;
+                        int completedItems = 0;
+                        foreach (Item file in filteredSelected)
+                        {
+                            if (isInterrupted)
+                                break;
+
+                            converter.convertJSONToExcel(package, file.FileContent, iterator++);
+                        }
+
+                        string fname = filteredSelected.Count > 1 ? "MultipleFiles" : filteredSelected.First<Item>().FileName;
+
+                        // Save Excel file
+                        string[] extension = { "excel" };
+                        string savePath = GeneralMethod.saveFileDialog(extension, fname + "-res.xlsx");
+
+                        if (savePath != "")
+                        {
+                            package.SaveAs(new FileInfo(savePath));
+                            t5_tb_output_file.Text = savePath;
+                            MessageBox.Show(@"[SUCCESS]: Conversion successful");
+
+                            // Update progress
+                            completedItems++;
+                            ((IProgress<int>)progress).Report(completedItems);
+                        }
                     }
                 }
+                else
+                {
+                    MessageBox.Show("[WARNING]: No one item were selected");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("[WARNING]: No one item were selected");
+                MessageBox.Show("[ERROR]: " + ex.Message);
             }
+            finally
+            {
+                // Re-enable the cursor and reset it to the default
+                t5_sp_main.IsEnabled = true;
+                Mouse.OverrideCursor = null;
+                t5_progressBar.Visibility = Visibility.Hidden;
+                t5_progressText.Visibility = Visibility.Hidden;
+                t5_btn_StopProgressBar.Visibility = Visibility.Hidden;
+                isInterrupted = false;
+            }
+        }
+
+        private void t5_tb_SearchRequestList_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var search = lb_JSONRequestItems.Where(file => file.FileName.Contains(t5_tb_SearchRequestList.Text, StringComparison.OrdinalIgnoreCase)).ToList<Item>();
+
+            if (search != null)
+                t5_lb_RequestList.ItemsSource = search;
+        }
+
+        private void t5_tb_SearchResponseList_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var search = lb_JSONResponseItems.Where(file => file.FileName.Contains(t5_tb_SearchResponseList.Text, StringComparison.OrdinalIgnoreCase)).ToList<Item>();
+
+            if (search != null)
+                t5_lb_ResponseList.ItemsSource = search;
         }
 
         private void t5_lb_RequestList_CopyCell(object sender, DataGridRowClipboardEventArgs e)

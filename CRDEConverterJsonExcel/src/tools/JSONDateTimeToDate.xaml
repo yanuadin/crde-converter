@@ -8,65 +8,97 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <StackPanel x:Name="t6_sp_main" Margin="10" Grid.Row="1">
+        <StackPanel Margin="10" Grid.Row="1">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="9.5*"/>
+                    <ColumnDefinition Width="9.2*"/>
                     <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition Width="0.3*"/>
                 </Grid.ColumnDefinitions>
 
                 <ProgressBar Grid.Column="0" x:Name="t6_progressBar" Margin="0,0,0,10" Visibility="Hidden"/>
                 <TextBlock Grid.Column="1" x:Name="t6_progressText" Text="0/0" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Hidden" Margin="10,0,0,10"/>
+                <Button 
+                    Grid.Column="2" 
+                    x:Name="t6_btn_StopProgressBar" 
+                    Style="{StaticResource MaterialDesignIconForegroundButton}" 
+                    Click="t6_btn_StopProgressBar_Click" Width="30" Height="30" 
+                    Margin="0,-10,0,0" 
+                    Visibility="Hidden"
+                    MouseEnter="t6_btn_StopProgressBar_MouseEnter" MouseLeave="t6_btn_StopProgressBar_MouseLeave"
+                    >
+                    <materialDesign:PackIcon Kind="Stop" Width="20" Height="20"/>
+                </Button>
             </Grid>
-            <StackPanel Orientation="Horizontal">
-                <Button x:Name="t6_btn_BrowseFile" Content="Select JSON Files" HorizontalAlignment="Left" Click="t6_btn_BrowseFile_Click" Height="30" Margin="0,0,0,5"/>
-                <Button x:Name="t6_btn_BrowseFolder" Content="Select JSON Folder" HorizontalAlignment="Left" Click="t6_btn_BrowseFolder_Click" Height="30" Margin="10,0,0,5"/>
-            </StackPanel>
-            <Grid Margin="0,5,0,5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="17*"/>
-                </Grid.ColumnDefinitions>
+            <StackPanel x:Name="t6_sp_main" >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Folder : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
-                <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t6_tb_folder" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
-            </Grid>
-            <DataGrid Name="t6_dg_JSONList" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" CanUserAddRows="false" Height="300" Margin="0,5,0,5" CopyingRowClipboardContent="t6_dg_JSONList_CopyCell">
-                <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="#">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="5,0,5,0"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTextColumn Binding="{Binding FileName}" Header="Name" IsReadOnly="True"/>
-                    <DataGridTextColumn Binding="{Binding CreatedDate}" Header="Created Date" IsReadOnly="True"/>
-                </DataGrid.Columns>
-                <DataGrid.Resources>
-                    <Style BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}" TargetType="{x:Type DataGridColumnHeader}">
-                        <Setter Property="Background" Value="DodgerBlue" />
-                        <Setter Property="FontWeight" Value="Bold" />
-                    </Style>
-                </DataGrid.Resources>
-            </DataGrid>
-            <Grid Margin="0,5,0,5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <CheckBox x:Name="t6_cb_selectAll" Content="Select All" HorizontalAlignment="Left" Click="t6_cb_SelectAll_Click"/>
-                <Button Grid.Column="1" x:Name="t6_btn_ClearListBox" Content="Clear JSON" HorizontalAlignment="Right" Click="t6_btn_ClearListBox_Click" Height="30"/>
-            </Grid>
-            <Button x:Name="t6_btn_ConvertDate" Content="Convert to Date" HorizontalAlignment="Left" Click="t6_btn_ConvertDate_Click" Height="30" Margin="0,5,0,5"/>
-            <Grid Margin="0,5,0,5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="6*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Masking Output Folder : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
-                <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t6_tb_output" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
-            </Grid>
+                    <Button Grid.Column="0" x:Name="t6_btn_BrowseFile" Content="Select JSON Files" HorizontalAlignment="Left" Click="t6_btn_BrowseFile_Click" Height="30" Margin="0,0,0,5"/>
+                    <Button Grid.Column="1" x:Name="t6_btn_BrowseFolder" Content="Select JSON Folder" HorizontalAlignment="Left" Click="t6_btn_BrowseFolder_Click" Height="30" Margin="10,0,0,5"/>
+                    <TextBox 
+                        x:Name="t6_tb_SearchJSONList"
+                        Grid.Column="2"
+                        Width="200"
+                        VerticalAlignment="Center"
+                        materialDesign:HintAssist.Hint="Search"
+                        TextChanged="t6_tb_SearchJSONList_TextChanged"
+                        HorizontalAlignment="Right"
+                        Margin="0,0,20,0"/>
+                </Grid>
+                <StackPanel Orientation="Horizontal">
+                    
+                </StackPanel>
+                <Grid Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="17*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Folder : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
+                    <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t6_tb_folder" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
+                </Grid>
+                <DataGrid Name="t6_dg_JSONList" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" CanUserAddRows="false" Height="300" Margin="0,5,0,5" CopyingRowClipboardContent="t6_dg_JSONList_CopyCell">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="#">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="5,0,5,0"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Binding="{Binding FileName}" Header="Name" IsReadOnly="True"/>
+                        <DataGridTextColumn Binding="{Binding CreatedDate}" Header="Created Date" IsReadOnly="True"/>
+                    </DataGrid.Columns>
+                    <DataGrid.Resources>
+                        <Style BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}" TargetType="{x:Type DataGridColumnHeader}">
+                            <Setter Property="Background" Value="DodgerBlue" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Style>
+                    </DataGrid.Resources>
+                </DataGrid>
+                <Grid Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <CheckBox x:Name="t6_cb_selectAll" Content="Select All" HorizontalAlignment="Left" Click="t6_cb_SelectAll_Click"/>
+                    <Button Grid.Column="1" x:Name="t6_btn_ClearListBox" Content="Clear JSON" HorizontalAlignment="Right" Click="t6_btn_ClearListBox_Click" Height="30"/>
+                </Grid>
+                <Button x:Name="t6_btn_ConvertDate" Content="Convert to Date" HorizontalAlignment="Left" Click="t6_btn_ConvertDate_Click" Height="30" Margin="0,5,0,5"/>
+                <Grid Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="6*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Masking Output Folder : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
+                    <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t6_tb_output" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
+                </Grid>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </UserControl>

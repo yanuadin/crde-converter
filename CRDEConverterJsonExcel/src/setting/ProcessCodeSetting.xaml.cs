@@ -59,5 +59,13 @@ namespace CRDEConverterJsonExcel.src.setting
             processCodeList = processCodeController.getProcessCodeList().ToObject<ObservableCollection<ProcessCode>>();
             s4_lb_ProcessCode.ItemsSource = processCodeList;
         }
+
+        private void s4_tb_SearchProcessCode_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var search = processCodeList.Where(pcode => pcode.Name.Contains(s4_tb_SearchProcessCode.Text, StringComparison.OrdinalIgnoreCase)).ToList<ProcessCode>();
+
+            if (search != null)
+                s4_lb_ProcessCode.ItemsSource = search;
+        }
     }
 }

@@ -59,5 +59,13 @@ namespace CRDEConverterJsonExcel.src.setting
             apiAddressList = apiAddressController.getAPIAddressList().ToObject<ObservableCollection<APIAddress>>();
             s3_dg_environment.ItemsSource = apiAddressList;
         }
+
+        private void s3_tb_SearchAPIAddress_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var search = apiAddressList.Where(api => api.Name.Contains(s3_tb_SearchAPIAddress.Text, StringComparison.OrdinalIgnoreCase)).ToList<APIAddress>();
+
+            if (search != null)
+                s3_dg_environment.ItemsSource = search;
+        }
     }
 }

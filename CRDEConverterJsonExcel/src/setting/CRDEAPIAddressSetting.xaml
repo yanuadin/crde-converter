@@ -9,6 +9,15 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <StackPanel Margin="10">
+            <TextBox 
+                x:Name="s3_tb_SearchAPIAddress"
+                Grid.Column="1"
+                Width="200"
+                VerticalAlignment="Center"
+                materialDesign:HintAssist.Hint="Search"
+                TextChanged="s3_tb_SearchAPIAddress_TextChanged"
+                HorizontalAlignment="Right"
+                Margin="0,0,20,0"/>
             <DataGrid Name="s3_dg_environment" GridLinesVisibility="All" VerticalScrollBarVisibility="Visible" AutoGenerateColumns="False" MaxHeight="500" Margin="0,5,0,5">
                 <DataGrid.Columns>
                     <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Header="Environment Name"/>

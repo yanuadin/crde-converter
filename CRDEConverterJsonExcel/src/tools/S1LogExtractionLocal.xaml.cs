@@ -20,6 +20,7 @@ namespace CRDEConverterJsonExcel.src.tools
         private S1LogController s1LogController = new S1LogController();
         private ObservableCollection<Item> lb_LogFiles = new ObservableCollection<Item>();
         private ObservableCollection<Item> lb_JSONFiles = new ObservableCollection<Item>();
+        private bool isInterrupted = false;
 
         public S1LogExtractionLocal()
         {
@@ -90,6 +91,7 @@ namespace CRDEConverterJsonExcel.src.tools
                         t4_progressText.Text = "0/0";
                         t4_progressBar.Visibility = Visibility.Visible;
                         t4_progressText.Visibility = Visibility.Visible;
+                        t4_btn_StopProgressBar.Visibility = Visibility.Visible;
 
                         string savePath = GeneralMethod.saveFolderDialog();
 
@@ -103,6 +105,9 @@ namespace CRDEConverterJsonExcel.src.tools
 
                             foreach (Item file in filteredSelected)
                             {
+                                if (isInterrupted)
+                                    break;
+
                                 string filePath = file.FilePath;
                                 string fileName = file.FileName;
                                 JArray contentFile = new JArray();
@@ -192,13 +197,46 @@ namespace CRDEConverterJsonExcel.src.tools
                 Mouse.OverrideCursor = null;
                 t4_progressBar.Visibility = Visibility.Hidden;
                 t4_progressText.Visibility = Visibility.Hidden;
+                t4_btn_StopProgressBar.Visibility = Visibility.Hidden;
+                isInterrupted = false;
             }
+        }
+
+        private void t4_btn_StopProgressBar_Click(object sender, RoutedEventArgs e)
+        {
+            isInterrupted = true;
+        }
+
+        private async void t4_btn_StopProgressBar_MouseEnter(object sender, RoutedEventArgs e)
+        {
+            Mouse.OverrideCursor = null;
+        }
+
+        private async void t4_btn_StopProgressBar_MouseLeave(object sender, RoutedEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Wait;
         }
 
         private void t4_btn_ClearJSONListBox_Click(object sender, RoutedEventArgs e)
         {
             lb_JSONFiles = new ObservableCollection<Item>();
             t4_lb_JSONList.ItemsSource = lb_JSONFiles;
+        }
+
+        private void t4_tb_SearchLogList_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var search = lb_LogFiles.Where(file => file.FileName.Contains(t4_tb_SearchLogList.Text, StringComparison.OrdinalIgnoreCase)).ToList<Item>();
+
+            if (search != null)
+                t4_lb_LogList.ItemsSource = search;
+        }
+
+        private void t4_tb_SearchJSONList_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var search = lb_JSONFiles.Where(file => file.FileName.Contains(t4_tb_SearchJSONList.Text, StringComparison.OrdinalIgnoreCase)).ToList<Item>();
+
+            if (search != null)
+                t4_lb_JSONList.ItemsSource = search;
         }
 
         private void t4_lb_LogList_CopyCell(object sender, DataGridRowClipboardEventArgs e)

@@ -15,6 +15,7 @@ namespace CRDEConverterJsonExcel.src.tools
     public partial class ExcelConverter : UserControl
     {
         ObservableCollection<Item> lb_JSONItems = new ObservableCollection<Item>();
+        bool isInterrupted = false;
 
         public ExcelConverter()
         {
@@ -93,6 +94,7 @@ namespace CRDEConverterJsonExcel.src.tools
                     t2_progressText.Text = "0/0";
                     t2_progressBar.Visibility = Visibility.Visible;
                     t2_progressText.Visibility = Visibility.Visible;
+                    t2_btn_StopProgressBar.Visibility = Visibility.Visible;
 
                     string filePath = filteredSelected.First<Item>().FilePath;
                     string savePath = converter.convertExcelTo(filePath, filteredSelected, "txt", progress);
@@ -111,6 +113,8 @@ namespace CRDEConverterJsonExcel.src.tools
                 Mouse.OverrideCursor = null;
                 t2_progressBar.Visibility = Visibility.Hidden;
                 t2_progressText.Visibility = Visibility.Hidden;
+                t2_btn_StopProgressBar.Visibility = Visibility.Hidden;
+                isInterrupted = false;
             }
         }
 
@@ -140,6 +144,7 @@ namespace CRDEConverterJsonExcel.src.tools
                     t2_progressText.Text = "0/0";
                     t2_progressBar.Visibility = Visibility.Visible;
                     t2_progressText.Visibility = Visibility.Visible;
+                    t2_btn_StopProgressBar.Visibility = Visibility.Visible;
 
                     string filePath = filteredSelected.First<Item>().FilePath;
                     string savePath = converter.convertExcelTo(filePath, filteredSelected, "json", progress);
@@ -158,7 +163,32 @@ namespace CRDEConverterJsonExcel.src.tools
                 Mouse.OverrideCursor = null;
                 t2_progressBar.Visibility = Visibility.Hidden;
                 t2_progressText.Visibility = Visibility.Hidden;
+                t2_btn_StopProgressBar.Visibility = Visibility.Hidden;
+                isInterrupted = false;
             }
+        }
+
+        private void t2_btn_StopProgressBar_Click(object sender, RoutedEventArgs e)
+        {
+            isInterrupted = true;
+        }
+
+        private async void t2_btn_StopProgressBar_MouseEnter(object sender, RoutedEventArgs e)
+        {
+            Mouse.OverrideCursor = null;
+        }
+
+        private async void t2_btn_StopProgressBar_MouseLeave(object sender, RoutedEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Wait;
+        }
+
+        private void t2_tb_SearchJSONList_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var search = lb_JSONItems.Where(file => file.FileName.Contains(t2_tb_SearchJSONList.Text, StringComparison.OrdinalIgnoreCase)).ToList<Item>();
+
+            if (search != null)
+                t2_lb_JSONList.ItemsSource = search;
         }
 
         private void t2_lb_JSONList_CopyCell(object sender, DataGridRowClipboardEventArgs e)

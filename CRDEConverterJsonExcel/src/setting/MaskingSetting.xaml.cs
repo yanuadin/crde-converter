@@ -15,6 +15,7 @@ namespace CRDEConverterJsonExcel.src.setting
     {
         MaskingTemplateController maskingTemplateController = new MaskingTemplateController();
         ObservableCollection<MaskingTemplate> maskingTemplateList = new ObservableCollection<MaskingTemplate>();
+        ObservableCollection<Masking> maskingList = new ObservableCollection<Masking>();
 
         public MaskingSetting()
         {
@@ -43,7 +44,10 @@ namespace CRDEConverterJsonExcel.src.setting
             Button button = sender as Button;
             MaskingTemplate maskingTemplate = button.DataContext as MaskingTemplate;
             if (maskingTemplate != null)
-                s1_gd_masking.ItemsSource = maskingTemplate.Mask;
+            {
+                maskingList = maskingTemplate.Mask;
+                s1_gd_masking.ItemsSource = maskingList;
+            }
         }
 
         private void s1_btn_DeleteMaskingClick(object sender, RoutedEventArgs e)
@@ -88,6 +92,22 @@ namespace CRDEConverterJsonExcel.src.setting
             {
                 MessageBox.Show("[FAILED]: " + ex.Message);
             }
+        }
+
+        private void s1_tb_SearchMaskingTemplateList_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var search = maskingTemplateList.Where(mTemplate => mTemplate.Name.Contains(s1_tb_SearchMaskingTemplateList.Text, StringComparison.OrdinalIgnoreCase)).ToList<MaskingTemplate>();
+
+            if (search != null)
+                s1_gd_template.ItemsSource = search;
+        }
+
+        private void s1_tb_SearchMaskingList_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var search = maskingList.Where(masking => masking.Variable.Contains(s1_tb_SearchMaskingList.Text, StringComparison.OrdinalIgnoreCase) || masking.Value.Contains(s1_tb_SearchMaskingList.Text, StringComparison.OrdinalIgnoreCase)).ToList<Masking>();
+
+            if (search != null)
+                s1_gd_masking.ItemsSource = search;
         }
     }
 }

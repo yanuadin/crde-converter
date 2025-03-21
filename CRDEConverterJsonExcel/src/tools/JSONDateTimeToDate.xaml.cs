@@ -16,6 +16,7 @@ namespace CRDEConverterJsonExcel.src.tools
     public partial class JSONDateTimeToDate : UserControl
     {
         private ObservableCollection<Item> JSONItemList = new ObservableCollection<Item>();
+        private bool isInterrupted = false;
 
         public JSONDateTimeToDate()
         {
@@ -98,6 +99,7 @@ namespace CRDEConverterJsonExcel.src.tools
                     t6_progressText.Text = "0/0";
                     t6_progressBar.Visibility = Visibility.Visible;
                     t6_progressText.Visibility = Visibility.Visible;
+                    t6_btn_StopProgressBar.Visibility = Visibility.Visible;
 
                     string savePath = GeneralMethod.saveFolderDialog();
 
@@ -108,6 +110,9 @@ namespace CRDEConverterJsonExcel.src.tools
                         int completedItems = 0;
                         foreach (Item item in filteredSelected)
                         {
+                            if (isInterrupted)
+                                break;
+
                             // Save Response to JSON File
                             string formattedDateJSON = replaceDateTimeFormat(item.FileContent, "yyyy-MM-dd");
                             if (formattedDateJSON != "")
@@ -141,6 +146,8 @@ namespace CRDEConverterJsonExcel.src.tools
                 Mouse.OverrideCursor = null;
                 t6_progressBar.Visibility = Visibility.Hidden;
                 t6_progressText.Visibility = Visibility.Hidden;
+                t6_btn_StopProgressBar.Visibility = Visibility.Hidden;
+                isInterrupted = false;
             }
         }
 
@@ -167,6 +174,29 @@ namespace CRDEConverterJsonExcel.src.tools
                 input = "";
 
             return input;
+        }
+
+        private void t6_btn_StopProgressBar_Click(object sender, RoutedEventArgs e)
+        {
+            isInterrupted = true;
+        }
+
+        private async void t6_btn_StopProgressBar_MouseEnter(object sender, RoutedEventArgs e)
+        {
+            Mouse.OverrideCursor = null;
+        }
+
+        private async void t6_btn_StopProgressBar_MouseLeave(object sender, RoutedEventArgs e)
+        {
+            Mouse.OverrideCursor = Cursors.Wait;
+        }
+
+        private void t6_tb_SearchJSONList_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var search = JSONItemList.Where(file => file.FileName.Contains(t6_tb_SearchJSONList.Text, StringComparison.OrdinalIgnoreCase)).ToList<Item>();
+
+            if (search != null)
+                t6_dg_JSONList.ItemsSource = search;
         }
 
         private void t6_dg_JSONList_CopyCell(object sender, DataGridRowClipboardEventArgs e)
