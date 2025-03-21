@@ -28,12 +28,15 @@ namespace CRDEConverterJsonExcel.src.tools
             {
                 string[] extension = { "json" };
                 lb_JSONItems = GeneralMethod.browseFile(extension, true);
-                t1_lb_JSONList.ItemsSource = lb_JSONItems;
-                t1_tb_folder.Text = string.Join(@"\", lb_JSONItems.First<Item>().FilePath.Split(@"\")[0..^1]);
+                if (lb_JSONItems.Count > 0)
+                {
+                    t1_lb_JSONList.ItemsSource = lb_JSONItems;
+                    t1_tb_folder.Text = string.Join(@"\", lb_JSONItems.First<Item>().FilePath.Split(@"\")[0..^1]);
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("[ERROR]: Failed to open file");
+                MessageBox.Show("[ERROR]: " + ex.Message);
             }
         }
 
@@ -43,12 +46,16 @@ namespace CRDEConverterJsonExcel.src.tools
             {
                 string[] extension = { "json" };
                 lb_JSONItems = GeneralMethod.browseFolder(extension);
-                t1_lb_JSONList.ItemsSource = lb_JSONItems;
-                t1_tb_folder.Text = string.Join(@"\", lb_JSONItems.First<Item>().FilePath.Split(@"\")[0..^1]);
+
+                if (lb_JSONItems.Count > 0)
+                {
+                    t1_lb_JSONList.ItemsSource = lb_JSONItems;
+                    t1_tb_folder.Text = string.Join(@"\", lb_JSONItems.First<Item>().FilePath.Split(@"\")[0..^1]);
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("[ERROR]: Failed to open folder");
+                MessageBox.Show("[ERROR]: " + ex.Message);
             }
         }
 

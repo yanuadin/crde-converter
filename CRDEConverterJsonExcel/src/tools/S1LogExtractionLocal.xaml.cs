@@ -34,12 +34,15 @@ namespace CRDEConverterJsonExcel.src.tools
             {
                 string[] extension = { "completed", "zip" };
                 lb_LogFiles = GeneralMethod.browseFolder(extension);
-                t4_lb_LogList.ItemsSource = lb_LogFiles;
-                t4_tb_folder.Text = string.Join(@"\", lb_LogFiles.First<Item>().FilePath.Split(@"\")[0..^1]);
+                if (lb_LogFiles.Count > 0)
+                {
+                    t4_lb_LogList.ItemsSource = lb_LogFiles;
+                    t4_tb_folder.Text = string.Join(@"\", lb_LogFiles.First<Item>().FilePath.Split(@"\")[0..^1]);
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("[ERROR]: Failed to open folder");
+                MessageBox.Show("[ERROR]: " + ex.Message);
             }
         }
 

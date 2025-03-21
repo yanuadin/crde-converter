@@ -28,23 +28,27 @@ namespace CRDEConverterJsonExcel.src.tools
                 lb_JSONItems = new ObservableCollection<Item>();
                 string[] extension = { "excel" };
                 ObservableCollection<Item> excelFile = GeneralMethod.browseFile(extension, false);
-                string fileName = excelFile.First<Item>().FileName;
-                string filePath = excelFile.First<Item>().FilePath;
-                t2_tb_folder.Text = filePath;
-
-                using (var package = new ExcelPackage(new FileInfo(filePath)))
+                
+                if (excelFile.Count > 0)
                 {
-                    ExcelWorksheet ws = package.Workbook.Worksheets["#HEADER#"];
-                    for (int row = 3; row <= ws.Dimension.Rows; row++)
+                    string fileName = excelFile.First<Item>().FileName;
+                    string filePath = excelFile.First<Item>().FilePath;
+                    t2_tb_folder.Text = filePath;
+
+                    using (var package = new ExcelPackage(new FileInfo(filePath)))
                     {
-                        lb_JSONItems.Add(new Item { FileName = ws.Cells[row, 5].Text, FilePath = filePath, FileContent = "", IsSelected = false });
+                        ExcelWorksheet ws = package.Workbook.Worksheets["#HEADER#"];
+                        for (int row = 3; row <= ws.Dimension.Rows; row++)
+                        {
+                            lb_JSONItems.Add(new Item { FileName = ws.Cells[row, 5].Text, FilePath = filePath, FileContent = "", IsSelected = false });
+                        }
+                        t2_lb_JSONList.ItemsSource = lb_JSONItems;
                     }
-                    t2_lb_JSONList.ItemsSource = lb_JSONItems;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("[ERROR]: Failed to open file");
+                MessageBox.Show("[ERROR]: " + ex.Message);
             }
         }
         
