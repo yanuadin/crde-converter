@@ -73,6 +73,7 @@ namespace CRDEConverterJsonExcel.src.tools
                         {
                             BucketName = bucketName,
                             Prefix = folderPath, // Specify the folder path
+                            Delimiter = "/"
                         };
                         
                         // Get response object
@@ -100,7 +101,7 @@ namespace CRDEConverterJsonExcel.src.tools
 
                             if (entry.Key != folderPath)
                             {
-                                string filePathWithoutName = string.Join(@"/", entry.Key.Split(@"/")[0..^1]);
+                                string filePathWithoutName = string.Join(@"/", entry.Key.Split(@"/")[0..^1]) + "/";
                                 string fileName = string.Join(@".", entry.Key.Split(@"/").Last().Split(".")[0..^1]);
                                 string fileExtension = entry.Key.Split(@"/").Last().Split(".").Last();
                                 
