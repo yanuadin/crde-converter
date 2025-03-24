@@ -137,6 +137,7 @@
                         <Button x:Name="t5_btn_ConvertToExcel" Content="Convert to Excel" HorizontalAlignment="Left" Click="t5_btn_ConvertToExcel_Click" Height="30" Margin="0,10,0,10"/>
                         <TextBlock HorizontalAlignment="Left" Text="Converted Excel File : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5" Margin="0,5,0,5"/>
                         <TextBox HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t5_tb_output_file" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True" Margin="0,5,0,5"/>
+                        <Button x:Name="t5_btn_OpenExcelFile" Content="Open Excel File" HorizontalAlignment="Left" Click="t5_btn_OpenExcelFile_Click" Height="30" Margin="0,5,0,5" Visibility="Hidden"/>
                     </StackPanel>
                 </Grid>
             </StackPanel>

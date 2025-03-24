@@ -22,6 +22,7 @@ namespace CRDEConverterJsonExcel.src.tools
         private ObservableCollection<Item> lb_JSONRequestItems = new ObservableCollection<Item>();
         private ObservableCollection<Item> lb_JSONResponseItems = new ObservableCollection<Item>();
         private bool isInterrupted = false;
+        private string saveOutputPath = "";
 
         public CallingCRDEAPI()
         {
@@ -246,6 +247,12 @@ namespace CRDEConverterJsonExcel.src.tools
 
         private void t5_btn_ConvertToExcel_Click(object sender, RoutedEventArgs e)
         {
+            // Disable the cursor and set it to "Wait" (spinning circle)
+            t5_sp_main.IsEnabled = false;
+            Mouse.OverrideCursor = Cursors.Wait;
+            saveOutputPath = "";
+            t5_btn_OpenExcelFile.Visibility = Visibility.Hidden;
+
             try
             {
                 List<Item> filteredSelected = lb_JSONResponseItems.Where(item => item.IsSelected).ToList();
@@ -289,8 +296,10 @@ namespace CRDEConverterJsonExcel.src.tools
 
                         if (savePath != "")
                         {
+                            saveOutputPath = savePath;
                             package.SaveAs(new FileInfo(savePath));
                             t5_tb_output_file.Text = savePath;
+                            t5_btn_OpenExcelFile.Visibility = Visibility.Visible;
                             MessageBox.Show(@"[SUCCESS]: Conversion successful");
 
                             // Update progress
@@ -317,6 +326,18 @@ namespace CRDEConverterJsonExcel.src.tools
                 t5_progressText.Visibility = Visibility.Hidden;
                 t5_btn_StopProgressBar.Visibility = Visibility.Hidden;
                 isInterrupted = false;
+            }
+        }
+
+        private void t5_btn_OpenExcelFile_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                GeneralMethod.openFile(saveOutputPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"[ERROR]: {ex.Message}");
             }
         }
 

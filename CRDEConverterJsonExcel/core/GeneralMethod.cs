@@ -238,6 +238,19 @@ namespace CRDEConverterJsonExcel.core
             return items;
         }
 
+        public static void openFile(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                // Open the file with the default application
+                Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+            }
+            else
+            {
+                MessageBox.Show("File not found!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private static string getCreatedDateOfFile(string filePath)
         {
             string dateCreated = "";

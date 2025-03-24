@@ -3,6 +3,7 @@ using CRDEConverterJsonExcel.objectClass;
 using Newtonsoft.Json.Linq;
 using OfficeOpenXml;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,6 +18,7 @@ namespace CRDEConverterJsonExcel.src.tools
     {
         private ObservableCollection<Item> lb_JSONItems = new ObservableCollection<Item>();
         private bool isInterrupted = false;
+        private string saveOutputPath = "";
 
         public JSONConverter()
         {
@@ -79,6 +81,8 @@ namespace CRDEConverterJsonExcel.src.tools
             // Disable the cursor and set it to "Wait" (spinning circle)
             t1_sp_main.IsEnabled = false;
             Mouse.OverrideCursor = Cursors.Wait;
+            saveOutputPath = "";
+            t1_btn_OpenExcelFile.Visibility = Visibility.Hidden;
 
             try
             {
@@ -142,8 +146,10 @@ namespace CRDEConverterJsonExcel.src.tools
 
                         if (savePath != "")
                         {
+                            saveOutputPath = savePath;
                             package.SaveAs(new FileInfo(savePath));
                             t1_tb_output.Text = savePath;
+                            t1_btn_OpenExcelFile.Visibility = Visibility.Visible;
                             MessageBox.Show(@"[SUCCESS]: Conversion successful");
                         }
                     }
@@ -160,6 +166,18 @@ namespace CRDEConverterJsonExcel.src.tools
                 t1_progressText.Visibility = Visibility.Hidden;
                 isInterrupted = false;
                 t1_btn_StopProgressBar.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void t1_btn_OpenExcelFile_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                GeneralMethod.openFile(saveOutputPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"[ERROR]: {ex.Message}");
             }
         }
 
