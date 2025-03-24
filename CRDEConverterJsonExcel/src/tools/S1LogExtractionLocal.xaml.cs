@@ -17,7 +17,7 @@ namespace CRDEConverterJsonExcel.src.tools
     /// </summary>
     public partial class S1LogExtractionLocal : UserControl
     {
-        private S1LogController s1LogController = new S1LogController();
+        private ProcessCodeController processCodeController = new ProcessCodeController();
         private ObservableCollection<Item> lb_LogFiles = new ObservableCollection<Item>();
         private ObservableCollection<Item> lb_JSONFiles = new ObservableCollection<Item>();
         private bool isInterrupted = false;
@@ -26,7 +26,7 @@ namespace CRDEConverterJsonExcel.src.tools
         {
             InitializeComponent();
 
-            t4_cb_process_code.ItemsSource = s1LogController.getS1LogList();
+            t4_cb_process_code.ItemsSource = processCodeController.getProcessCodeList();
         }
 
         private void t4_btn_BrowseFolder_Click(object sender, RoutedEventArgs e)
