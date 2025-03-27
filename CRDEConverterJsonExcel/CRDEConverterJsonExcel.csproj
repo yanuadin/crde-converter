@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>asset\image\logo_6BL_icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +18,10 @@
     <None Remove="sample\**" />
     <Page Remove="output\NewFolder\**" />
     <Page Remove="sample\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="asset\image\logo_6BL_icon.ico" />
   </ItemGroup>
 
   <ItemGroup>

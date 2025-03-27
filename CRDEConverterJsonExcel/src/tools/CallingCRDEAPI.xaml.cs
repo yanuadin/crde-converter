@@ -128,11 +128,16 @@ namespace CRDEConverterJsonExcel.src.tools
                             {
                                 // Calculate total work items
                                 int completedItems = 0;
+                                int successCount = 0;
                                 bool error = false;
                                 string errorMessage = "";
 
                                 foreach (Item request in filteredSelected)
                                 {
+                                    // Update progress
+                                    completedItems++;
+                                    ((IProgress<int>)progress).Report(completedItems);
+
                                     if (isInterrupted)
                                         break;
 
@@ -150,7 +155,7 @@ namespace CRDEConverterJsonExcel.src.tools
                                                 {
                                                     error = true;
                                                     errorMessage = responseAPI.message;
-                                                    break;
+                                                    continue;
                                                 }
                                             }
                                         }
@@ -162,27 +167,14 @@ namespace CRDEConverterJsonExcel.src.tools
                                         {
                                             error = true;
                                             errorMessage = responseAPI.message;
-                                            break;
+                                            continue;
                                         }
                                     }
-
-                                    if (error)
-                                        break;
-                                    else
-                                    {
-                                        // Update progress
-                                        completedItems++;
-                                        ((IProgress<int>)progress).Report(completedItems);
-                                    }
+                                    successCount++;
                                 }
 
-                                if (error)
-                                    MessageBox.Show(errorMessage);
-                                else
-                                {
-                                    t5_lb_ResponseList.ItemsSource = lb_JSONResponseItems;
-                                    MessageBox.Show($"[SUCCESS]: Success send ({completedItems}/{filteredCount}) request to API");
-                                }
+                                t5_lb_ResponseList.ItemsSource = lb_JSONResponseItems;
+                                MessageBox.Show($"[SUCCESS]: Success send ({successCount}/{filteredCount}) request to API");
                             }
                             else
                                 MessageBox.Show("[FAILED]: API address not found");
