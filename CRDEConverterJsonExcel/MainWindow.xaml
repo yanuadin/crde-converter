@@ -19,22 +19,8 @@
             </Grid.RowDefinitions>
 
             <materialDesign:Card Grid.Row="0">
-                <Menu materialDesign:MenuAssist.TopLevelMenuItemHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type materialDesign:Card}}, Path=ActualHeight}">
-                    <MenuItem Header="Tools">
-                        <MenuItem Header="JSON Converter" Click="mi_Control_Click" Tag="t1"/>
-                        <MenuItem Header="Excel Converter" Click="mi_Control_Click" Tag="t2"/>
-                        <MenuItem Header="JSON Datetime to Date" Click="mi_Control_Click" Tag="t6"/>
-                        <MenuItem Header="JSON Masking" Click="mi_Control_Click" Tag="t3"/>
-                        <MenuItem Header="S1 Log Extraction (Local)" Click="mi_Control_Click" Tag="t4"/>
-                        <MenuItem Header="S1 Log Extraction (Server)" Click="mi_Control_Click" Tag="t7"/>
-                        <MenuItem Header="Calling CRDE API" Click="mi_Control_Click" Tag="t5"/>
-                    </MenuItem>
-                    <MenuItem Header="Setting">
-                        <MenuItem Header="Masking" Click="mi_Control_Click" Tag="s1"/>
-                        <MenuItem Header="S1 Logs" Click="mi_Control_Click" Tag="s2"/>
-                        <MenuItem Header="CRDE API Address" Click="mi_Control_Click" Tag="s3"/>
-                        <MenuItem Header="Process Code" Click="mi_Control_Click" Tag="s4"/>
-                    </MenuItem>
+                <Menu x:Name="mainMenu" materialDesign:MenuAssist.TopLevelMenuItemHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type materialDesign:Card}}, Path=ActualHeight}">
+                    
                 </Menu>
             </materialDesign:Card>
 

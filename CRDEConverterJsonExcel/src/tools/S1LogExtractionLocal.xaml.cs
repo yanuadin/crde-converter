@@ -160,7 +160,7 @@ namespace CRDEConverterJsonExcel.src.tools
                                     // Convert IO_JSON to JSON File
                                     foreach (JObject content in contentFile)
                                     {
-                                        if (content["PROCESSCODE"].ToString() == processCode)
+                                        if (content["PROCESSCODE"] != null && content["PROCESSCODE"].ToString() == processCode)
                                         {
                                             for (int i = 0; i < content["IO_JSON"].Count(); i++)
                                             {

@@ -202,7 +202,7 @@ namespace CRDEConverterJsonExcel.src.tools
             Converter converter = new Converter();
 
             JObject jsonContent = JObject.Parse(requestContent);
-            string jsonName = jsonContent.First.First.First.First["InquiryCode"].ToString();
+            string jsonName = jsonContent.First?.First?.First?.First?["InquiryCode"]?.ToString() ?? "UknownJSON";
             APIResponse responseAPI = await Api.PostApiDataAsync(endpoint, jsonContent);
             if (responseAPI.success)
             {
