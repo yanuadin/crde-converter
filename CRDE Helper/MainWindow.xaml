@@ -8,7 +8,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         Style="{StaticResource MaterialDesignWindow}"
-        Title="CRDE OpsEase" 
+        Title="CRDE Helper" 
         Height="900" 
         Width="1350">
     <ScrollViewer>
