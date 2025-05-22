@@ -7,6 +7,7 @@ using CRDEConverterJsonExcel.src.tools;
 using CRDEConverterJsonExcel.src.setting;
 using System.Runtime.CompilerServices;
 using MaterialDesignThemes.Wpf;
+using CRDE_Helper.src.tools;
 
 namespace CRDEConverterJsonExcel;
 
@@ -78,6 +79,9 @@ public partial class MainWindow : Window
             case "t8":
                 addTabItem(new TabItemControl { Header = menuItem.Header.ToString(), Content = loginAsAdmin });
                 break;
+            case "t9":
+                addTabItem(new TabItemControl { Header = menuItem.Header.ToString(), Content = new ExcelConverterBackTest() });
+                break;
             case "s1":
                 addTabItem(new TabItemControl { Header = menuItem.Header.ToString(), Content = new MaskingSetting() });
                 break;
@@ -113,6 +117,7 @@ public partial class MainWindow : Window
         MenuItem t6 = new MenuItem { Header = "JSON Datetime to Date", Tag = "t6" };
         MenuItem t3 = new MenuItem { Header = "JSON Masking", Tag = "t3" };
         MenuItem t5 = new MenuItem { Header = "Calling CRDE API", Tag = "t5" };
+        MenuItem t9 = new MenuItem { Header = "Excel Converter - Back Test", Tag = "t9" };
         MenuItem t8 = new MenuItem { Header = "Login As Admin", Tag = "t8" };
 
         t1.Click += mi_Control_Click;
@@ -120,6 +125,7 @@ public partial class MainWindow : Window
         t6.Click += mi_Control_Click;
         t3.Click += mi_Control_Click;
         t5.Click += mi_Control_Click;
+        t9.Click += mi_Control_Click;
         t8.Click += mi_Control_Click;
 
         toolsMenu.Items.Add(t1);
@@ -127,6 +133,7 @@ public partial class MainWindow : Window
         toolsMenu.Items.Add(t6);
         toolsMenu.Items.Add(t3);
         toolsMenu.Items.Add(t5);
+        toolsMenu.Items.Add(t9);
         toolsMenu.Items.Add(t8);
     }
 

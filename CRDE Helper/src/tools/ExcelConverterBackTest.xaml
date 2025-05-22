@@ -1,0 +1,83 @@
+﻿<UserControl x:Class="CRDE_Helper.src.tools.ExcelConverterBackTest"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CRDE_Helper.src.tools"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <StackPanel Margin="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="8.0*"/>
+                    <ColumnDefinition Width="0.7*"/>
+                    <ColumnDefinition Width="0.3*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" x:Name="t9_tb_progressName" HorizontalAlignment="Left" Text="" TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5" Margin="0,0,0,10" Visibility="Hidden"/>
+                <ProgressBar Grid.Column="1" x:Name="t9_progressBar" Margin="0,0,0,10" Visibility="Hidden"/>
+                <TextBlock Grid.Column="2" x:Name="t9_progressText" Text="0/0" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Hidden" Margin="10,0,0,10"/>
+                <Button 
+                    Grid.Column="3" 
+                    x:Name="t9_btn_StopProgressBar" 
+                    Style="{StaticResource MaterialDesignIconForegroundButton}" 
+                    Click="t9_btn_StopProgressBar_Click" Width="30" Height="30" 
+                    Margin="0,-10,0,0" 
+                    Visibility="Hidden"
+                    MouseEnter="t9_btn_StopProgressBar_MouseEnter" MouseLeave="t9_btn_StopProgressBar_MouseLeave"
+                    >
+                    <materialDesign:PackIcon Kind="Stop" Width="20" Height="20"/>
+                </Button>
+            </Grid>
+            <StackPanel x:Name="t9_sp_main">
+                <Grid Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="6*"/>
+                        <ColumnDefinition Width="1.5*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Master Excel File : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
+                    <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t9_tb_master_excel_file" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
+                    <Button Grid.Column="2" x:Name="t9_btn_SelectMasterExcelFile" Content="Select Master Excel File" HorizontalAlignment="Right" Click="t9_btn_SelectMasterExcelFile_Click" Height="30"/>
+                </Grid>
+                <Grid Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="6*"/>
+                        <ColumnDefinition Width="1.5*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Back Test - Excel File : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
+                    <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t9_tb_back_test_excel_file" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
+                    <Button Grid.Column="2" x:Name="t9_btn_SelectBackTestExcelFile" Content="Select Back Test Excel File" HorizontalAlignment="Right" Click="t9_btn_SelectBackTestExcelFile_Click" Height="30"/>
+                </Grid>
+
+                <CheckBox x:Name="t9_cb_isSplittedFile" Content="Is Splitted File?" HorizontalAlignment="Left" Margin="0,5,0,5"/>
+                
+                <Button x:Name="t9_btn_ConvertTextFile" Content="Convert to Text File" HorizontalAlignment="Left" Click="t9_btn_ConvertTextFile_Click" Height="30" Margin="0,20,0,5"/>
+                <Grid Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="7*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Converted Text File : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
+                    <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t9_tb_text_output" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
+                </Grid>
+
+                <Button x:Name="t9_btn_ConvertJSONFile" Content="Convert to JSON File" HorizontalAlignment="Left" Click="t9_btn_ConvertJSONFile_Click" Height="30" Margin="0,5,0,5"/>
+                <Grid Margin="0,5,0,5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="7*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" HorizontalAlignment="Left" Text="Converted JSON Folder : " TextWrapping="Wrap" VerticalAlignment="Center" Opacity="0.5"/>
+                    <TextBox Grid.Column="1" HorizontalAlignment="Stretch" TextWrapping="Wrap" VerticalAlignment="Center" Padding="5" x:Name="t9_tb_json_output" Style="{StaticResource MaterialDesignOutlinedTextBox}" IsReadOnly="True"/>
+                </Grid>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

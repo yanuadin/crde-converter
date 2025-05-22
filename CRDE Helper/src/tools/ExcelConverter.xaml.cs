@@ -68,7 +68,7 @@ namespace CRDEConverterJsonExcel.src.tools
             t2_cb_selectAll.IsChecked = false;
         }
 
-        private void t2_btn_ConvertExcelToTxt_Click(object sender, RoutedEventArgs e)
+        private async void t2_btn_ConvertExcelToTxt_Click(object sender, RoutedEventArgs e)
         {
             // Disable the cursor and set it to "Wait" (spinning circle)
             t2_sp_main.IsEnabled = false;
@@ -97,10 +97,13 @@ namespace CRDEConverterJsonExcel.src.tools
                     t2_btn_StopProgressBar.Visibility = Visibility.Visible;
 
                     string filePath = filteredSelected.First<Item>().FilePath;
-                    string savePath = converter.convertExcelTo(filePath, filteredSelected, "txt", progress);
+                    var (savePath, successCount) = await converter.convertExcelTo(filePath, filteredSelected, "txt", progress);
 
                     if (savePath != "")
+                    {
                         t2_tb_txt_output.Text = savePath;
+                        MessageBox.Show($"[SUCCESS]: {successCount} files converted successfully");
+                    }
                     else
                         MessageBox.Show("[FAILED]: Save path not found");
                 }
@@ -118,7 +121,7 @@ namespace CRDEConverterJsonExcel.src.tools
             }
         }
 
-        private void t2_btn_ConvertExcelToJSON_Click(object sender, RoutedEventArgs e)
+        private async void t2_btn_ConvertExcelToJSON_Click(object sender, RoutedEventArgs e)
         {
             // Disable the cursor and set it to "Wait" (spinning circle)
             t2_sp_main.IsEnabled = false;
@@ -147,10 +150,13 @@ namespace CRDEConverterJsonExcel.src.tools
                     t2_btn_StopProgressBar.Visibility = Visibility.Visible;
 
                     string filePath = filteredSelected.First<Item>().FilePath;
-                    string savePath = converter.convertExcelTo(filePath, filteredSelected, "json", progress);
+                    var (savePath, successCount) = await converter.convertExcelTo(filePath, filteredSelected, "json", progress);
 
                     if (savePath != "")
+                    {
                         t2_tb_json_output.Text = savePath;
+                        MessageBox.Show($"[SUCCESS]: {successCount} files converted successfully");
+                    }
                     else
                         MessageBox.Show("[FAILED]: Save path not found");
                 }
