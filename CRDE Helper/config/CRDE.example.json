@@ -1,6 +1,6 @@
 {
   "COLOR_CELLS": [
-    "#FFF5F5DC"
+    "#FFF5F5DC",
   ],
   "API_ADDRESS": [
     {
@@ -22,7 +22,7 @@
   ],
   "PROCESS_CODE": [
     {
-      "Name": "CIMBNiaga_CC"
+      "Name": "X"
     }
   ],
   "MASKING_TEMPLATE": [
@@ -34,6 +34,17 @@
           "Value": "X"
         }
       ]
+    }
+  ],
+  "ADMIN_LOGIN": {
+    "Password": "X"
+  },
+  "S_KEY": "X",
+  "S_IV": "X",
+  "OVER_CHARACTER_VARIABLE": [
+    {
+      "Variable": "X",
+      "Value": "X"
     }
   ]
 }
