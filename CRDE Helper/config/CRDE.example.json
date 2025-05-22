@@ -1,0 +1,39 @@
+{
+  "COLOR_CELLS": [
+    "#FFF5F5DC"
+  ],
+  "API_ADDRESS": [
+    {
+      "UUID": "X",
+      "Name": "X",
+      "API": "https://google.com"
+    }
+  ],
+  "S1_LOG": [
+    {
+      "UUID": "X",
+      "Name": "X",
+      "HostName": "https://google.com",
+      "Port": "X",
+      "AccessKeyID": "X",
+      "SecretAccessKey": "X",
+      "DirectoryS1": "X"
+    }
+  ],
+  "PROCESS_CODE": [
+    {
+      "Name": "CIMBNiaga_CC"
+    }
+  ],
+  "MASKING_TEMPLATE": [
+    {
+      "Name": "X",
+      "Mask": [
+        {
+          "Variable": "X",
+          "Value": "X"
+        }
+      ]
+    }
+  ]
+}

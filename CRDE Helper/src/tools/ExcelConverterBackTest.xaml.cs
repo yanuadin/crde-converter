@@ -121,13 +121,9 @@ namespace CRDE_Helper.src.tools
                 t9_btn_StopProgressBar.Visibility = Visibility.Visible;
 
                 if (t9_cb_isSplittedFile.IsChecked == false)
-                {
                     chunkPathResult = await ProcessExcelChunksAsync(progress, savePath);
-                }
                 else
-                {
                     chunkPathResult = excelPath;
-                }
 
                 // Merge Excel
                 int totalOfSuccess = await ProcessConversionAsync(converter, progress, chunkPathResult, savePath, fileType);
