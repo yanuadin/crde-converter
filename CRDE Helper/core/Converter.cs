@@ -6,14 +6,10 @@ using System.Windows;
 using CRDEConverterJsonExcel.config;
 using System.Drawing;
 using CRDEConverterJsonExcel.objectClass;
-using System.IO.Packaging;
-using System.Reflection.PortableExecutable;
-using System.Diagnostics;
 using CRDE_Helper.objectClass;
 using System.Collections.ObjectModel;
-using CRDEConverterJsonExcel.controller;
 using CRDE_Helper.controller;
-using System.Buffers;
+using System.Diagnostics;
 
 namespace CRDEConverterJsonExcel.core
 {
@@ -126,176 +122,191 @@ namespace CRDEConverterJsonExcel.core
             }
         }
 
-        public async Task<(string, int)> convertExcelTo(string filePath, List<Item> filteredSelected, string convertType, IProgress<int> progress = null, ExcelPackage excelPackage = null, string optionalSavePath = "")
+        public async Task<(string, int)> convertExcelTo(string filePath, List<Item> filteredSelected, string convertType, IProgress<int> progress = null, ExcelPackage excelPackage = null, string optionalSavePath = "", CancellationToken cancellationToken = new CancellationToken())
         {
-            JArray resultCollection = new JArray();
-            string savePath = "";
-            if (optionalSavePath != "")
-                savePath = optionalSavePath;
-            else if (convertType == "json")
-                savePath = GeneralMethod.saveFolderDialog();
-
-            // Set EPPlus license context (required for non-commercial use)
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-            // Read the Excel file
-            int successCount = 0;
-            using (var package = excelPackage == null ? new ExcelPackage(new FileInfo(filePath)) : excelPackage)
+            try
             {
-                var workbook = package.Workbook;
-                Dictionary<string, JArray> excelData = mappingExcelToJSON(workbook);
+                JArray resultCollection = new JArray();
+                string savePath = "";
+                if (optionalSavePath != "")
+                    savePath = optionalSavePath;
+                else if (convertType == "json")
+                    savePath = GeneralMethod.saveFolderDialog();
 
-                //Mapping Children to Parent
-                string jsonString = "";
-                int countApplicationHeader = 0;
-                JObject result = new JObject();
-                foreach (var data in excelData)
+                // Set EPPlus license context (required for non-commercial use)
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+                // Read the Excel file
+                int successCount = 0;
+                using (var package = excelPackage == null ? new ExcelPackage(new FileInfo(filePath)) : excelPackage)
                 {
-                    for (int i = data.Value.Count - 1; i >= 0; i--)
+                    var workbook = package.Workbook;
+                    Dictionary<string, JArray> excelData = mappingExcelToJSON(workbook);
+                    cancellationToken.ThrowIfCancellationRequested();
+                    //Mapping Children to Parent
+                    string jsonString = "";
+                    int countApplicationHeader = 0;
+                    JObject result = new JObject();
+                    foreach (var data in excelData)
                     {
-                        foreach (var item in data.Value[i].ToObject<JObject>())
+                        cancellationToken.ThrowIfCancellationRequested();
+                        for (int i = data.Value.Count - 1; i >= 0; i--)
                         {
-                            JObject variable = item.Key == "#HEADER#" ? (JObject)item.Value.First.First.First.First : (JObject)item.Value["Variables"];
-                            Int64 idExcel = GeneralMethod.convertTryParse(variable["Id"].ToString(), "Integer");
-                            Int64 parentIdExcel = GeneralMethod.convertTryParse(variable["ParentId"].ToString(), "Integer");
-                            string parentExcel = variable["Parent"].ToString();
-
-                            if (parentExcel != null && parentExcel != "" && parentExcel != "-")
+                            foreach (var item in data.Value[i].ToObject<JObject>())
                             {
-                                //Trace.WriteLine(item.Key + " | " + idExcel + " | " + parentExcel + " | " + parentIdExcel);
-                                var parent = excelData[parentExcel].Children<JObject>().Children<JObject>().FirstOrDefault(pnt =>
-                                {
-                                    JProperty parent = (JProperty)pnt;
-                                    return parent.Value["Variables"] != null && parent.Name == parentExcel && parent.Value["Variables"]["Id"] != null && (int)parent.Value["Variables"]["Id"] == parentIdExcel;
-                                });
+                                cancellationToken.ThrowIfCancellationRequested();
 
-                                JProperty parentProperty = (JProperty)parent;
-                                if (parentProperty.Name == "#HEADER#")
-                                {
-                                    JObject skletonTypeHeader = new JObject();
-                                    JObject skletonHeader = new JObject();
+                                JObject variable = item.Key == "#HEADER#" ? (JObject)item.Value.First.First.First.First : (JObject)item.Value["Variables"];
+                                Int64 idExcel = GeneralMethod.convertTryParse(variable["Id"].ToString(), "Integer");
+                                Int64 parentIdExcel = GeneralMethod.convertTryParse(variable["ParentId"].ToString(), "Integer");
+                                string parentExcel = variable["Parent"].ToString();
 
-                                    skletonHeader["Header"] = parentProperty.Value["Variables"];
-                                    skletonHeader["Body"] = data.Value[i];
-                                    skletonTypeHeader[parentProperty.Value["Variables"]["Type"].ToString()] = skletonHeader;
-                                    parentProperty.Value = skletonTypeHeader;
+                                if (parentExcel != null && parentExcel != "" && parentExcel != "-")
+                                {
+                                    //Trace.WriteLine(item.Key + " | " + idExcel + " | " + parentExcel + " | " + parentIdExcel);
+                                    var parent = excelData[parentExcel].Children<JObject>().Children<JObject>().FirstOrDefault(pnt =>
+                                    {
+                                        JProperty parent = (JProperty)pnt;
+                                        return parent.Value["Variables"] != null && parent.Name == parentExcel && parent.Value["Variables"]["Id"] != null && (int)parent.Value["Variables"]["Id"] == parentIdExcel;
+                                    });
+
+                                    if (parent != null)
+                                    {
+                                        JProperty parentProperty = (JProperty)parent;
+                                        if (parentProperty.Name == "#HEADER#")
+                                        {
+                                            JObject skletonTypeHeader = new JObject();
+                                            JObject skletonHeader = new JObject();
+
+                                            skletonHeader["Header"] = parentProperty.Value["Variables"];
+                                            skletonHeader["Body"] = data.Value[i];
+                                            skletonTypeHeader[parentProperty.Value["Variables"]["Type"].ToString()] = skletonHeader;
+                                            parentProperty.Value = skletonTypeHeader;
+                                        }
+                                        else
+                                        {
+                                            if (parentProperty.Value["Categories"] == null)
+                                                parentProperty.Value["Categories"] = new JArray();
+
+                                            ((JArray)parentProperty.Value["Categories"]).AddFirst(data.Value[i]);
+                                        }
+                                    }
                                 }
                                 else
                                 {
-                                    if (parentProperty.Value["Categories"] == null)
-                                        parentProperty.Value["Categories"] = new JArray();
+                                    JObject headerJSON = new JObject();
+                                    headerJSON["header"] = cleanIdParentAndParentId(data.Value[i]["#HEADER#"].ToObject<JObject>());
+                                    headerJSON["name"] = headerJSON["header"].First.First.First.First["InquiryCode"];
+                                    headerJSON["typeJSON"] = data.Value[i]["#HEADER#"].ToObject<JObject>().First.First.First.First["Type"];
+                                    result = new JObject();
 
-                                    ((JArray)parentProperty.Value["Categories"]).AddFirst(data.Value[i]);
+                                    try
+                                    {
+                                        if (convertType == "json")
+                                        {
+                                            // Convert the data to JSON
+                                            result["json"] = JsonConvert.SerializeObject(headerJSON["header"], Formatting.Indented);
+                                            result["fileName"] = headerJSON["name"];
+                                            result["typeJSON"] = headerJSON["typeJSON"].ToString() == "StrategyOneRequest" ? "req" : "res";
+
+                                            resultCollection.Add(result);
+                                        }
+                                        else if (convertType == "txt")
+                                        {
+                                            result["json"] = JsonConvert.SerializeObject(headerJSON["header"]);
+                                            result["fileName"] = headerJSON["name"];
+                                            result["typeJSON"] = headerJSON["typeJSON"].ToString() == "StrategyOneRequest" ? "req" : "res";
+
+                                            resultCollection.Add(result);
+                                        }
+                                        else
+                                        {
+                                            MessageBox.Show("[FAILED]: [" + headerJSON["name"] + "] [FAILED]: Invalid Convert Type");
+
+                                            break;
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        MessageBox.Show("[FAILED]: [" + headerJSON["name"] + "] Convert was failed" + Environment.NewLine + ex.Message);
+
+                                        continue;
+                                    }
+
+                                    countApplicationHeader++;
                                 }
                             }
-                            else
-                            {
-                                JObject headerJSON = new JObject();
-                                headerJSON["header"] = cleanIdParentAndParentId(data.Value[i]["#HEADER#"].ToObject<JObject>());
-                                headerJSON["name"] = headerJSON["header"].First.First.First.First["InquiryCode"];
-                                headerJSON["typeJSON"] = data.Value[i]["#HEADER#"].ToObject<JObject>().First.First.First.First["Type"];
-                                result = new JObject();
-
-                                try
-                                {
-                                    if (convertType == "json")
-                                    {
-                                        // Convert the data to JSON
-                                        result["json"] = JsonConvert.SerializeObject(headerJSON["header"], Formatting.Indented);
-                                        result["fileName"] = headerJSON["name"];
-                                        result["typeJSON"] = headerJSON["typeJSON"].ToString() == "StrategyOneRequest" ? "req" : "res";
-
-                                        resultCollection.Add(result);
-                                    }
-                                    else if (convertType == "txt")
-                                    {
-                                        result["json"] = JsonConvert.SerializeObject(headerJSON["header"]);
-                                        result["fileName"] = headerJSON["name"];
-                                        result["typeJSON"] = headerJSON["typeJSON"].ToString() == "StrategyOneRequest" ? "req" : "res";
-
-                                        resultCollection.Add(result);
-                                    }
-                                    else
-                                    {
-                                        MessageBox.Show("[FAILED]: [" + headerJSON["name"] + "] [FAILED]: Invalid Convert Type");
-
-                                        break;
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    MessageBox.Show("[FAILED]: [" + headerJSON["name"] + "] Convert was failed" + Environment.NewLine + ex.Message);
-
-                                    continue;
-                                }
-
-                                countApplicationHeader++;
-                            }
+                            data.Value.Remove(data.Value[i]);
                         }
-                        data.Value.Remove(data.Value[i]);
                     }
-                }
 
-                // Save File
-                string jsonTxt = "";
-                string fileNameTxt = "";
+                    // Save File
+                    string jsonTxt = "";
+                    string fileNameTxt = "";
 
-                foreach (JObject res in resultCollection)
-                {
-                    Item matchingItem = filteredSelected.FirstOrDefault(item => item.FileName == res["fileName"].ToString());
-
-                    if (matchingItem != null)
+                    foreach (JObject res in resultCollection)
                     {
-                        if (convertType == "json")
-                        {
-                            saveTextFile(savePath + @"\" + res["fileName"] + ".json", res["json"].ToString(), res["typeJSON"].ToString());
-                            successCount++;
-                        }
-                        else if (convertType == "txt")
-                        {
-                            if (jsonTxt == "")
-                            {
-                                jsonTxt = res["json"].ToString();
-                                fileNameTxt = res["fileName"].ToString();
-                            }
-                            else
-                            {
-                                jsonTxt += Environment.NewLine + res["json"].ToString();
-                                fileNameTxt = "MultipleFiles";
-                            }
-                            successCount++;
-                        }
+                        cancellationToken.ThrowIfCancellationRequested();
+                        Item matchingItem = filteredSelected.FirstOrDefault(item => item.FileName == res["fileName"].ToString());
 
-                        // Update progress bar
-                        if (progress != null)
-                            ((IProgress<int>)progress).Report(successCount);
+                        if (matchingItem != null)
+                        {
+                            if (convertType == "json")
+                            {
+                                saveTextFile(savePath + @"\" + res["fileName"] + ".json", res["json"].ToString(), res["typeJSON"].ToString());
+                                successCount++;
+                            }
+                            else if (convertType == "txt")
+                            {
+                                if (jsonTxt == "")
+                                {
+                                    jsonTxt = res["json"].ToString();
+                                    fileNameTxt = res["fileName"].ToString();
+                                }
+                                else
+                                {
+                                    jsonTxt += Environment.NewLine + res["json"].ToString();
+                                    fileNameTxt = "MultipleFiles";
+                                }
+                                successCount++;
+                            }
+
+                            // Update progress bar
+                            if (progress != null)
+                                ((IProgress<int>)progress).Report(successCount);
+                        }
                     }
-                }
 
-                try
-                {
-                    if (convertType == "txt")
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    try
                     {
-                        string[] extension = { convertType };
-                        if (optionalSavePath == "")
-                            savePath = GeneralMethod.saveFileDialog(extension, fileNameTxt);
-                        else
-                            savePath = optionalSavePath;
+                        if (convertType == "txt")
+                        {
+                            string[] extension = { convertType };
+                            if (optionalSavePath == "")
+                                savePath = GeneralMethod.saveFileDialog(extension, fileNameTxt);
+                            else
+                                savePath = optionalSavePath;
 
-                        if (savePath != "")
-                            saveTextFile(savePath, jsonTxt);
-                        else
-                            MessageBox.Show("[FAILED]: Location not found");
+                            if (savePath != "")
+                                saveTextFile(savePath, jsonTxt);
+                            else
+                                MessageBox.Show("[FAILED]: Location not found");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        successCount = 0;
+                        MessageBox.Show("[ERROR]: " + ex.Message);
                     }
                 }
-                catch (Exception ex)
-                {
-                    successCount = 0;
-                    MessageBox.Show("[ERROR]: " + ex.Message);
-                }
+
+                return (savePath, successCount);
+            } catch (OperationCanceledException)
+            {
+                return ("", 0);
             }
-
-            return (savePath, successCount);
         }
 
         public Dictionary<string, JArray> mappingExcelToJSON(ExcelWorkbook workbook)

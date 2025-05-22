@@ -1,21 +1,12 @@
 ﻿using CRDEConverterJsonExcel.core;
 using OfficeOpenXml;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using CRDEConverterJsonExcel.objectClass;
 using System.Diagnostics;
-using System.Xml.Linq;
-using Amazon.S3.Model;
-using System.IO.Packaging;
 using System.Windows.Input;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using CRDE_Helper.controller;
-using Amazon.Runtime.Internal.Transform;
 
 namespace CRDE_Helper.src.tools
 {
@@ -27,7 +18,7 @@ namespace CRDE_Helper.src.tools
         List<string> excelPath = new List<string>();
         ObservableCollection<Item> lb_JSONItems = new ObservableCollection<Item>();
         ObservableCollection<Item> masterData = new ObservableCollection<Item>();
-        bool isInterrupted = false;
+        private CancellationTokenSource _cts;
 
         public ExcelConverterBackTest()
         {
@@ -103,6 +94,7 @@ namespace CRDE_Helper.src.tools
             // Disable the cursor and set it to "Wait" (spinning circle)
             t9_sp_main.IsEnabled = false;
             Mouse.OverrideCursor = Cursors.Wait;
+            _cts = new CancellationTokenSource();
 
             try
             {
@@ -126,7 +118,7 @@ namespace CRDE_Helper.src.tools
                     chunkPathResult = excelPath;
 
                 // Merge Excel
-                int totalOfSuccess = await ProcessConversionAsync(converter, progress, chunkPathResult, savePath, fileType);
+                int totalOfSuccess = await Task.Run(() => ProcessConversionAsync(converter, progress, chunkPathResult, savePath, fileType), _cts.Token);
 
                 MessageBox.Show($"[SUCCESS]: {totalOfSuccess} files converted successfully");
 
@@ -170,9 +162,6 @@ namespace CRDE_Helper.src.tools
 
                 for (int chunk = 1; chunk <= countOfChunk; chunk++)
                 {
-                    if (isInterrupted)
-                        break;
-
                     chunkPathResult.Add(chunkProcess(workbook, dictionarySheetStartRow, chunkSize, chunk, savePath));
                     ((IProgress<int>)progress).Report(chunk);
                     await Task.Delay(50);
@@ -186,59 +175,81 @@ namespace CRDE_Helper.src.tools
         {
             int totalOfSuccess = 0;
 
-            InitializeProgressBar(lb_JSONItems.Count, "Converting File");
-
-            progress = new Progress<int>(value =>
+            try
             {
-                t9_progressBar.Value = (int)((double)value / lb_JSONItems.Count * 100);
-                t9_progressText.Text = $"{value}/{lb_JSONItems.Count}";
-            });
+                InitializeProgressBar(lb_JSONItems.Count, "Converting File");
 
-            await Task.Delay(100);
-
-            foreach (string chunkPath in chunkPathResult)
-            {
-                if (isInterrupted)
-                    break;
-
-                ExcelPackage mergeExcel = converter.mergeTwoExcel(
-                    new ExcelPackage(new FileInfo(t9_tb_master_excel_file.Text)),
-                    new ExcelPackage(new FileInfo(chunkPath)));
-
-                string fileNameSaved = savePath + @"\" + Path.GetFileNameWithoutExtension(chunkPath) +
-                    (fileType == "txt" ? ".txt" : ".json");
-
-                var (resultPath, successCount) = await converter.convertExcelTo(
-                    t9_tb_master_excel_file.Text,
-                    lb_JSONItems.ToList(),
-                    fileType,
-                    progress,
-                    mergeExcel,
-                    fileType == "txt" ? fileNameSaved : savePath);
-
-                totalOfSuccess += successCount;
-
-                if (savePath != "")
+                progress = new Progress<int>(value =>
                 {
-                    if (fileType == "txt")
-                        t9_tb_text_output.Text = savePath;
-                    else
-                        t9_tb_json_output.Text = savePath;
+                    Dispatcher.Invoke(() =>
+                    {
+                        t9_progressBar.Value = (int)((double)value / lb_JSONItems.Count * 100);
+                        t9_progressText.Text = $"{value}/{lb_JSONItems.Count}";
+                    });
+                });
+
+                await Task.Delay(100);
+
+                foreach (string chunkPath in chunkPathResult)
+                {
+                    _cts.Token.ThrowIfCancellationRequested();
+
+                    string masterExcelPath = "";
+                    Dispatcher.Invoke(() =>
+                    {
+                        masterExcelPath = t9_tb_master_excel_file.Text;
+                    });
+
+                    ExcelPackage mergeExcel = converter.mergeTwoExcel(
+                        new ExcelPackage(new FileInfo(masterExcelPath)),
+                        new ExcelPackage(new FileInfo(chunkPath)));
+
+                    string fileNameSaved = savePath + @"\" + Path.GetFileNameWithoutExtension(chunkPath) +
+                        (fileType == "txt" ? ".txt" : ".json");
+
+                    var (resultPath, successCount) = await converter.convertExcelTo(
+                        masterExcelPath,
+                        lb_JSONItems.ToList(),
+                        fileType,
+                        progress,
+                        mergeExcel,
+                        fileType == "txt" ? fileNameSaved : savePath, _cts.Token);
+
+                    totalOfSuccess += successCount;
+
+                    if (savePath != "")
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            if (fileType == "txt")
+                                t9_tb_text_output.Text = savePath;
+                            else
+                                t9_tb_json_output.Text = savePath;
+                        });
+                    }
+
+                    _cts.Token.ThrowIfCancellationRequested();
+
+                    File.Delete(chunkPath);
+                    ((IProgress<int>)progress).Report(totalOfSuccess);
+                    await Task.Delay(50);
                 }
 
-                File.Delete(chunkPath);
-                ((IProgress<int>)progress).Report(totalOfSuccess);
-                await Task.Delay(50);
+                return totalOfSuccess;
+            } catch (OperationCanceledException)
+            {
+                return totalOfSuccess;
             }
-
-            return totalOfSuccess;
         }
 
         private void InitializeProgressBar(double totalItems, string progressName)
         {
-            t9_progressBar.Value = 0;
-            t9_progressText.Text = $"0/{totalItems}";
-            t9_tb_progressName.Text = progressName;
+            Dispatcher.Invoke(() =>
+            {
+                t9_progressBar.Value = 0;
+                t9_progressText.Text = $"0/{totalItems}";
+                t9_tb_progressName.Text = progressName;
+            });
         }
 
         private void ResetUIState()
@@ -249,7 +260,6 @@ namespace CRDE_Helper.src.tools
             t9_progressBar.Visibility = Visibility.Hidden;
             t9_progressText.Visibility = Visibility.Hidden;
             t9_btn_StopProgressBar.Visibility = Visibility.Hidden;
-            isInterrupted = false;
         }
 
         private string chunkProcess(ExcelWorkbook workbook, Dictionary<string, int> dictionarySheetStartRow, int chunkSize, int chunk, string savePath)
@@ -308,7 +318,8 @@ namespace CRDE_Helper.src.tools
 
         private void t9_btn_StopProgressBar_Click(object sender, RoutedEventArgs e)
         {
-            isInterrupted = true;
+            _cts?.Cancel();
+            Trace.WriteLine("yes");
         }
 
         private async void t9_btn_StopProgressBar_MouseEnter(object sender, RoutedEventArgs e)
