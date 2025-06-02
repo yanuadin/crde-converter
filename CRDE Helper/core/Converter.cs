@@ -18,7 +18,7 @@ namespace CRDEConverterJsonExcel.core
         private Dictionary<string, List<string>> dictionaryHeader = new Dictionary<string, List<string>>();
         private CRDE config = new CRDE();
 
-        public void convertJSONToExcel(ExcelPackage package, string json, int iterator)
+        public async Task convertJSONToExcel(ExcelPackage package, string json, int iterator)
         {
             // Parse JSON
             JObject jsonObject = JObject.Parse(json);
@@ -541,34 +541,36 @@ namespace CRDEConverterJsonExcel.core
                     if (parentId > 1)
                         parentId -= 1;
 
-                    if (package.Workbook.Worksheets[property.Key] == null)
+                    string sheetName = property.Key;
+                    // Masking sheet name if length more than 31 character
+                    if (property.Key.Length > 31)
                     {
-                        string sheetName = property.Key;
-                        // Masking sheet name if length more than 31 character
-                        if (property.Key.Length > 31)
+                        OverCharacterVariableController overCharacterVariableController = new OverCharacterVariableController();
+                        JObject overCharacterVariable = overCharacterVariableController.getOverCharacterVariable("Variable", property.Key);
+                        if (overCharacterVariable == null)
                         {
-                            OverCharacterVariableController overCharacterVariableController = new OverCharacterVariableController();
-                            JObject overCharacterVariable = overCharacterVariableController.getOverCharacterVariable("Variable", property.Key);
-                            if (overCharacterVariable == null)
-                            {
-                                sheetName = property.Key.Substring(0, 27) + "|" + (overCharacterVariableController.getListOverCharacterVariable().Count() + 1).ToString("D3");
-                                JObject newOverCharacterVariable = new JObject();
-                                newOverCharacterVariable["Variable"] = property.Key;
-                                newOverCharacterVariable["Value"] = sheetName;
-                                overCharacterVariableController.setOverCharacterVariable(newOverCharacterVariable);
-                            } else
-                            {
-                                sheetName = overCharacterVariable["Value"].ToString();
-                            }
+                            sheetName = property.Key.Substring(0, 27) + "|" + (overCharacterVariableController.getListOverCharacterVariable().Count() + 1).ToString("D3");
+                            JObject newOverCharacterVariable = new JObject();
+                            newOverCharacterVariable["Variable"] = property.Key;
+                            newOverCharacterVariable["Value"] = sheetName;
+                            overCharacterVariableController.setOverCharacterVariable(newOverCharacterVariable);
                         }
+                        else
+                        {
+                            sheetName = overCharacterVariable["Value"].ToString();
+                        }
+                    }
+
+                    if (package.Workbook.Worksheets[sheetName] == null)
+                    {
                         addSheet(iterator, (JObject)property.Value, package, package.Workbook.Worksheets.Add(sheetName), 1, parent, parentId, sheetName);
                     }
                     else
                     {
-                        if (package.Workbook.Worksheets[property.Key].Dimension != null)
+                        if (package.Workbook.Worksheets[sheetName].Dimension != null)
                         {
 
-                            addSheet(iterator, (JObject)property.Value, package, package.Workbook.Worksheets[property.Key], package.Workbook.Worksheets[property.Key].Dimension.End.Row, parent, parentId, property.Key);
+                            addSheet(iterator, (JObject)property.Value, package, package.Workbook.Worksheets[sheetName], package.Workbook.Worksheets[sheetName].Dimension.End.Row, parent, parentId, sheetName);
                         }
                     }
                 }
@@ -823,7 +825,7 @@ namespace CRDEConverterJsonExcel.core
 
                                 if (parent != null)
                                 {
-                                    ExcelWorksheet swsParentSheet = secondWorkbook.Worksheets[parent.SheetName] == null ? secondWorkbook.Worksheets["Application_Header"] : secondWorkbook.Worksheets[parent.SheetName];
+                                    ExcelWorksheet swsParentSheet = secondWorkbook.Worksheets[parent.SheetName] == null ? firstWorkbook.Worksheets[parent.SheetName] : secondWorkbook.Worksheets[parent.SheetName];
                                     int startCol = swsParentSheet.Cells[2, 1].Text == "Main_Id" ? 3 : 1;
 
                                     for (int row = 3; row <= parent.RowCount + 2; row++)
@@ -844,16 +846,6 @@ namespace CRDEConverterJsonExcel.core
             }
 
             return firstExcel;
-        }
-
-        public JObject replicateJSON(JObject firstJSON, ExcelPackage secondExcel)
-        {
-            JObject resultJSON = new JObject();
-            //JArray secondJSON = mappingExcelToJSON(secondExcel.Workbook);
-            //Trace.WriteLine(secondExcel);
-
-
-            return resultJSON;
         }
     }
 }

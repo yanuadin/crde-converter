@@ -1,4 +1,5 @@
-﻿using CRDEConverterJsonExcel.core;
+﻿using CRDEConverterJsonExcel.config;
+using CRDEConverterJsonExcel.core;
 using CRDEConverterJsonExcel.objectClass;
 using Newtonsoft.Json.Linq;
 using OfficeOpenXml;
@@ -19,6 +20,8 @@ namespace CRDEConverterJsonExcel.src.tools
         private ObservableCollection<Item> lb_JSONItems = new ObservableCollection<Item>();
         private bool isInterrupted = false;
         private string saveOutputPath = "";
+        private CRDE config = new CRDE();
+        private CancellationTokenSource _cts;
 
         public JSONConverter()
         {
@@ -76,17 +79,17 @@ namespace CRDEConverterJsonExcel.src.tools
             GeneralMethod.selectAllList(lb_JSONItems, t1_cb_selectAll);
         }
 
-        private void t1_btn_ConvertJSONToExcel_Click(object sender, RoutedEventArgs e)
+        private async void t1_btn_ConvertJSONToExcel_Click(object sender, RoutedEventArgs e)
         {
             // Disable the cursor and set it to "Wait" (spinning circle)
             t1_sp_main.IsEnabled = false;
             Mouse.OverrideCursor = Cursors.Wait;
             saveOutputPath = "";
             t1_btn_OpenExcelFile.Visibility = Visibility.Hidden;
+            _cts = new CancellationTokenSource();
 
             try
             {
-                Converter converter = new Converter();
                 List<Item> filteredSelected = lb_JSONItems.Where(item => item.IsSelected).ToList();
                 int filteredCount = filteredSelected.Count;
 
@@ -114,16 +117,27 @@ namespace CRDEConverterJsonExcel.src.tools
                         if (filteredCount == 1)
                         {
                             JObject parseJSON = JObject.Parse(filteredSelected.First<Item>().FileContent);
-                            fname = parseJSON.First.First.First.First["InquiryCode"].ToString();
+                            string type = parseJSON.First.ToObject<JProperty>()?.Name.ToString() == "StrategyOneRequest" ? "-req" : "-res";
+                            fname = parseJSON.First.First.First.First["InquiryCode"].ToString() + type;
                         }
                         else
                             fname = "MultipleFiles";
 
-                        fname += "-req.xlsx";
+                        fname += ".xlsx";
+
+                        // Save Excel file
+                        string[] extension = { "excel" };
+                        string savePath = GeneralMethod.saveFileDialog(extension, fname);
 
                         // Loop through the multiple files
                         int iterator = 0;
                         int completedItems = 0;
+
+                        if (config.getColorCells().Count() < filteredCount)
+                            config.setColorCells(filteredCount);
+
+                        Converter converter = new Converter();
+
                         foreach (Item file in filteredSelected)
                         {
                             if (isInterrupted)
@@ -133,16 +147,17 @@ namespace CRDEConverterJsonExcel.src.tools
                             string fileName = file.FileName;
                             string jsonContent = File.ReadAllText(filePath);
 
-                            converter.convertJSONToExcel(package, jsonContent, iterator++);
+                            await Task.Run(() => converter.convertJSONToExcel(package, jsonContent, iterator++), _cts.Token);
 
                             // Update progress
                             completedItems++;
                             ((IProgress<int>)progress).Report(completedItems);
-                        }
 
-                        // Save Excel file
-                        string[] extension = { "excel" };
-                        string savePath = GeneralMethod.saveFileDialog(extension, fname);
+                            await Task.Delay(50);
+
+                            if (_cts.Token.IsCancellationRequested)
+                                break;
+                        }
 
                         if (savePath != "")
                         {
@@ -154,10 +169,12 @@ namespace CRDEConverterJsonExcel.src.tools
                         }
                     }
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
-                MessageBox.Show("[FAILED]: Error: " + ex.Message);
-            } finally
+                MessageBox.Show($"[ERROR]: {ex.Message}");
+            }
+            finally
             {
                 // Re-enable the cursor and reset it to the default
                 t1_sp_main.IsEnabled = true;
@@ -184,6 +201,7 @@ namespace CRDEConverterJsonExcel.src.tools
         private void t1_btn_StopProgressBar_Click(object sender, RoutedEventArgs e)
         {
             isInterrupted = true;
+            _cts?.Cancel();
         }
 
         private async void t1_btn_StopProgressBar_MouseEnter(object sender, RoutedEventArgs e)

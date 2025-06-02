@@ -21,8 +21,10 @@ namespace CRDEConverterJsonExcel.src.tools
         private APIAddressController apiAddressController = new APIAddressController();
         private ObservableCollection<Item> lb_JSONRequestItems = new ObservableCollection<Item>();
         private ObservableCollection<Item> lb_JSONResponseItems = new ObservableCollection<Item>();
+        private CRDE config = new CRDE();
         private bool isInterrupted = false;
         private string saveOutputPath = "";
+        private CancellationTokenSource _cts;
 
         public CallingCRDEAPI()
         {
@@ -220,6 +222,7 @@ namespace CRDEConverterJsonExcel.src.tools
         private void t5_btn_StopProgressBar_Click(object sender, RoutedEventArgs e)
         {
             isInterrupted = true;
+            _cts?.Cancel();
         }
 
         private async void t5_btn_StopProgressBar_MouseEnter(object sender, RoutedEventArgs e)
@@ -237,19 +240,19 @@ namespace CRDEConverterJsonExcel.src.tools
             GeneralMethod.selectAllList(lb_JSONResponseItems, t5_cb_selectAllResponse);
         }
 
-        private void t5_btn_ConvertToExcel_Click(object sender, RoutedEventArgs e)
+        private async void t5_btn_ConvertToExcel_Click(object sender, RoutedEventArgs e)
         {
             // Disable the cursor and set it to "Wait" (spinning circle)
             t5_sp_main.IsEnabled = false;
             Mouse.OverrideCursor = Cursors.Wait;
             saveOutputPath = "";
             t5_btn_OpenExcelFile.Visibility = Visibility.Hidden;
+            _cts = new CancellationTokenSource();
 
             try
             {
                 List<Item> filteredSelected = lb_JSONResponseItems.Where(item => item.IsSelected).ToList();
                 int filteredCount = filteredSelected.Count;
-                Converter converter = new Converter();
 
                 if (filteredCount > 0)
                 {
@@ -269,6 +272,11 @@ namespace CRDEConverterJsonExcel.src.tools
 
                     using (var package = new ExcelPackage())
                     {
+                        if (config.getColorCells().Count() < filteredCount)
+                            config.setColorCells(filteredCount);
+
+                        Converter converter = new Converter();
+
                         // Loop through the multiple files
                         int iterator = 0;
                         int completedItems = 0;
@@ -277,7 +285,16 @@ namespace CRDEConverterJsonExcel.src.tools
                             if (isInterrupted)
                                 break;
 
-                            converter.convertJSONToExcel(package, file.FileContent, iterator++);
+                            await Task.Run(() => converter.convertJSONToExcel(package, file.FileContent, iterator++), _cts.Token);
+
+                            // Update progress
+                            completedItems++;
+                            ((IProgress<int>)progress).Report(completedItems);
+
+                            await Task.Delay(50);
+
+                            if (_cts.Token.IsCancellationRequested)
+                                break;
                         }
 
                         string fname = filteredSelected.Count > 1 ? "MultipleFiles" : filteredSelected.First<Item>().FileName;

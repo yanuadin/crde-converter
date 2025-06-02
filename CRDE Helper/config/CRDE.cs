@@ -29,6 +29,26 @@ namespace CRDEConverterJsonExcel.config
             return config["COLOR_CELLS"].ToObject<JArray>();
         }
 
+        public void setColorCells(int amount)
+        {
+            Random _random = new Random();
+            JArray resultColor = new JArray();
+
+            for (int i = 0; i < amount; i++)
+            {
+                string color;
+                do
+                {
+                    color = $"#{_random.Next(0x1000000):X6}";
+                } while (resultColor.Contains(color));
+
+                resultColor.Add(color);
+            }
+
+            config["COLOR_CELLS"] = resultColor;
+            File.WriteAllText(getFilePathConfig(), config.ToString());
+        }
+
         public JObject getConfig(string configKey, string variableKey, string variableValue)
         {
             var envConfig = config[configKey].Children<JObject>().FirstOrDefault(child => child[variableKey] != null && child[variableKey].ToString().Equals(variableValue));
