@@ -12,5 +12,6 @@ namespace CRDEConverterJsonExcel.objectClass
         public bool success { get; set; }
         public string message { get; set; }
         public string data { get; set; }
+        public bool isInterrupted { get; set; } = false;
     }
 }

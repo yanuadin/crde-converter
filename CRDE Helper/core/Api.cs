@@ -2,7 +2,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeOpenXml;
+using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Windows;
@@ -41,17 +43,27 @@ namespace CRDEConverterJsonExcel.core
                     // Send a POST request to the API
                     HttpResponseMessage response = await client.PostAsync(url, content);
 
-                    // Ensure the request was successful
-                    response.EnsureSuccessStatusCode();
-
-                    // Read and return the response content as a string
+                    // Read the response content
                     string responseData = await response.Content.ReadAsStringAsync();
 
-                    return new APIResponse { success = true, message = "SUCCESS", data = responseData };
+                    // Handle different status codes
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return new APIResponse { success = true, message = "SUCCESS", data = responseData };
+                    }
+                    else
+                    {
+                        return new APIResponse
+                        {
+                            success = false,
+                            message = $"[ERROR] : {responseData}",
+                            data = ""
+                        };
+                    }
                 }
-                catch (HttpRequestException ex)
+                catch (Exception ex)
                 {
-                    return new APIResponse { success = false, message = $"[ERROR] : {ex.Message}", data = "" };
+                    return new APIResponse { success = false, message = $"[ERROR] : {ex.Message}", data = "", isInterrupted = true };
                 }
             }
         }

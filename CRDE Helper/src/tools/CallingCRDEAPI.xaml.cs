@@ -133,6 +133,7 @@ namespace CRDEConverterJsonExcel.src.tools
                                 int successCount = 0;
                                 bool error = false;
                                 string errorMessage = "";
+                                bool isInterrupted = false;
 
                                 foreach (Item request in filteredSelected)
                                 {
@@ -153,6 +154,15 @@ namespace CRDEConverterJsonExcel.src.tools
                                             while ((line = reader.ReadLine()) != null)
                                             {
                                                 APIResponse responseAPI = await sendRequestToAPI(endpoint, line, savePath);
+
+                                                if(responseAPI.isInterrupted)
+                                                {
+                                                    error = true;
+                                                    errorMessage = responseAPI.message;
+                                                    isInterrupted = responseAPI.isInterrupted;
+                                                    break;
+                                                }
+
                                                 if (!responseAPI.success)
                                                 {
                                                     error = true;
@@ -160,23 +170,45 @@ namespace CRDEConverterJsonExcel.src.tools
                                                     continue;
                                                 }
                                             }
+
+                                            if (isInterrupted)
+                                                break;
                                         }
                                     }
                                     else
                                     {
                                         APIResponse responseAPI = await sendRequestToAPI(endpoint, request.FileContent, savePath);
+
+                                        if (responseAPI.isInterrupted)
+                                        {
+                                            error = true;
+                                            errorMessage = responseAPI.message;
+                                            isInterrupted = responseAPI.isInterrupted;
+                                            break;
+                                        }
+
                                         if (!responseAPI.success)
                                         {
                                             error = true;
                                             errorMessage = responseAPI.message;
                                             continue;
                                         }
+
+                                        if (isInterrupted)
+                                            break;
                                     }
                                     successCount++;
                                 }
 
                                 t5_lb_ResponseList.ItemsSource = lb_JSONResponseItems;
-                                MessageBox.Show($"[SUCCESS]: Success send ({successCount}/{filteredCount}) request to API");
+                                if (isInterrupted)
+                                    MessageBox.Show(errorMessage);
+
+                                string additionalMessage = "";
+                                if (error)
+                                    additionalMessage = Environment.NewLine + "Please check the error in output file (-error.txt).";
+
+                                MessageBox.Show($"[SUCCESS]: Success send ({successCount}/{filteredCount}) request to API." + additionalMessage);
                             }
                             else
                                 MessageBox.Show("[FAILED]: API address not found");
@@ -214,8 +246,11 @@ namespace CRDEConverterJsonExcel.src.tools
                 // Save Response to JSON File
                 string fileOutputPath = converter.saveTextFile(savePath + @"\" + jsonName + ".json", responseJSONTextIndent, "res");
                 lb_JSONResponseItems.Add(new Item { FileName = jsonName, FilePath = fileOutputPath, FileContent = responseAPI.data, IsSelected = false });
+            } else if(!responseAPI.isInterrupted)
+            {
+                converter.saveTextFile(savePath + @"\" + jsonName + ".txt", responseAPI.message, "error");
             }
-
+            
             return responseAPI;
         }
 
