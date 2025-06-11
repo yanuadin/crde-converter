@@ -133,9 +133,6 @@ namespace CRDEConverterJsonExcel.src.tools
                         int iterator = 0;
                         int completedItems = 0;
 
-                        if (config.getColorCells().Count() < filteredCount)
-                            config.setColorCells(filteredCount);
-
                         Converter converter = new Converter();
 
                         foreach (Item file in filteredSelected)

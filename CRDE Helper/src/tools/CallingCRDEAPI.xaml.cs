@@ -307,9 +307,6 @@ namespace CRDEConverterJsonExcel.src.tools
 
                     using (var package = new ExcelPackage())
                     {
-                        if (config.getColorCells().Count() < filteredCount)
-                            config.setColorCells(filteredCount);
-
                         Converter converter = new Converter();
 
                         // Loop through the multiple files
